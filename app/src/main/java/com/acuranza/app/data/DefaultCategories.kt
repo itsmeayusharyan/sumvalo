@@ -1,0 +1,50 @@
+package com.acuranza.app.data
+
+import com.acuranza.app.model.TxnType
+
+/**
+ * Built-in categories. Keys match the ones the SMS engine's CategoryGuesser returns,
+ * and `icon` names map to Material icons in the UI layer.
+ */
+object DefaultCategories {
+    val all: List<CategoryEntity> = listOf(
+        expense("food", "Food & Dining", "restaurant", 0xFFFF7A59),
+        expense("groceries", "Groceries", "local_grocery_store", 0xFF34C38F),
+        expense("shopping", "Shopping", "shopping_bag", 0xFFE056FD),
+        expense("transport", "Transport", "directions_car", 0xFF4DABF7),
+        expense("fuel", "Fuel", "local_gas_station", 0xFFFFA94D),
+        expense("bills", "Bills & Utilities", "receipt_long", 0xFF748FFC),
+        expense("rent", "Rent", "home", 0xFF9775FA),
+        expense("entertainment", "Entertainment", "movie", 0xFFF06595),
+        expense("health", "Health", "medical_services", 0xFFFF6B6B),
+        expense("education", "Education", "school", 0xFF20C997),
+        expense("travel", "Travel", "flight", 0xFF3BC9DB),
+        expense("subscriptions", "Subscriptions", "subscriptions", 0xFFCC5DE8),
+        expense("emi", "EMI & Loans", "account_balance", 0xFFFA5252),
+        expense("investment", "Investments", "trending_up", 0xFF51CF66),
+        expense("cash", "Cash", "local_atm", 0xFF2F9E44),
+        expense("people", "People", "group", 0xFF4263EB),
+        expense("insurance", "Insurance", "shield", 0xFF1098AD),
+        expense("taxes", "Taxes", "gavel", 0xFF495057),
+        expense("fitness", "Fitness", "fitness_center", 0xFFF76707),
+        expense("personal_care", "Personal Care", "spa", 0xFFD6336C),
+        expense("household", "Household", "chair", 0xFF8D6E63),
+        expense("gifts", "Gifts & Donations", "card_giftcard", 0xFFE64980),
+        expense("transfer", "Transfers", "swap_horiz", 0xFF868E96),
+        expense("other", "Other", "category", 0xFFADB5BD),
+        // Income: what was earned. Refunds and cashback come off spending, and money received isn't income.
+        income("salary", "Salary", "payments", 0xFF2F9E44),
+        income("interest", "Interest & dividends", "savings", 0xFF0CA678),
+        income("business", "Business & freelance", "work", 0xFF5C7CFA),
+        income("rental", "Rent received", "real_estate_agent", 0xFF845EF7),
+        income("refund", "Refunds", "replay", 0xFF1C7ED6),
+        income("cashback", "Cashback", "redeem", 0xFFF59F00),
+        income("other_income", "Money received", "add_card", 0xFF37B24D),
+    )
+
+    private fun expense(key: String, name: String, icon: String, color: Long) =
+        CategoryEntity(key = key, name = name, type = TxnType.EXPENSE, icon = icon, colorArgb = color)
+
+    private fun income(key: String, name: String, icon: String, color: Long) =
+        CategoryEntity(key = key, name = name, type = TxnType.INCOME, icon = icon, colorArgb = color)
+}

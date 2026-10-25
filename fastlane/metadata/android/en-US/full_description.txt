@@ -1,0 +1,20 @@
+Sumvalo is a private, fully offline personal finance tracker for Android, built for Indian banking.
+
+You add transactions by hand, or import the CSV statements your net banking exports — everything stays
+on your phone. No account, no servers, no analytics: the app does not even request the INTERNET
+permission, so Android itself guarantees your data cannot leave the device.
+
+• Bank statement (CSV) import with a review inbox: confirm or fix anything it reads
+• Accounts, credit cards, balances that reconcile with what you know
+• Budgets that follow your salary cycle, with rollover and an envelope mode
+• Goals with Monte-Carlo success probability, and safe-to-spend until payday
+• Recurring payments, subscriptions, loans and EMIs, card-bill reminders
+• Insights computed offline: spending spikes, savings rate, card utilisation
+• Receipts, PDF reports, CSV/Beancount/Ledger export
+• Encrypted database (SQLCipher + Android Keystore), biometric lock, decoy PIN, encrypted backups
+
+Sumvalo is free software under GPL-3.0-or-later, with its own interface, a strict offline build
+and a notification gate on first launch. Upstream attribution and licence text ship with the source
+distribution.
+
+Notifications are required at first launch — that is how bill due dates and spend alerts reach you. Nothing else is asked for: no SMS, no contacts, no location.

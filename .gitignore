@@ -1,0 +1,11 @@
+keystore/
+.gradle/
+build/
+/app/build/
+/core/*/build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+.claude/
+cli.zip

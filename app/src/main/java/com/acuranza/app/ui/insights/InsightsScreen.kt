@@ -1,0 +1,468 @@
+package com.acuranza.app.ui.insights
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
+import androidx.compose.material.icons.outlined.Restore
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.acuranza.app.designsystem.components.EmptyState
+import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.MiniBarChart
+import com.acuranza.app.designsystem.components.MiniLineChart
+import com.acuranza.app.designsystem.components.ProgressRing
+import com.acuranza.app.designsystem.components.SecondaryButton
+import com.acuranza.app.designsystem.components.SwipeActionsRow
+import com.acuranza.app.designsystem.components.accent
+import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.di.AppContainer
+import com.acuranza.app.finance.Insight
+import com.acuranza.app.finance.InsightAction
+import com.acuranza.app.finance.InsightChart
+import com.acuranza.app.finance.InsightMetric
+import com.acuranza.app.finance.InsightRoute
+import com.acuranza.app.finance.Severity
+import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.LocalHideAmounts
+import com.acuranza.app.ui.common.acuranzaViewModel
+import com.acuranza.app.ui.common.rememberHaptic
+import com.acuranza.app.ui.common.toUi
+import com.acuranza.app.ui.nav.Routes
+import com.acuranza.app.ui.transactions.ActivityFilterRequest
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import com.acuranza.app.util.Time
+import com.acuranza.app.util.Period
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import com.acuranza.app.ui.nav.popBackSafely
+import com.acuranza.app.ui.nav.navigateToTab
+
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+class InsightsViewModel(private val c: AppContainer) : ViewModel() {
+    val insights: StateFlow<List<Insight>?> = c.insights.observeInsights().map<List<Insight>, List<Insight>?> { it }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** The selected analysis window for the comparison card. */
+    val range = kotlinx.coroutines.flow.MutableStateFlow(InsightRange.M1)
+    fun setRange(r: InsightRange) { range.value = r }
+
+    val comparison: kotlinx.coroutines.flow.StateFlow<PeriodComparison?> = range
+        .flatMapLatest { r ->
+            c.settings.settings.map { it.payCycle }.distinctUntilChanged().flatMapLatest { cycle ->
+                kotlinx.coroutines.flow.flow {
+                    val today = Time.today()
+                    val current = if (r.months == 1) {
+                        Period.containing(today, cycle)
+                    } else {
+                        Period(today.minusMonths((r.months - 1).toLong()).withDayOfMonth(1), today.plusDays(1))
+                    }
+                    val previous = if (r.months == 1) {
+                        current.previous()
+                    } else {
+                        Period(current.start.minusMonths(r.months.toLong()), current.start)
+                    }
+                    val cur = runCatching { c.transactions.summary(current) }.getOrNull()
+                    val prev = runCatching { c.transactions.summary(previous) }.getOrNull()
+                    if (cur != null) emit(PeriodComparison(r, cur, prev))
+                }
+            }
+        }
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000), null)
+
+    fun dismiss(id: String) = viewModelScope.launch { c.insights.dismiss(id) }
+    fun restoreDismissed() = viewModelScope.launch { c.settings.clearDismissedInsights() }
+    suspend fun regenerate() = c.insights.refresh()
+}
+
+private fun Severity.heading(): String = when (this) {
+    Severity.ALERT -> "Needs attention"
+    Severity.WARNING -> "Heads up"
+    Severity.TIP -> "Tips"
+    Severity.GOOD -> "Going well"
+}
+
+/** Navigates to where an insight's action points. */
+fun openInsightAction(nav: NavController, action: InsightAction) {
+    when (action.route) {
+        InsightRoute.CATEGORY -> {
+            ActivityFilterRequest.pendingCategory = action.argument
+            nav.navigateToTab(Routes.TRANSACTIONS)
+        }
+        InsightRoute.ACTIVITY -> nav.navigateToTab(Routes.TRANSACTIONS)
+        InsightRoute.BUDGETS, InsightRoute.GOALS -> {
+            com.acuranza.app.ui.planning.PlanningTabRequest.pending = if (action.route == InsightRoute.GOALS) 1 else 0
+            nav.navigateToTab(Routes.PLANNING)
+        }
+        InsightRoute.BILLS -> nav.navigate(Routes.BILLS)
+        InsightRoute.ACCOUNTS -> nav.navigate(Routes.ACCOUNTS)
+    }
+}
+
+/** Selectable analysis window for the income-vs-spending comparison. */
+enum class InsightRange(val months: Int, val label: String) {
+    M1(1, "1M"), M3(3, "3M"), M6(6, "6M"), Y1(12, "1Y"),
+}
+
+/** The selected window's totals beside the equivalent previous window's, for the delta card. */
+data class PeriodComparison(
+    val range: InsightRange,
+    val current: com.acuranza.app.repo.MonthSummary,
+    val previous: com.acuranza.app.repo.MonthSummary?,
+) {
+    /** Percent change vs the previous window; null when the previous window had nothing to compare. */
+    fun delta(of: (com.acuranza.app.repo.MonthSummary) -> Long): Double? {
+        val prev = previous ?: return null
+        val base = of(prev).toDouble().let { if (it == 0.0) return null else kotlin.math.abs(it) }
+        return (of(current) - of(prev)) / base * 100.0
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun InsightsScreen(nav: NavController) {
+    val vm = acuranzaViewModel { InsightsViewModel(it) }
+    val insights by vm.insights.collectAsStateWithLifecycle()
+    val range by vm.range.collectAsState()
+    val comparison by vm.comparison.collectAsState()
+    val scope = rememberCoroutineScope()
+    val haptic = rememberHaptic()
+    var refreshing by remember { mutableStateOf(false) }
+
+    AcuranzaScreen(
+        title = "Insights",
+        subtitle = "Worked out on your phone, from your own data",
+        actions = { IconButton(onClick = vm::restoreDismissed) { Icon(Icons.Outlined.Restore, contentDescription = "Show dismissed insights") } },
+    ) { padding ->
+        PullToRefreshBox(
+            isRefreshing = refreshing,
+            onRefresh = {
+                refreshing = true
+                scope.launch {
+                    vm.regenerate()
+                    delay(400)
+                    refreshing = false
+                }
+            },
+            modifier = Modifier.fillMaxSize().padding(padding),
+        ) {
+            InsightsContent(
+                insights = insights,
+                hidden = LocalHideAmounts.current,
+                range = range,
+                comparison = comparison,
+                onRange = vm::setRange,
+                onDismiss = { haptic(); vm.dismiss(it.id) },
+                onAction = { openInsightAction(nav, it) },
+            )
+        }
+    }
+}
+
+/** Stateless insights list: summary header, then expandable insight cards grouped by severity. */
+@Composable
+fun InsightsContent(
+    insights: List<Insight>?,
+    hidden: Boolean,
+    range: InsightRange = InsightRange.M1,
+    comparison: PeriodComparison? = null,
+    onRange: (InsightRange) -> Unit = {},
+    onDismiss: (Insight) -> Unit = {},
+    onAction: (InsightAction) -> Unit = {},
+    expandedByDefault: Set<String> = emptySet(),
+    listState: androidx.compose.foundation.lazy.LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
+) {
+    val list = insights
+    if (list != null && list.isEmpty()) {
+        EmptyState(
+            "No insights right now",
+            "As you add transactions, budgets and goals, Acuranza spots overspending, subscriptions, idle cash and more.",
+            Modifier.padding(top = 60.dp),
+            icon = Icons.Outlined.AutoAwesome,
+        )
+        return
+    }
+    val summary = list.orEmpty().firstOrNull { it.isSummary }
+    val cards = list.orEmpty().filterNot { it.isSummary }
+    LazyColumn(state = listState, contentPadding = PaddingValues(16.dp, 4.dp, 16.dp, 40.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        item(key = "range") {
+            com.acuranza.app.designsystem.components.RangeChips(
+                options = InsightRange.entries.map { it.label },
+                selectedIndex = InsightRange.entries.indexOf(range),
+                onSelect = { onRange(InsightRange.entries[it]) },
+                modifier = Modifier.padding(vertical = 4.dp),
+            )
+        }
+        comparison?.let { cmp ->
+            item(key = "comparison") { ComparisonCard(cmp, hidden) }
+        }
+        summary?.let { s -> item(key = "summary") { SummaryCard(s, hidden, onAction) } }
+        cards.groupBy { it.severity }.toSortedMap().forEach { (sev, items) ->
+            item(key = "h-$sev") {
+                Text(
+                    sev.heading().uppercase(),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = sev.toUi().accent().first,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 12.dp, start = 4.dp),
+                )
+            }
+            items(items, key = { it.id }) { i ->
+                SwipeActionsRow(onDelete = {
+                    onDismiss(i)
+                    true
+                }) {
+                    InsightDetailCard(i, hidden, onAction, initiallyExpanded = i.id in expandedByDefault)
+                }
+            }
+        }
+        if (cards.isNotEmpty()) {
+            item(key = "hint") {
+                Text("Tap an insight for details · swipe left to dismiss", style = MaterialTheme.typography.bodySmall,
+                    color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(top = 12.dp, start = 4.dp))
+            }
+        }
+    }
+}
+
+/** Income vs spending for the selected window, with deltas against the previous window. */
+@Composable
+private fun ComparisonCard(cmp: PeriodComparison, hidden: Boolean) {
+    val colors = AcuranzaTheme.colors
+    fun money(v: Long): String = if (hidden) "₹ ••••" else com.acuranza.app.model.Money.format(v, showPaise = false)
+    com.acuranza.app.designsystem.components.AcuranzaCard(Modifier.padding(horizontal = 0.dp)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(
+                "Income vs spending · ${cmp.range.label}",
+                style = MaterialTheme.typography.labelMedium,
+                color = colors.subtleText,
+            )
+            Spacer(Modifier.height(10.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                ComparisonMetric("Income", money(cmp.current.income), cmp.delta { it.income }, colors.income, Modifier.weight(1f))
+                ComparisonMetric("Spending", money(cmp.current.expense), cmp.delta { it.expense }, colors.ink, Modifier.weight(1f))
+                ComparisonMetric("Savings", money(cmp.current.savings), cmp.delta { it.savings }, colors.income, Modifier.weight(1f))
+            }
+            val rate = cmp.current.savingsRate
+            if (rate != null && !hidden) {
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Savings rate ${(rate * 100).toInt()}% of income" +
+                        (cmp.previous?.savingsRate?.let { prev ->
+                            if (prev > 0) " · was ${(prev * 100).toInt()}%" else ""
+                        } ?: ""),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.subtleText,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ComparisonMetric(label: String, value: String, deltaPct: Double?, tint: androidx.compose.ui.graphics.Color, modifier: Modifier = Modifier) {
+    val colors = AcuranzaTheme.colors
+    Column(modifier) {
+        Text(label, style = MaterialTheme.typography.labelSmall, color = colors.subtleText)
+        Text(value, style = MaterialTheme.typography.titleMedium, color = tint)
+        if (deltaPct != null) {
+            val arrow = if (deltaPct >= 0) "▲" else "▼"
+            val good = if (label == "Spending") deltaPct <= 0 else deltaPct >= 0
+            Text(
+                "$arrow ${kotlin.math.abs(deltaPct).toInt()}% vs prev",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (deltaPct == 0.0) colors.subtleText else if (good) colors.income else colors.alert,
+            )
+        } else {
+            Text("—", style = MaterialTheme.typography.labelSmall, color = colors.subtleText)
+        }
+    }
+}
+
+@Composable
+private fun SummaryCard(s: Insight, hidden: Boolean, onAction: (InsightAction) -> Unit) {
+    val score = s.metrics.firstOrNull { it.label == "Score" }?.value?.substringBefore('/')?.toIntOrNull()
+    AcuranzaCard {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            if (score != null) {
+                ProgressRing(score / 100f, size = 64.dp, thickness = 6.dp) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("$score", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text("score", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.tertiaryText)
+                    }
+                }
+                Spacer(Modifier.width(16.dp))
+            }
+            Column(Modifier.weight(1f)) {
+                Text("THIS MONTH", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                Text(s.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Text(if (hidden) s.message.maskAmounts() else (s.detail ?: s.message), style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.height(12.dp))
+        MetricChips(s.metrics.filterNot { it.label == "Score" }, hidden)
+        s.chart?.let {
+            Spacer(Modifier.height(14.dp))
+            InsightChartView(it, hidden)
+        }
+    }
+}
+
+@Composable
+private fun InsightDetailCard(i: Insight, hidden: Boolean, onAction: (InsightAction) -> Unit, initiallyExpanded: Boolean) {
+    val insightFadeIn = com.acuranza.app.designsystem.theme.motionTween<Float>(com.acuranza.app.designsystem.theme.Motion.STANDARD)
+    val insightExpand = com.acuranza.app.designsystem.theme.motionTween<androidx.compose.ui.unit.IntSize>(com.acuranza.app.designsystem.theme.Motion.STANDARD)
+    val insightFadeOut = com.acuranza.app.designsystem.theme.motionTween<Float>(com.acuranza.app.designsystem.theme.Motion.FAST)
+    val insightShrink = com.acuranza.app.designsystem.theme.motionTween<androidx.compose.ui.unit.IntSize>(com.acuranza.app.designsystem.theme.Motion.FAST)
+    var expanded by rememberSaveable(i.id) { mutableStateOf(initiallyExpanded) }
+    val (accent, icon) = i.severity.toUi().accent()
+    val hasMore = i.detail != null || i.metrics.isNotEmpty() || i.chart != null || i.action != null
+    val shape = RoundedCornerShape(16.dp)
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(AcuranzaTheme.colors.cardSurface)
+            .border(1.dp, AcuranzaTheme.colors.hairline, shape)
+            .clickable(enabled = hasMore) { expanded = !expanded }
+            .animateContentSize(com.acuranza.app.designsystem.theme.motionTween(com.acuranza.app.designsystem.theme.Motion.STANDARD))
+            .padding(16.dp),
+    ) {
+        Row(verticalAlignment = Alignment.Top) {
+            Box(Modifier.size(32.dp).clip(RoundedCornerShape(12.dp)).background(accent.copy(alpha = 0.12f)), contentAlignment = Alignment.Center) {
+                Icon(icon, contentDescription = null, tint = accent, modifier = Modifier.size(18.dp))
+            }
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(i.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    if (hidden) i.message.maskAmounts() else i.message,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = AcuranzaTheme.colors.subtleText,
+                    maxLines = if (expanded) Int.MAX_VALUE else 3,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (hasMore) {
+                Icon(
+                    if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                    contentDescription = if (expanded) "Show less" else "Show more",
+                    tint = AcuranzaTheme.colors.tertiaryText,
+                )
+            }
+        }
+        AnimatedVisibility(
+            expanded,
+            enter = fadeIn(insightFadeIn) + expandVertically(insightExpand),
+            exit = fadeOut(insightFadeOut) + shrinkVertically(insightShrink),
+        ) {
+            Column(Modifier.padding(start = 44.dp, top = 12.dp)) {
+                i.detail?.let {
+                    Text(if (hidden) it.maskAmounts() else it, style = MaterialTheme.typography.bodySmall)
+                    Spacer(Modifier.height(12.dp))
+                }
+                if (i.metrics.isNotEmpty()) {
+                    MetricChips(i.metrics, hidden)
+                    Spacer(Modifier.height(12.dp))
+                }
+                i.chart?.let {
+                    InsightChartView(it, hidden)
+                    Spacer(Modifier.height(12.dp))
+                }
+                i.action?.let { a -> SecondaryButton(a.label, onClick = { onAction(a) }, modifier = Modifier.fillMaxWidth()) }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MetricChips(metrics: List<InsightMetric>, hidden: Boolean) {
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        metrics.forEach { m ->
+            Column(
+                Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(AcuranzaTheme.colors.fill)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            ) {
+                Text(m.label, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(if (hidden) m.value.maskAmounts() else m.value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+@Composable
+private fun InsightChartView(chart: InsightChart, hidden: Boolean) {
+    Column {
+        chart.caption?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.tertiaryText) }
+        when (chart.kind) {
+            InsightChart.Kind.BARS -> MiniBarChart(chart.labels, chart.values, reference = chart.reference, hidden = hidden)
+            InsightChart.Kind.LINE -> MiniLineChart(
+                chart.values, reference = chart.reference, hidden = hidden,
+                startLabel = chart.labels.firstOrNull(), endLabel = chart.labels.lastOrNull(),
+            )
+        }
+    }
+}
+
+/** Replaces rupee amounts with dots for privacy mode. */
+private fun String.maskAmounts(): String = replace(Regex("[−-]?₹[0-9,.]+[KLCr]*"), "₹ ••••")

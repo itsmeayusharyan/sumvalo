@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Full variant only: automatic SMS capture. READ_SMS enables the historical inbox import
+         and the background scanner; the listener captures new bank SMS from the Messages app's
+         notifications. Declared only in this variant; the standard sideload has neither. -->
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <application>
+        <service
+            android:name="com.acuranza.app.notify.SmsNotificationListenerService"
+            android:exported="true"
+            android:label="Sumvalo SMS capture"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

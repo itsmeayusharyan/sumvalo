@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Sumvalo is fully offline: it holds no permission that can open a network socket. -->
+    <!-- WorkManager declares this to watch connectivity constraints; Sumvalo schedules no such
+         work, and reading network state is still an information leak, so it is removed at merge. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Opt-in self-upgrade: Settings → Financial tools offers installing the Full build from an
+         APK file on this device. The file is verified (package + signature) and Android's own
+         install confirmation and security checks run as usual. The permission is inert until
+         the user initiates that flow. -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <!-- Normal (auto-granted) permission for the haptic strength implementation; the old
+         View-feedback path needed none. Zero privacy surface: no data, no runtime prompt. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <application
+        android:name=".AcuranzaApp"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Acuranza">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".install.InstallResultReceiver"
+            android:exported="false" />
+
+        <!-- SMS transaction tracking, permissionless: the user shares a bank message from their
+             Messages app to Sumvalo. No SMS permission is requested (Play Protect blocks
+             sideloaded APKs that request one); the shared text is parsed and discarded — only the
+             extracted transaction details are stored, and only after the user confirms them. -->
+        <activity
+            android:name=".ui.settings.SmsShareActivity"
+            android:exported="true"
+            android:label="Add to Sumvalo"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter android:label="Add to Sumvalo">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".tools.WidgetConfigReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.CONFIGURATION_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".tools.MonthWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_month_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_month_info" />
+        </receiver>
+
+        <receiver
+            android:name=".tools.QuickAddWidgetProvider"
+            android:exported="true"
+            android:label="Quick add">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_quick_add_info" />
+        </receiver>
+
+        <receiver
+            android:name=".tools.SavingsGoalWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_goal_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_goal_info" />
+        </receiver>
+
+        <receiver
+            android:name=".tools.CategoryDonutWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_categories_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_categories_info" />
+        </receiver>
+
+        <receiver
+            android:name=".tools.ShortcutsWidgetProvider"
+            android:exported="true"
+            android:label="@string/widget_shortcuts_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_shortcuts_info" />
+        </receiver>
+
+        <service
+            android:name=".tools.QuickAddTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_notification"
+            android:label="@string/tile_add_expense"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

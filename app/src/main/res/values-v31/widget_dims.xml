@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12+ clips the whole widget with the launcher's own radius; matching it removes
+         the double-rounded edge the mismatch produced. -->
+    <dimen name="widget_bg_radius">@android:dimen/system_app_widget_background_radius</dimen>
+</resources>
