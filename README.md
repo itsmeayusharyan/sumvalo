@@ -1,27 +1,11 @@
-<h1 align="center">Sumvalo</h1>
+# Sumvalo
 
-<p align="center">
-  <img src="docs/screenshots/logo.png" alt="Sumvalo logo" width="96" height="96"/>
-</p>
+Offline-first personal finance for Android. Local-only, encrypted, no network permission — your money data never leaves the phone.
 
-<p align="center">
-  <b>Offline-first personal finance for Android.</b><br/>
-  Local-only, encrypted, no network permission — your money data never leaves the phone.
-</p>
-
-<details>
-<summary><b>Table of Contents</b></summary>
-
-- [About](#about)
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Development](#development)
-- [Privacy](#privacy)
-- [License](#license)
-
-</details>
-
----
+[![GitHub release](https://img.shields.io/github/v/release/itsmeayusharyan/sumvalo?include_prereleases&label=latest&sort=semver&style=flat-square)](https://github.com/itsmeayusharyan/sumvalo/releases/latest)
+[![License](https://img.shields.io/badge/license-GPL--3.0-2563EB.svg?style=flat-square)](LICENSE)
+[![Android 8.0+](https://img.shields.io/badge/Android-8.0%2B-111111.svg?style=flat-square)](https://developer.android.com/about/versions)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF.svg?style=flat-square)](https://kotlinlang.org/)
 
 ## About
 
@@ -33,30 +17,53 @@ Designed to be minimal, tactile, and glanceable: bold typography, clean hierarch
 
 ## Features
 
-- **Home dashboard** — net worth card, this-month income/spent/saved, upcoming bills, quick-add actions, and a “safe to spend” pill that respects your salary cycle
-- **Accounts & cards** — balances that reconcile with your bank, card outstanding and utilization, mark-paid recording
-- **Budgets & goals** — monthly budgets that follow your salary cycle with pace projection and rollover; savings goals with progress rings
-- **Transactions** — add by hand or import bank-statement CSV (HDFC, ICICI, SBI, Axis, Kotak and others); tags, splits, IOUs, receipts (photo/PDF, encrypted)
-- **Recurring & bills** — subscriptions, EMIs, UPI AutoPay / NACH mandates found in your spending; due-date reminders with price-change alerts
-- **Reports & insights** — monthly & yearly PDF reports, Beancount & Ledger export, year-in-review, daily spending calendar, spending spikes, savings rate
-- **Everyday tools** — home-screen widgets (this month, savings goal, spending by category, quick add), a Quick Settings tile, haptic feedback (Light/Standard/Strong), and a default-landing-tab choice
+| Category | Capabilities |
+|----------|-------------|
+| **Home dashboard** | Net worth card, this-month income/spent/saved, upcoming bills, quick-add actions, “safe to spend” pill that respects your salary cycle |
+| **Accounts & cards** | Balances that reconcile with your bank, card outstanding and utilization, mark-paid recording |
+| **Budgets & goals** | Monthly budgets that follow your salary cycle with pace projection and rollover; savings goals with progress rings |
+| **Transactions** | Add by hand or import bank-statement CSV (HDFC, ICICI, SBI, Axis, Kotak and others); tags, splits, IOUs, encrypted receipts |
+| **Recurring & bills** | Subscriptions, EMIs, UPI AutoPay / NACH mandates; due-date reminders with price-change alerts |
+| **Reports & insights** | Monthly & yearly PDF reports, Beancount & Ledger export, year-in-review, daily spending calendar, spending spikes, savings rate |
+| **Everyday tools** | Home-screen widgets, Quick Settings tile, haptic feedback (Light/Standard/Strong), default-landing-tab choice |
+| **Security** | Biometric/PIN app lock with decoy-PIN mode, privacy mode that masks amounts, SQLCipher AES-256 database |
+
+---
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/home-light.png" alt="Home — light theme" width="200"/>
+  <img src="docs/screenshots/home-dark.png" alt="Home — dark theme" width="200"/>
+  <img src="docs/screenshots/settings.png" alt="Settings hub" width="200"/>
+  <img src="docs/screenshots/settings-dark.png" alt="Settings — dark theme" width="200"/>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/budgets.png" alt="Budgets" width="200"/>
+  <img src="docs/screenshots/goals.png" alt="Goals" width="200"/>
+  <img src="docs/screenshots/categories.png" alt="Categories" width="200"/>
+  <img src="docs/screenshots/card-bills.png" alt="Card bills" width="200"/>
+</p>
+
+---
 
 ## Getting Started
 
-**Two builds, same app:**
+### Download
+
+Download signed release APKs from the [Releases page](https://github.com/itsmeayusharyan/sumvalo/releases/latest). Two variants are available:
 
 | Build | SMS permission | Best for |
 |-------|---------------|----------|
 | **Standard** | Not requested | Share or paste bank messages; sideloads cleanly, Play Protect friendly |
 | **Full** | Requested (opt-in) | Automatic inbox scan and notification capture; may trigger Play Protect warnings on sideload |
 
-Download the signed APKs from the [Releases page](https://github.com/itsmeayusharyan/sumvalo/releases/latest). Both variants share identical code, features, and signing key — upgrades install cleanly over previous versions.
+Both variants share identical code, features, and signing key — upgrades install cleanly over previous versions.
 
 Sumvalo targets Android 8.0+ (minSdk 26, targetSdk 35). The app requests no network permission — nothing can leave your phone.
 
----
-
-## Development
+### Build from source
 
 **Prerequisites** — JDK 17+ (JDK 21 tested), Android SDK with `platforms;android-35` and `build-tools;35.0.0`, Gradle wrapper (8.9):
 
@@ -70,15 +77,6 @@ echo "sdk.dir=/opt/android-sdk" > local.properties   # or export ANDROID_HOME=/o
 ```bash
 ./gradlew :app:assembleRelease
 ```
-
-**Release checklist** (run against the signed artifact):
-
-1. No INTERNET / network permission — `aapt2 dump permissions` is clean
-2. Not debuggable, `allowBackup=false`, no unexpected exported components
-3. Signature verifies against the Sumvalo release certificate — `apksigner verify`
-4. No HTTP client classes or hardcoded URLs in the DEX
-5. No analytics, ads, or tracking SDKs
-6. SHA-256 hash recorded alongside release notes
 
 Full details: [BUILDING.md](docs/BUILDING.md)
 
@@ -95,6 +93,90 @@ Sumvalo holds **no permission to access the network**. It cannot upload, sync, o
 - **Local-only** — database, preferences, and datastore excluded from cloud backup and device transfer
 
 Full policy: [PRIVACY.md](docs/PRIVACY.md)
+
+---
+
+## Security
+
+- No servers, no analytics, no third-party SDKs
+- No INTERNET permission — verified against every release artifact
+- `allowBackup="false"`, not debuggable
+- PendingIntent uses `FLAG_IMMUTABLE`
+- Optional biometric/device-credential app lock that re-locks after 60 seconds in the background
+- Screenshot and recents-preview blocking
+- Lock-screen notifications hide amounts and merchants
+
+See [SECURITY.md](SECURITY.md) for the full security policy and vulnerability reporting contact.
+
+---
+
+## Project structure
+
+```
+Sumvalo/
+├── app/                          # Application module
+│   └── src/main/
+│       ├── java/com/acuranza/app/
+│       │   ├── data/             # Database, entities, DAOs, SMS parsing
+│       │   ├── di/               # Dependency injection (AppContainer)
+│       │   ├── domain/           # Business logic (balances, budgets, transfers)
+│       │   ├── export/           # CSV, Beancount, Ledger exporters
+│       │   ├── install/          # In-app APK self-updater
+│       │   ├── notify/           # Notifications, SMS listener
+│       │   ├── repo/             # Repositories (accounts, transactions, categories)
+│       │   ├── reports/          # PDF report generation
+│       │   ├── security/         # Encryption, PIN hashing, biometric lock
+│       │   ├── tools/            # Widgets, Quick Settings tile, digest
+│       │   ├── ui/               # Jetpack Compose screens and components
+│       │   ├── work/             # Background workers (SMS scanning)
+│       │   └── AcuranzaApp.kt    # Application class
+│       └── res/                  # Resources, layouts, drawables, themes
+├── core/
+│   ├── designsystem/             # Shared UI components and theming
+│   ├── finance/                  # Financial calculations (budgets, goals, loans)
+│   ├── model/                    # Money, accent color, types
+│   └── sms/                      # SMS parsing, sender matching, categorization
+├── docs/                         # Documentation (BUILDING.md, PRIVACY.md, etc.)
+├── fastlane/                     # Release metadata
+├── scripts/                      # Release, security audit, retention scripts
+└── gradle/                       # Gradle wrapper and version catalog
+```
+
+Note: The package name `com.acuranza.app` is retained from the project's origins for upgrade compatibility.
+
+---
+
+## Development
+
+### Building
+
+Debug build:
+
+```bash
+./gradlew :app:assembleDebug
+```
+
+Release build:
+
+```bash
+./gradlew :app:assembleRelease
+```
+
+The signing configuration reads `keystore/sumvalo-release.jks` and two Gradle properties (`SUMVALO_STORE_PASSWORD`, `SUMVALO_KEY_PASSWORD`) from `~/.gradle/gradle.properties` — never in the repository.
+
+### Testing
+
+```bash
+./gradlew test
+```
+
+### Release
+
+```bash
+./scripts/release.sh
+```
+
+The release script runs the full test suite, security audit, builds both standard and full variants, signs them, and publishes to GitHub. `!sync` (via `scripts/release-sync.sh`) pushes source changes and publishes the release with attached APKs.
 
 ---
 
