@@ -9,7 +9,7 @@ Track income, expenses, credit cards, bills, budgets, and goals entirely on your
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-2563EB.svg?style=flat-square)](LICENSE)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF.svg?style=flat-square)](https://kotlinlang.org/)
 
-[Features](#features) · [Get it](#get-it) · [Privacy](#privacy) · [Security](#security) · [License](#license)
+[Features](#features) · [Get it](#get-it) · [Preview](#preview) · [Privacy](#privacy) · [Security](#security) · [License](#license)
 
 ## Features
 
