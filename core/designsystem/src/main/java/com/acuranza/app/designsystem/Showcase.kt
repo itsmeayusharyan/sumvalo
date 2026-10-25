@@ -21,6 +21,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.acuranza.app.designsystem.theme.SumvaloTheme as SumvaloThemeFn
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,9 +46,9 @@ import com.acuranza.app.designsystem.components.GoalCard
 import com.acuranza.app.designsystem.components.InsightCard
 import com.acuranza.app.designsystem.components.InsightSeverity
 import com.acuranza.app.designsystem.components.KeypadExpression
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.components.AcuranzaLogo
-import com.acuranza.app.designsystem.components.AcuranzaTopBar
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.components.SumvaloLogo
+import com.acuranza.app.designsystem.components.SumvaloTopBar
 import com.acuranza.app.designsystem.components.LineAreaChart
 import com.acuranza.app.designsystem.components.LoadingShimmer
 import com.acuranza.app.designsystem.components.LogoShape
@@ -60,7 +61,6 @@ import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.StackedBar
 import com.acuranza.app.designsystem.components.StatChip
 import com.acuranza.app.designsystem.components.TransactionRow
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
 import com.acuranza.app.model.Bank
 import com.acuranza.app.model.TxnSource
 import com.acuranza.app.model.TxnType
@@ -89,7 +89,7 @@ private val samplePoints = listOf(31, 32, 31.5, 34, 36, 35.2, 38, 41, 40.4, 44).
 @Composable
 private fun Section(title: String, content: @Composable () -> Unit) {
     Column(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(title, style = MaterialTheme.typography.labelLarge, color = AcuranzaTheme.colors.subtleText)
+        Text(title, style = MaterialTheme.typography.labelLarge, color = com.acuranza.app.designsystem.theme.SumvaloTheme.colors.subtleText)
         Spacer(Modifier.height(8.dp))
         content()
     }
@@ -97,7 +97,7 @@ private fun Section(title: String, content: @Composable () -> Unit) {
 
 @Composable
 private fun ShowcaseSurface(dark: Boolean, content: @Composable () -> Unit) {
-    AcuranzaTheme(darkTheme = dark) {
+    SumvaloThemeFn(darkTheme = dark) {
         Column(
             Modifier
                 .background(MaterialTheme.colorScheme.background)
@@ -117,7 +117,7 @@ private fun HeroLight() = ShowcaseSurface(dark = false) { HeroContent() }
 @Composable
 private fun HeroContent() {
     var hidden by remember { mutableStateOf(false) }
-    AcuranzaTopBar(title = "Good evening, Amit", subtitle = "Tuesday, 14 Oct")
+    SumvaloTopBar(title = "Good evening, Amit", subtitle = "Tuesday, 14 Oct")
     BalanceHeroCard(
         label = "Net worth",
         amount = 4_825_634_50,
@@ -177,7 +177,7 @@ private fun ChartsContent() {
     Spacer(Modifier.height(12.dp))
     MonthSwitcher("Oct 2026", onPrevious = {}, onNext = {}, canGoNext = false)
     Spacer(Modifier.height(12.dp))
-    AcuranzaCard(Modifier.fillMaxWidth()) {
+    SumvaloCard(Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             DonutChart(sampleSlices, size = 150.dp, thickness = 18.dp, centerLabel = "Spent")
             Spacer(Modifier.width(16.dp))
@@ -185,9 +185,9 @@ private fun ChartsContent() {
         }
     }
     Spacer(Modifier.height(12.dp))
-    AcuranzaCard(Modifier.fillMaxWidth()) { BarChart(sampleBars) }
+    SumvaloCard(Modifier.fillMaxWidth()) { BarChart(sampleBars) }
     Spacer(Modifier.height(12.dp))
-    AcuranzaCard(Modifier.fillMaxWidth()) { LineAreaChart(samplePoints) }
+    SumvaloCard(Modifier.fillMaxWidth()) { LineAreaChart(samplePoints) }
     Spacer(Modifier.height(12.dp))
     StackedBar(sampleSlices)
 }
@@ -261,11 +261,11 @@ private fun EntryContent() {
     val expr = remember { KeypadExpression("1250+300") }
     var text by remember { mutableStateOf(expr.text) }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        AcuranzaLogo(size = 56.dp)
+        SumvaloLogo(size = 56.dp)
         Spacer(Modifier.width(12.dp))
-        AcuranzaLogo(size = 56.dp, shape = LogoShape.Circle)
+        SumvaloLogo(size = 56.dp, shape = LogoShape.Circle)
         Spacer(Modifier.width(12.dp))
-        Text("Acuranza", style = MaterialTheme.typography.headlineLarge)
+        Text("Sumvalo", style = MaterialTheme.typography.headlineLarge)
     }
     AmountInputDisplay(text, expr.valuePaise(), showResult = expr.hasOperator)
     NumberKeypad(onKey = { text = expr.press(it) })

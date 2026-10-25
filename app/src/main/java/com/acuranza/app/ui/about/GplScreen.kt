@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Description
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
 import kotlinx.coroutines.launch
 
@@ -28,7 +28,7 @@ fun GplScreen(nav: NavController) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val snackbar = androidx.compose.runtime.remember { SnackbarHostState() }
     val scope = androidx.compose.runtime.rememberCoroutineScope()
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Licence",
         subtitle = "GNU General Public License v3.0",
         onBack = { nav.popBackSafely() },
@@ -44,7 +44,7 @@ fun GplScreen(nav: NavController) {
             Text(
                 "Sumvalo is free and open-source software under the GNU General Public License v3.0.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
             Text(
@@ -53,7 +53,7 @@ fun GplScreen(nav: NavController) {
                     "is no warranty: the app is provided as-is, without even the implied warranty of " +
                     "merchantability or fitness for a particular purpose.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(bottom = 12.dp),
             )
             Text(
@@ -61,7 +61,7 @@ fun GplScreen(nav: NavController) {
                     "the repository), alongside the attribution to the upstream Kosh project this app " +
                     "derives from. Each source file keeps the copyright notice it carried.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
             com.acuranza.app.ui.settings.SettingsRow(

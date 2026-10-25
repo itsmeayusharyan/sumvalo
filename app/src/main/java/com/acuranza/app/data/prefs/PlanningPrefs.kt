@@ -21,7 +21,7 @@ private val Context.planningStore: DataStore<Preferences> by preferencesDataStor
 )
 
 /**
- * The user's own tax inputs. Null means "use the value Acuranza worked out from your data"; a number overrides it.
+ * The user's own tax inputs. Null means "use the value Sumvalo worked out from your data"; a number overrides it.
  * Amounts are annual, in paise.
  */
 data class TaxOverrides(

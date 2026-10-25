@@ -24,7 +24,7 @@ object SmsForegroundTicker {
 
     private const val INTERVAL_MS = 10L * 60 * 1000
 
-    fun start(app: com.acuranza.app.AcuranzaApp) {
+    fun start(app: com.acuranza.app.SumvaloApp) {
         if (!com.acuranza.app.BuildConfig.SMS_FULL) return
         app.appScope.launch {
             while (isActive) {
@@ -34,7 +34,7 @@ object SmsForegroundTicker {
         }
     }
 
-    private suspend fun tick(app: com.acuranza.app.AcuranzaApp) {
+    private suspend fun tick(app: com.acuranza.app.SumvaloApp) {
         // Foreground only: this cadence is an in-app experience, not background polling.
         if (!AppLock.isForeground) return
         val settings = app.container.settings.current()

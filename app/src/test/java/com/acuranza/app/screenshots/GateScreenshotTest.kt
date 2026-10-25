@@ -17,12 +17,12 @@ class GateScreenshotTest {
     @get:Rule
     val paparazzi = Paparazzi(
         deviceConfig = DeviceConfig.PIXEL_6,
-        theme = "Theme.Acuranza",
+        theme = "Theme.Sumvalo",
     )
 
     @Test
-    fun notification_gate_dark() = paparazzi.snapshot { AcuranzaGateFrame(dark = true) }
+    fun notification_gate_dark() = paparazzi.snapshot { SumvaloGateFrame(dark = true) }
 
     @Test
-    fun notification_gate_light() = paparazzi.snapshot { AcuranzaGateFrame(dark = false) }
+    fun notification_gate_light() = paparazzi.snapshot { SumvaloGateFrame(dark = false) }
 }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import androidx.room.withTransaction
 import com.acuranza.app.data.AccountEntity
 import com.acuranza.app.data.CategoryEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.MerchantRuleEntity
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.domain.MoneyIn
@@ -65,14 +65,14 @@ data class MonthSummary(
     val transactionCount: Int,
     /** Refunds and cashback, already taken off [expense]. */
     val givenBack: Paise = 0,
-    /** Money received that isn't income (friends, family, credits Acuranza can't place). */
+    /** Money received that isn't income (friends, family, credits Sumvalo can't place). */
     val received: Paise = 0,
 ) {
     val savings: Paise get() = income - expense
     val savingsRate: Double? get() = if (income > 0) savings.toDouble() / income else null
 }
 
-class TransactionRepository(private val db: AcuranzaDatabase) {
+class TransactionRepository(private val db: SumvaloDatabase) {
 
     private val dao get() = db.transactions()
 

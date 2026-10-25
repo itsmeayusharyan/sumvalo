@@ -13,7 +13,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-/** File formats Acuranza can export to. */
+/** File formats Sumvalo can export to. */
 enum class ExportFormat(val label: String, val extension: String, val mimeType: String) {
     CSV("CSV", "csv", "text/csv"),
     EXCEL("Excel (CSV)", "csv", "text/csv"),
@@ -150,7 +150,7 @@ object Exporters {
     internal data class Entry(val date: LocalDate, val payee: String, val narration: String?, val postings: List<Posting>)
     internal data class BalanceAssertion(val date: LocalDate, val account: String, val amount: Paise, val verified: Boolean)
 
-    /** Converts Acuranza transactions into balanced double-entry postings. */
+    /** Converts Sumvalo transactions into balanced double-entry postings. */
     internal class Book(data: ExportData) {
         private val accounts = data.accounts.associateBy { it.id }
         private val categories = data.categories.associateBy { it.key }
@@ -237,7 +237,7 @@ object Exporters {
 
     internal fun day(millis: Long, zone: ZoneId): LocalDate = Instant.ofEpochMilli(millis).atZone(zone).toLocalDate()
 
-    /** Beancount/ledger account for a Acuranza account, e.g. `Assets:Bank:HDFC-Savings-4821`. */
+    /** Beancount/ledger account for a Sumvalo account, e.g. `Assets:Bank:HDFC-Savings-4821`. */
     fun ledgerAccount(a: AccountEntity?): String {
         if (a == null) return "Assets:Unknown"
         val label = if (a.last4 != null && !a.name.contains(a.last4)) "${a.name} ${a.last4}" else a.name

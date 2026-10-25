@@ -45,9 +45,9 @@ fun ColorTheme.isSupported(sdkInt: Int): Boolean = this != ColorTheme.DYNAMIC ||
  * so money keeps the same meaning in every theme — and direction is never colour-only (rows carry
  * arrows and signs).
  */
-internal fun dynamicAcuranzaColors(scheme: ColorScheme, dark: Boolean): AcuranzaColors {
-    val semantic = if (dark) DarkAcuranzaColors else LightAcuranzaColors
-    return AcuranzaColors(
+internal fun dynamicSumvaloColors(scheme: ColorScheme, dark: Boolean): SumvaloColors {
+    val semantic = if (dark) DarkSumvaloColors else LightSumvaloColors
+    return SumvaloColors(
         income = semantic.income,
         expense = semantic.expense,
         transfer = semantic.transfer,
@@ -79,7 +79,7 @@ internal fun dynamicAcuranzaColors(scheme: ColorScheme, dark: Boolean): Acuranza
 }
 
 /** Build a Material scheme from a palette's tokens plus its base background colour. */
-private fun tokensToScheme(tokens: AcuranzaColors, background: Color): ColorScheme {
+private fun tokensToScheme(tokens: SumvaloColors, background: Color): ColorScheme {
     val base = if (tokens.isDark) darkColorScheme() else lightColorScheme()
     return base.copy(
         primary = tokens.accent,
@@ -120,10 +120,10 @@ private fun tokensToScheme(tokens: AcuranzaColors, background: Color): ColorSche
 }
 
 /** Resolved theme for a palette: the token set, its Material scheme and its base background. */
-data class ResolvedPalette(val tokens: AcuranzaColors, val scheme: ColorScheme, val background: Color)
+data class ResolvedPalette(val tokens: SumvaloColors, val scheme: ColorScheme, val background: Color)
 
 // ── Catppuccin: coordinated pastels — Mocha for dark, Latte for light ──────────────────────────
-private fun catppuccinTokens(dark: Boolean) = if (dark) AcuranzaColors(
+private fun catppuccinTokens(dark: Boolean) = if (dark) SumvaloColors(
     income = Color(0xFFA6E3A1), expense = Color(0xFFCDD6F4), transfer = Color(0xFF9399B2),
     warning = Color(0xFFF9E2AF), alert = Color(0xFFF38BA8), good = Color(0xFFA6E3A1),
     tip = Color(0xFF89B4FA), gold = Color(0xFF89B4FA),
@@ -134,7 +134,7 @@ private fun catppuccinTokens(dark: Boolean) = if (dark) AcuranzaColors(
     hairline = Color(0xFF45475A), accent = Color(0xFF89B4FA), accentTint = Color(0xFF27364F),
     alertTint = Color(0xFF3B2530), warningTint = Color(0xFF3A3327), tipTint = Color(0xFF27364F),
     fill = Color(0xFF313244),
-) else AcuranzaColors(
+) else SumvaloColors(
     income = Color(0xFF40A02B), expense = Color(0xFF4C4F69), transfer = Color(0xFF6C6F85),
     warning = Color(0xFFDF8E1D), alert = Color(0xFFD20F39), good = Color(0xFF40A02B),
     tip = Color(0xFF1E66F5), gold = Color(0xFF1E66F5),
@@ -148,7 +148,7 @@ private fun catppuccinTokens(dark: Boolean) = if (dark) AcuranzaColors(
 )
 
 // ── Cloud / Amber: warm, muted neutrals with an amber accent ───────────────────────────────────
-private fun cloudTokens(dark: Boolean) = if (dark) AcuranzaColors(
+private fun cloudTokens(dark: Boolean) = if (dark) SumvaloColors(
     income = Color(0xFF8FD694), expense = Color(0xFFE8E0D4), transfer = Color(0xFFA99F8F),
     warning = Color(0xFFFBBF24), alert = Color(0xFFF87171), good = Color(0xFF8FD694),
     tip = Color(0xFFFBBF24), gold = Color(0xFFFBBF24),
@@ -159,7 +159,7 @@ private fun cloudTokens(dark: Boolean) = if (dark) AcuranzaColors(
     hairline = Color(0xFF453A2D), accent = Color(0xFFFBBF24), accentTint = Color(0xFF3D341F),
     alertTint = Color(0xFF3B2530), warningTint = Color(0xFF3A3327), tipTint = Color(0xFF3D341F),
     fill = Color(0xFF2F2820),
-) else AcuranzaColors(
+) else SumvaloColors(
     income = Color(0xFF2F9E44), expense = Color(0xFF292524), transfer = Color(0xFF78716C),
     warning = Color(0xFFB45309), alert = Color(0xFFDC2626), good = Color(0xFF2F9E44),
     tip = Color(0xFFB45309), gold = Color(0xFFB45309),
@@ -173,7 +173,7 @@ private fun cloudTokens(dark: Boolean) = if (dark) AcuranzaColors(
 )
 
 // ── Ocean: deep teal-blues ──────────────────────────────────────────────────────────────────────
-private fun oceanTokens(dark: Boolean) = if (dark) AcuranzaColors(
+private fun oceanTokens(dark: Boolean) = if (dark) SumvaloColors(
     income = Color(0xFF7DD3FC), expense = Color(0xFFE0F2FE), transfer = Color(0xFF94A9C4),
     warning = Color(0xFFFBBF24), alert = Color(0xFFF87171), good = Color(0xFF6EE7B7),
     tip = Color(0xFF22D3EE), gold = Color(0xFF22D3EE),
@@ -184,7 +184,7 @@ private fun oceanTokens(dark: Boolean) = if (dark) AcuranzaColors(
     hairline = Color(0xFF24466B), accent = Color(0xFF22D3EE), accentTint = Color(0xFF0F3242),
     alertTint = Color(0xFF3B2530), warningTint = Color(0xFF3A3327), tipTint = Color(0xFF0F3242),
     fill = Color(0xFF16304E),
-) else AcuranzaColors(
+) else SumvaloColors(
     income = Color(0xFF0E9F6E), expense = Color(0xFF0F1728), transfer = Color(0xFF5B7A99),
     warning = Color(0xFFB45309), alert = Color(0xFFDC2626), good = Color(0xFF0E9F6E),
     tip = Color(0xFF0E7490), gold = Color(0xFF0E7490),
@@ -198,7 +198,7 @@ private fun oceanTokens(dark: Boolean) = if (dark) AcuranzaColors(
 )
 
 // ── Forest: deep greens ─────────────────────────────────────────────────────────────────────────
-private fun forestTokens(dark: Boolean) = if (dark) AcuranzaColors(
+private fun forestTokens(dark: Boolean) = if (dark) SumvaloColors(
     income = Color(0xFF86EFAC), expense = Color(0xFFE5F3EA), transfer = Color(0xFF93AD9E),
     warning = Color(0xFFFBBF24), alert = Color(0xFFF87171), good = Color(0xFF86EFAC),
     tip = Color(0xFF4ADE80), gold = Color(0xFF4ADE80),
@@ -209,7 +209,7 @@ private fun forestTokens(dark: Boolean) = if (dark) AcuranzaColors(
     hairline = Color(0xFF2A4736), accent = Color(0xFF4ADE80), accentTint = Color(0xFF153827),
     alertTint = Color(0xFF3B2530), warningTint = Color(0xFF3A3327), tipTint = Color(0xFF153827),
     fill = Color(0xFF1C3225),
-) else AcuranzaColors(
+) else SumvaloColors(
     income = Color(0xFF15803D), expense = Color(0xFF14201A), transfer = Color(0xFF68826F),
     warning = Color(0xFFB45309), alert = Color(0xFFDC2626), good = Color(0xFF15803D),
     tip = Color(0xFF15803D), gold = Color(0xFF15803D),
@@ -223,7 +223,7 @@ private fun forestTokens(dark: Boolean) = if (dark) AcuranzaColors(
 )
 
 // ── Rose: dusty rose ────────────────────────────────────────────────────────────────────────────
-private fun roseTokens(dark: Boolean) = if (dark) AcuranzaColors(
+private fun roseTokens(dark: Boolean) = if (dark) SumvaloColors(
     income = Color(0xFF9BE3C1), expense = Color(0xFFF6E4EA), transfer = Color(0xFFB39AA6),
     warning = Color(0xFFFBBF24), alert = Color(0xFFF87171), good = Color(0xFF9BE3C1),
     tip = Color(0xFFFB7185), gold = Color(0xFFFB7185),
@@ -234,7 +234,7 @@ private fun roseTokens(dark: Boolean) = if (dark) AcuranzaColors(
     hairline = Color(0xFF48303C), accent = Color(0xFFFB7185), accentTint = Color(0xFF3C2430),
     alertTint = Color(0xFF3B2530), warningTint = Color(0xFF3A3327), tipTint = Color(0xFF3C2430),
     fill = Color(0xFF31222B),
-) else AcuranzaColors(
+) else SumvaloColors(
     income = Color(0xFF0F8A5F), expense = Color(0xFF221619), transfer = Color(0xFF967982),
     warning = Color(0xFFB45309), alert = Color(0xFFDC2626), good = Color(0xFF0F8A5F),
     tip = Color(0xFFE11D48), gold = Color(0xFFE11D48),
@@ -264,7 +264,7 @@ fun builtInPalette(theme: ColorTheme, dark: Boolean): ResolvedPalette {
         ColorTheme.OCEAN -> oceanTokens(dark)
         ColorTheme.FOREST -> forestTokens(dark)
         ColorTheme.ROSE -> roseTokens(dark)
-        else -> if (dark) DarkAcuranzaColors else LightAcuranzaColors
+        else -> if (dark) DarkSumvaloColors else LightSumvaloColors
     }
     val background = when (theme) {
         ColorTheme.CATPPUCCIN -> catppuccinBackground(dark)
@@ -272,30 +272,7 @@ fun builtInPalette(theme: ColorTheme, dark: Boolean): ResolvedPalette {
         ColorTheme.OCEAN -> oceanBackground(dark)
         ColorTheme.FOREST -> forestBackground(dark)
         ColorTheme.ROSE -> roseBackground(dark)
-        else -> if (dark) BrandPalette.Night else BrandPalette.Paper
+        else -> if (dark) BrandPalette.SumvaloNight else BrandPalette.SumvaloPaper
     }
     return ResolvedPalette(tokens, tokensToScheme(tokens, background), background)
 }
-
-/** Pure-black surfaces for AMOLED, dark mode only — layered off true black for depth. */
-internal fun AcuranzaColors.amoled(): AcuranzaColors = copy(
-    cardSurface = Color(0xFF0B0B0F),
-    cardSurfaceHigh = Color(0xFF141419),
-    glass = Color(0xFF0B0B0F),
-    fill = Color(0xFF141419),
-    hairline = Color(0xFF232330),
-    divider = Color(0xFF232330),
-    shimmerBase = Color(0xFF0F0F14),
-    shimmerHighlight = Color(0xFF17171D),
-)
-
-/** The Material scheme for AMOLED: true-black canvas, near-black containers. */
-internal fun ColorScheme.amoled(): ColorScheme = copy(
-    background = Color.Black,
-    surface = Color.Black,
-    surfaceContainerLowest = Color.Black,
-    surfaceContainerLow = Color(0xFF0B0B0F),
-    surfaceContainer = Color(0xFF0B0B0F),
-    surfaceContainerHigh = Color(0xFF0B0B0F),
-    surfaceContainerHighest = Color(0xFF141419),
-)

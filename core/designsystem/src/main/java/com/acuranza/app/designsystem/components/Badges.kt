@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Bank
 import com.acuranza.app.model.Paise
 import androidx.compose.ui.text.style.TextOverflow
@@ -138,7 +138,7 @@ private fun UtilisationBar(fraction: Float, modifier: Modifier = Modifier) {
         com.acuranza.app.designsystem.theme.motionTween(com.acuranza.app.designsystem.theme.Motion.STANDARD),
         label = "util",
     )
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val barColor = when {
         fraction >= 0.75f -> Color(0xFFF87171)
         fraction >= 0.3f -> Color(0xFFFBBF24)

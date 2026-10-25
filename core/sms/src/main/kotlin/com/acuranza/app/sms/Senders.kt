@@ -165,7 +165,7 @@ private fun isPersonalNumber(sender: String): Boolean {
 }
 
 /**
- * Banks that Acuranza filed under [Bank.OTHER] before it recognised them. Their transactions keep the
+ * Banks that Sumvalo filed under [Bank.OTHER] before it recognised them. Their transactions keep the
  * fingerprint they had then (see [BankDetector.fingerprintBank]) so that re-scanning the inbox doesn't
  * import them a second time, and the importer may keep using an existing "Other" account with the same digits.
  */

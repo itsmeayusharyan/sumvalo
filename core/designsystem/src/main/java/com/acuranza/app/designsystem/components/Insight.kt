@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 
 /** Severity of an insight; mirrors the finance engine's levels. */
 enum class InsightSeverity { ALERT, WARNING, TIP, GOOD }
@@ -37,7 +37,7 @@ enum class InsightSeverity { ALERT, WARNING, TIP, GOOD }
 /** Accent colour and icon for a severity. */
 @Composable
 fun InsightSeverity.accent(): Pair<Color, ImageVector> {
-    val c = AcuranzaTheme.colors
+    val c = SumvaloTheme.colors
     return when (this) {
         InsightSeverity.ALERT -> c.alert to Icons.Outlined.ErrorOutline
         InsightSeverity.WARNING -> c.warning to Icons.Outlined.WarningAmber
@@ -67,8 +67,8 @@ fun InsightCard(
     Column(
         modifier = modifier
             .clip(shape)
-            .background(AcuranzaTheme.colors.cardSurface)
-            .border(1.dp, AcuranzaTheme.colors.hairline, shape)
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, shape)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(16.dp),
     ) {
@@ -83,7 +83,7 @@ fun InsightCard(
                 Text(
                     message,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     maxLines = if (compact) 2 else Int.MAX_VALUE,
                 )
             }

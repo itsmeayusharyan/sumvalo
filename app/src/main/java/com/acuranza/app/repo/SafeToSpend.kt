@@ -87,7 +87,7 @@ object SafeToSpend {
 
     /**
      * The salary to plan with: what the user entered, else the salary credited this period, else the latest salary
-     * credit Acuranza has seen recently.
+     * credit Sumvalo has seen recently.
      */
     fun salaryFor(entered: Paise?, salaryThisPeriod: Paise, latestSalaryCredit: Paise?): Paise? =
         entered?.takeIf { it > 0 } ?: salaryThisPeriod.takeIf { it > 0 } ?: latestSalaryCredit?.takeIf { it > 0 }

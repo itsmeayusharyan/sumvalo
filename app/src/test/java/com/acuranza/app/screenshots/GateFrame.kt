@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
 import com.acuranza.app.ui.onboarding.NotificationGateBody
 
 /**
@@ -12,8 +11,8 @@ import com.acuranza.app.ui.onboarding.NotificationGateBody
  * the permission must always see, in both appearances.
  */
 @Composable
-fun AcuranzaGateFrame(dark: Boolean) {
-    AcuranzaTheme(darkTheme = dark) {
+fun SumvaloGateFrame(dark: Boolean) {
+    com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = dark) {
         Surface(Modifier.fillMaxSize()) {
             NotificationGateBody(granted = false, onRequest = {})
         }

@@ -53,11 +53,11 @@ import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.CategoryIcons
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.CategoryRules
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.color
 import com.acuranza.app.ui.nav.popBackSafely
@@ -179,7 +179,7 @@ fun CategoriesContent(
     editSheet: @Composable () -> Unit = {},
     deleteFlow: @Composable () -> Unit = {},
 ) {
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Categories",
         subtitle = "Your spending and income categories",
         onBack = onBack,
@@ -196,11 +196,11 @@ fun CategoriesContent(
                         Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(title.uppercase(), style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText, modifier = Modifier.weight(1f))
+                        Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.weight(1f))
                         Text(
                             "Add category",
                             style = MaterialTheme.typography.labelMedium,
-                            color = AcuranzaTheme.colors.accent,
+                            color = SumvaloTheme.colors.accent,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable { onAdd(type) }
@@ -232,10 +232,10 @@ private fun CategoryRow(cat: CategoryEntity, onClick: () -> Unit) {
         Spacer(Modifier.width(14.dp))
         Text(cat.name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
         if (!CategoryRules.isDeletable(cat)) {
-            Text("Built-in", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.tertiaryText)
+            Text("Built-in", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.tertiaryText)
             Spacer(Modifier.width(12.dp))
         }
-        Icon(Icons.Outlined.Edit, contentDescription = "Edit ${cat.name}", tint = AcuranzaTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
+        Icon(Icons.Outlined.Edit, contentDescription = "Edit ${cat.name}", tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
     }
 }
 
@@ -278,14 +278,14 @@ fun CategoryEditSheet(
             OutlinedTextField(name, { name = it }, label = { Text("Name") }, singleLine = true, isError = !nameOk && error == null, modifier = Modifier.fillMaxWidth())
             error?.let {
                 Spacer(Modifier.height(8.dp))
-                Text(it, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.alert)
+                Text(it, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.alert)
             }
             Spacer(Modifier.height(16.dp))
-            Text("Icon", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+            Text("Icon", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.height(8.dp))
             IconPicker(selected = icon, onSelect = { icon = it })
             Spacer(Modifier.height(16.dp))
-            Text("Colour", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+            Text("Colour", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.height(8.dp))
             ColorSwatches(selected = color, onSelect = { color = it })
             Spacer(Modifier.height(20.dp))
@@ -300,9 +300,9 @@ fun CategoryEditSheet(
                         .padding(vertical = 14.dp),
                     horizontalArrangement = Arrangement.Center,
                 ) {
-                    Icon(Icons.Outlined.DeleteForever, contentDescription = null, tint = AcuranzaTheme.colors.alert, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Outlined.DeleteForever, contentDescription = null, tint = SumvaloTheme.colors.alert, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Delete category", style = MaterialTheme.typography.labelLarge, color = AcuranzaTheme.colors.alert)
+                    Text("Delete category", style = MaterialTheme.typography.labelLarge, color = SumvaloTheme.colors.alert)
                 }
             }
         }
@@ -320,14 +320,14 @@ private fun IconPicker(selected: String, onSelect: (String) -> Unit) {
                         Modifier
                             .size(44.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (picked) AcuranzaTheme.colors.accentTint else AcuranzaTheme.colors.fill)
+                            .background(if (picked) SumvaloTheme.colors.accentTint else SumvaloTheme.colors.fill)
                             .clickable { onSelect(n) },
                         contentAlignment = Alignment.Center,
                     ) {
                         Icon(
                             CategoryIcons.forName(n),
                             contentDescription = null,
-                            tint = if (picked) AcuranzaTheme.colors.accent else AcuranzaTheme.colors.ink,
+                            tint = if (picked) SumvaloTheme.colors.accent else SumvaloTheme.colors.ink,
                             modifier = Modifier.size(20.dp),
                         )
                     }
@@ -349,7 +349,7 @@ private fun ColorSwatches(selected: Long, onSelect: (Long) -> Unit) {
                             .size(32.dp)
                             .clip(CircleShape)
                             .background(Color(c))
-                            .then(if (picked) Modifier.border(2.dp, AcuranzaTheme.colors.ink, CircleShape) else Modifier)
+                            .then(if (picked) Modifier.border(2.dp, SumvaloTheme.colors.ink, CircleShape) else Modifier)
                             .clickable { onSelect(c) },
                     )
                 }
@@ -386,7 +386,7 @@ fun ReplaceCategoryDialog(
                         Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(12.dp))
-                            .background(if (option.key == selectedKey) AcuranzaTheme.colors.accentTint else Color.Transparent)
+                            .background(if (option.key == selectedKey) SumvaloTheme.colors.accentTint else Color.Transparent)
                             .clickable { onSelect(option.key) }
                             .padding(horizontal = 8.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -395,7 +395,7 @@ fun ReplaceCategoryDialog(
                         Spacer(Modifier.width(10.dp))
                         Text(option.name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
                         if (option.key == selectedKey) {
-                            Icon(Icons.Outlined.Check, contentDescription = null, tint = AcuranzaTheme.colors.accent, modifier = Modifier.size(18.dp))
+                            Icon(Icons.Outlined.Check, contentDescription = null, tint = SumvaloTheme.colors.accent, modifier = Modifier.size(18.dp))
                         }
                     }
                 }

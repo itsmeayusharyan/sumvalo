@@ -1,7 +1,7 @@
 package com.acuranza.app.repo
 
 import androidx.room.withTransaction
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.domain.SmsMapping
@@ -13,7 +13,7 @@ object DataRepairs {
     /** Bump when adding a repair below. */
     const val CURRENT = 3
 
-    suspend fun run(db: AcuranzaDatabase, settings: SettingsStore, netWorth: NetWorthRepository) {
+    suspend fun run(db: SumvaloDatabase, settings: SettingsStore, netWorth: NetWorthRepository) {
         val done = settings.repairVersion()
         if (done >= CURRENT) return
         if (done < 1) repairBalancesV1(db, netWorth)
@@ -35,7 +35,7 @@ object DataRepairs {
      * - Existing imports with implausible amounts are flagged suspicious, so they stop moving balances.
      * - The recorded net worth history was computed with the old rules, so it restarts from today.
      */
-    private suspend fun repairBalancesV1(db: AcuranzaDatabase, netWorth: NetWorthRepository) {
+    private suspend fun repairBalancesV1(db: SumvaloDatabase, netWorth: NetWorthRepository) {
         db.withTransaction {
             db.accounts().all()
                 .filter { !it.autoCreated && it.openingDate == 0L && it.reportedBalance == null }

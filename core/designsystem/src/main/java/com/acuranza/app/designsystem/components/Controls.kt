@@ -11,7 +11,7 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.theme.SumvaloText
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -77,7 +77,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.BrandPalette
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnType
 
@@ -103,7 +103,7 @@ fun SegmentedTabs(
             .fillMaxWidth()
             .height(40.dp)
             .clip(shape)
-            .background(AcuranzaTheme.colors.fill)
+            .background(SumvaloTheme.colors.fill)
             .padding(3.dp),
     ) {
         val segment = maxWidth / options.size.coerceAtLeast(1)
@@ -119,8 +119,8 @@ fun SegmentedTabs(
                 .width(segment)
                 .fillMaxHeight()
                 .clip(shape)
-                .background(AcuranzaTheme.colors.cardSurface)
-                .border(1.dp, AcuranzaTheme.colors.hairline, shape),
+                .background(SumvaloTheme.colors.cardSurface)
+                .border(1.dp, SumvaloTheme.colors.hairline, shape),
         )
         Row(Modifier.fillMaxWidth().fillMaxHeight()) {
             options.forEachIndexed { i, label ->
@@ -140,7 +140,7 @@ fun SegmentedTabs(
                     Text(
                         label,
                         style = MaterialTheme.typography.labelMedium,
-                        color = if (selected) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.subtleText,
+                        color = if (selected) SumvaloTheme.colors.ink else SumvaloTheme.colors.subtleText,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -170,7 +170,7 @@ fun RangeChips(
                 Modifier
                     .heightIn(min = 32.dp)
                     .clip(shape)
-                    .then(if (active) Modifier.background(AcuranzaTheme.colors.ink) else Modifier)
+                    .then(if (active) Modifier.background(SumvaloTheme.colors.ink) else Modifier)
                     .clickable { tick(); onSelect(i) }
                     .padding(horizontal = 12.dp, vertical = 7.dp)
                     .semantics {
@@ -182,7 +182,7 @@ fun RangeChips(
                 Text(
                     label,
                     style = MaterialTheme.typography.labelMedium,
-                    color = if (active) AcuranzaTheme.colors.onInk else AcuranzaTheme.colors.subtleText,
+                    color = if (active) SumvaloTheme.colors.onInk else SumvaloTheme.colors.subtleText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -203,7 +203,7 @@ fun MonthSwitcher(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(50))
-            .background(AcuranzaTheme.colors.cardSurfaceHigh),
+            .background(SumvaloTheme.colors.cardSurfaceHigh),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = onPrevious, modifier = Modifier.size(36.dp)) {
@@ -251,7 +251,7 @@ fun FilterChipsRow(
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
                     selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                    containerColor = AcuranzaTheme.colors.cardSurfaceHigh,
+                    containerColor = SumvaloTheme.colors.cardSurfaceHigh,
                 ),
                 border = null,
             )
@@ -279,10 +279,10 @@ fun EmptyState(
             Modifier
                 .size(64.dp)
                 .clip(androidx.compose.foundation.shape.CircleShape)
-                .background(AcuranzaTheme.colors.fill),
+                .background(SumvaloTheme.colors.fill),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(28.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(28.dp))
         }
         Spacer(Modifier.height(24.dp))
         Text(title, style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.Center)
@@ -290,7 +290,7 @@ fun EmptyState(
         Text(
             message,
             style = MaterialTheme.typography.bodyMedium,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
             textAlign = TextAlign.Center,
         )
         if (actionLabel != null && onAction != null) {
@@ -317,8 +317,8 @@ fun LoadingShimmer(
         else infiniteRepeatable(tween(1300, easing = LinearEasing), RepeatMode.Restart),
         label = "shimmer-x",
     )
-    val base = AcuranzaTheme.colors.shimmerBase
-    val hi = AcuranzaTheme.colors.shimmerHighlight
+    val base = SumvaloTheme.colors.shimmerBase
+    val hi = SumvaloTheme.colors.shimmerHighlight
     BoxWithConstraints(
         modifier
             .fillMaxWidth()
@@ -347,7 +347,7 @@ fun LoadingShimmer(
  * Transparent so it sits on the screen background.
  */
 @Composable
-fun AcuranzaTopBar(
+fun SumvaloTopBar(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -371,7 +371,7 @@ fun AcuranzaTopBar(
         Column(Modifier.weight(1f).padding(horizontal = 4.dp)) {
             Text(title, style = MaterialTheme.typography.titleLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
             if (subtitle != null) {
-                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(subtitle, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
         actions()
@@ -398,7 +398,7 @@ fun StatChip(
         Text(
             label,
             style = MaterialTheme.typography.bodySmall,
-            color = if (onDark) Color.White.copy(alpha = 0.7f) else AcuranzaTheme.colors.subtleText,
+            color = if (onDark) Color.White.copy(alpha = 0.7f) else SumvaloTheme.colors.subtleText,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -409,9 +409,9 @@ fun StatChip(
             compact = true,
             hidden = hidden,
             color = if (onDark) Color.White else when (type) {
-                TxnType.INCOME -> AcuranzaTheme.colors.income
-                TxnType.EXPENSE -> AcuranzaTheme.colors.ink
-                else -> AcuranzaTheme.colors.ink
+                TxnType.INCOME -> SumvaloTheme.colors.income
+                TxnType.EXPENSE -> SumvaloTheme.colors.ink
+                else -> SumvaloTheme.colors.ink
             },
         )
         if (deltaPaise != null) {
@@ -436,15 +436,15 @@ fun SectionHeader(
     ) {
         Text(
             title.uppercase(),
-            style = AcuranzaText.sectionLabel,
-            color = AcuranzaTheme.colors.subtleText,
+            style = SumvaloText.sectionLabel,
+            color = SumvaloTheme.colors.subtleText,
             modifier = Modifier.weight(1f),
         )
         if (actionLabel != null && onAction != null) {
             Text(
                 actionLabel,
                 style = MaterialTheme.typography.labelMedium,
-                color = AcuranzaTheme.colors.accent,
+                color = SumvaloTheme.colors.accent,
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
                     .clickable(role = Role.Button) { tick(); onAction() }
@@ -502,20 +502,20 @@ fun PrimaryButton(
             .heightIn(min = 52.dp)
             .clip(shape)
             .then(if (enabled) Modifier.pressScale(interaction) else Modifier)
-            .background(if (enabled) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.fill)
+            .background(if (enabled) SumvaloTheme.colors.ink else SumvaloTheme.colors.fill)
             .clickable(interactionSource = interaction, indication = indication, enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.onInk, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.onInk, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
         }
         Text(
             text,
             style = MaterialTheme.typography.labelLarge,
-            color = if (enabled) AcuranzaTheme.colors.onInk else AcuranzaTheme.colors.tertiaryText,
+            color = if (enabled) SumvaloTheme.colors.onInk else SumvaloTheme.colors.tertiaryText,
         )
     }
 }
@@ -544,13 +544,13 @@ fun QuickAction(
             Modifier
                 .size(46.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(AcuranzaTheme.colors.fill),
+                .background(SumvaloTheme.colors.fill),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(21.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(21.dp))
         }
         Spacer(Modifier.height(6.dp))
-        Text(label, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
 }
 
@@ -611,21 +611,21 @@ fun SecondaryButton(
         modifier = modifier
             .heightIn(min = 52.dp)
             .clip(shape)
-            .background(AcuranzaTheme.colors.cardSurface)
-            .border(1.dp, AcuranzaTheme.colors.hairline, shape)
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, shape)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
         }
         Text(
             text,
             style = MaterialTheme.typography.labelLarge,
-            color = if (enabled) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.tertiaryText,
+            color = if (enabled) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText,
         )
     }
 }

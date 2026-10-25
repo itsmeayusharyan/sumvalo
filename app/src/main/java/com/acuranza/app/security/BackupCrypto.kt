@@ -22,7 +22,7 @@ object BackupCrypto {
 
     /**
      * Bounds for the iteration count read from a file header. A crafted file can't make restore hang for
-     * hours, and nothing weaker than any Acuranza version ever wrote is accepted.
+     * hours, and nothing weaker than any Sumvalo version ever wrote is accepted.
      */
     const val MIN_ITERATIONS = 100_000
     const val MAX_ITERATIONS = 2_000_000
@@ -47,7 +47,7 @@ object BackupCrypto {
     fun decrypt(data: ByteArray, password: CharArray): ByteArray {
         val headerLen = MAGIC.size + 1 + 4 + SALT_LEN + IV_LEN
         if (data.size < headerLen || !data.copyOfRange(0, MAGIC.size).contentEquals(MAGIC)) {
-            throw IllegalArgumentException("Not a Acuranza backup file")
+            throw IllegalArgumentException("Not a Sumvalo backup file")
         }
         val buf = ByteBuffer.wrap(data)
         buf.position(MAGIC.size)

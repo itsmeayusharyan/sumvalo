@@ -36,7 +36,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.security.PinHasher
 import com.acuranza.app.security.PinMatch
 import com.acuranza.app.tools.ToolsPrefs
@@ -103,7 +103,7 @@ fun PinLockPad(prefs: ToolsPrefs, onMatch: (PinMatch) -> Unit, onBiometric: (() 
                     Modifier
                         .size(12.dp)
                         .clip(CircleShape)
-                        .background(if (i < pin.length) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.hairline),
+                        .background(if (i < pin.length) SumvaloTheme.colors.ink else SumvaloTheme.colors.hairline),
                 )
             }
         }
@@ -112,7 +112,7 @@ fun PinLockPad(prefs: ToolsPrefs, onMatch: (PinMatch) -> Unit, onBiometric: (() 
             checking -> "Checking…"
             else -> error
         }
-        Text(status ?: " ", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+        Text(status ?: " ", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         val rows = listOf(listOf("1", "2", "3"), listOf("4", "5", "6"), listOf("7", "8", "9"))
         rows.forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
@@ -129,11 +129,11 @@ fun PinLockPad(prefs: ToolsPrefs, onMatch: (PinMatch) -> Unit, onBiometric: (() 
         Box(
             Modifier
                 .clip(CircleShape)
-                .background(if (pin.length >= PinHasher.MIN_LENGTH && !waiting) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.hairline)
+                .background(if (pin.length >= PinHasher.MIN_LENGTH && !waiting) SumvaloTheme.colors.ink else SumvaloTheme.colors.hairline)
                 .clickable(enabled = pin.length >= PinHasher.MIN_LENGTH && !waiting && !checking) { submit() }
                 .padding(horizontal = 40.dp, vertical = 12.dp),
         ) {
-            Text("Unlock", color = AcuranzaTheme.colors.onInk, fontWeight = FontWeight.SemiBold)
+            Text("Unlock", color = SumvaloTheme.colors.onInk, fontWeight = FontWeight.SemiBold)
         }
     }
 }
@@ -144,11 +144,11 @@ private fun PinKey(label: String, enabled: Boolean, onClick: () -> Unit) {
         Modifier
             .size(64.dp)
             .clip(CircleShape)
-            .background(AcuranzaTheme.colors.fill)
+            .background(SumvaloTheme.colors.fill)
             .clickable(enabled = enabled, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, fontSize = 24.sp, fontWeight = FontWeight.Medium, color = AcuranzaTheme.colors.ink)
+        Text(label, fontSize = 24.sp, fontWeight = FontWeight.Medium, color = SumvaloTheme.colors.ink)
     }
 }
 
@@ -162,6 +162,6 @@ private fun PinIconKey(icon: ImageVector, description: String, enabled: Boolean,
             .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(26.dp))
+        Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(26.dp))
     }
 }

@@ -1,13 +1,13 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.model.TxnType
 import kotlinx.coroutines.flow.Flow
 import androidx.room.withTransaction
 import kotlinx.coroutines.flow.map
 
-class CategoryRepository(private val db: AcuranzaDatabase) {
+class CategoryRepository(private val db: SumvaloDatabase) {
 
     fun observeAll(): Flow<List<CategoryEntity>> = db.categories().observeAll()
 

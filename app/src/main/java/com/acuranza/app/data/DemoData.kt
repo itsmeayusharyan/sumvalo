@@ -17,7 +17,7 @@ import kotlin.random.Random
  * Every row it creates is recorded in `demo_rows`, so [load] runs at most once and [removeSample] deletes the
  * sample rows (and, through foreign keys, their transactions, bills and history) without touching the user's own.
  */
-class DemoData(private val db: AcuranzaDatabase) {
+class DemoData(private val db: SumvaloDatabase) {
 
     /** Loads the sample data; returns false (and does nothing) if it is already loaded. */
     suspend fun load(today: LocalDate = Time.today()): Boolean {

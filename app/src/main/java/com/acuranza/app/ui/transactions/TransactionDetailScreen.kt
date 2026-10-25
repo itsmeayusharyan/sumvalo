@@ -43,16 +43,16 @@ import com.acuranza.app.ui.common.launchGuarded
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SourceBadge
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.model.TxnChannel
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.color
 import com.acuranza.app.ui.common.acuranzaViewModel
@@ -97,7 +97,7 @@ fun TransactionDetailScreen(nav: NavController, id: Long) {
     var confirmDelete by remember { mutableStateOf(false) }
     val item = state.item
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Transaction",
         onBack = { nav.popBackSafely() },
         actions = {
@@ -111,7 +111,7 @@ fun TransactionDetailScreen(nav: NavController, id: Long) {
             if (state.loaded) {
                 EmptyState("Transaction not found", "It may have been deleted.", Modifier.padding(padding).padding(top = 60.dp))
             }
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         val t = item.txn
         Column(
@@ -134,9 +134,9 @@ fun TransactionDetailScreen(nav: NavController, id: Long) {
                 SourceBadge(t.source)
             }
             if (!t.reviewed) {
-                AcuranzaCard(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
+                SumvaloCard(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
                     Text("Imported automatically", fontWeight = FontWeight.SemiBold)
-                    Text("Check the category and account, then confirm.", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("Check the category and account, then confirm.", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     Spacer(Modifier.height(8.dp))
                     OutlinedButton(onClick = vm::markReviewed) {
                         Icon(Icons.Outlined.Check, contentDescription = null)
@@ -145,7 +145,7 @@ fun TransactionDetailScreen(nav: NavController, id: Long) {
                     }
                 }
             }
-            AcuranzaCard {
+            SumvaloCard {
                 DetailRow("Category", item.category?.name ?: t.categoryKey, accent = true, onClick = {
                     if (t.type == com.acuranza.app.model.TxnType.TRANSFER) nav.navigate(Routes.editTxn(id)) { launchSingleTop = true }
                     else recategorise = true
@@ -236,7 +236,7 @@ fun TransactionDetailScreen(nav: NavController, id: Long) {
 }
 
 @Composable
-private fun Divider() = HorizontalDivider(color = AcuranzaTheme.colors.divider, modifier = Modifier.padding(vertical = 2.dp))
+private fun Divider() = HorizontalDivider(color = SumvaloTheme.colors.divider, modifier = Modifier.padding(vertical = 2.dp))
 
 @Composable
 fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = null, accent: Boolean = false, valueColor: Color = Color.Unspecified) {
@@ -247,7 +247,7 @@ fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = null, accen
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = AcuranzaTheme.colors.subtleText, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(0.4f))
+        Text(label, color = SumvaloTheme.colors.subtleText, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(0.4f))
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
@@ -299,9 +299,9 @@ private fun BalanceEffectNote(
         )
         else -> return
     }
-    AcuranzaCard(color = AcuranzaTheme.colors.warning.copy(alpha = 0.12f)) {
+    SumvaloCard(color = SumvaloTheme.colors.warning.copy(alpha = 0.12f)) {
         Text(title, fontWeight = FontWeight.SemiBold)
-        Text(body, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+        Text(body, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         Spacer(Modifier.height(8.dp))
         OutlinedButton(onClick = action.second) { Text(action.first) }
     }

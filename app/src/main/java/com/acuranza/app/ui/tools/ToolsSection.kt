@@ -41,7 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.export.ExportData
 import com.acuranza.app.export.ExportFormat
@@ -253,14 +253,14 @@ private fun ExportDialog(onDismiss: () -> Unit, onExport: (ExportFormat, ExportR
         },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text("Range", style = MaterialTheme.typography.labelLarge, color = AcuranzaTheme.colors.subtleText)
+                Text("Range", style = MaterialTheme.typography.labelLarge, color = SumvaloTheme.colors.subtleText)
                 ExportRange.entries.forEach { r -> Choice(r.label, r == range) { range = r } }
-                Text("Format", style = MaterialTheme.typography.labelLarge, color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(top = 12.dp))
+                Text("Format", style = MaterialTheme.typography.labelLarge, color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(top = 12.dp))
                 ExportFormat.entries.forEach { f -> Choice(f.label, f == format) { format = f } }
                 Text(
                     "The file is saved where you choose and isn't encrypted.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }

@@ -2,20 +2,23 @@ package com.acuranza.app.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.res.painterResource
 import com.acuranza.app.designsystem.R
 
-/** Background shape of [AcuranzaLogo]. */
+/** Background shape of [SumvaloLogo]. */
 enum class LogoShape { Circle, RoundedSquare, None }
 
 /**
- * The Acuranza mark: the official logo rendered from the supplied PNG asset.
+ * The Sumvalo mark: the official logo rendered from the supplied PNG asset.
  *
  * [shape] is retained for API compatibility: [LogoShape.RoundedSquare] matches the asset's
  * baked-in rounded-square tile, [LogoShape.Circle] and [LogoShape.None] are accepted but
@@ -25,7 +28,7 @@ enum class LogoShape { Circle, RoundedSquare, None }
  * on the image-rendered logo — colors are baked into the asset.
  */
 @Composable
-fun AcuranzaLogo(
+fun SumvaloLogo(
     modifier: Modifier = Modifier,
     size: Dp = 96.dp,
     shape: LogoShape = LogoShape.RoundedSquare,
@@ -34,7 +37,7 @@ fun AcuranzaLogo(
 ) {
     Image(
         painter = painterResource(id = R.drawable.acuranza_logo),
-        contentDescription = "Acuranza logo",
+        contentDescription = "Sumvalo logo",
         modifier = modifier.size(size),
         contentScale = ContentScale.Fit,
     )

@@ -15,7 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.acuranza.app.notify.Notifications
-import com.acuranza.app.ui.AcuranzaRoot
+import com.acuranza.app.ui.SumvaloRoot
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -30,7 +30,7 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         // Only a fresh launch opens the notification's screen; recreation after rotation must not open it again.
         if (savedInstanceState == null) pendingRoute.value = takeRoute(intent)
-        val container = (application as AcuranzaApp).container
+        val container = (application as SumvaloApp).container
 
         // Block screenshots and the recent-apps preview while the user wants their finances hidden.
         lifecycleScope.launch {
@@ -45,7 +45,7 @@ class MainActivity : FragmentActivity() {
             val decoy by com.acuranza.app.security.DecoySession.active.collectAsState()
             val active = if (decoy) com.acuranza.app.security.DecoySession.container ?: container else container
             key(active) {
-                AcuranzaRoot(
+                SumvaloRoot(
                     container = active,
                     initialRoute = pendingRoute.value,
                     onRouteConsumed = { pendingRoute.value = null },

@@ -13,13 +13,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
 import kotlinx.coroutines.launch
 
 /**
- * Dedicated legal pages reachable from About. Every statement here describes what Acuranza
+ * Dedicated legal pages reachable from About. Every statement here describes what Sumvalo
  * actually does — no invented links, no invented guarantees.
  */
 
@@ -28,7 +28,7 @@ private fun LegalParagraph(text: String) {
     Text(
         text,
         style = MaterialTheme.typography.bodyMedium,
-        color = AcuranzaTheme.colors.subtleText,
+        color = SumvaloTheme.colors.subtleText,
         modifier = Modifier.padding(bottom = 12.dp),
     )
 }
@@ -38,7 +38,7 @@ private fun LegalHeading(text: String) {
     Text(
         text,
         style = MaterialTheme.typography.titleMedium,
-        color = AcuranzaTheme.colors.ink,
+        color = SumvaloTheme.colors.ink,
         modifier = Modifier.padding(top = 8.dp, bottom = 8.dp),
     )
 }
@@ -58,7 +58,7 @@ private fun LegalPageScaffold(body: @Composable () -> Unit) {
 
 @Composable
 fun PrivacyPolicyScreen(nav: NavController) {
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Privacy policy",
         subtitle = "Applies to every build of Sumvalo",
         onBack = { nav.popBackSafely() },
@@ -90,7 +90,7 @@ fun PrivacyPolicyScreen(nav: NavController) {
                 LegalParagraph(
                     "In the standard build, bank messages enter only when you share them from your " +
                         "Messages app or paste them — no SMS permission is requested. In the Full build, " +
-                        "with your explicit consent, Acuranza can scan your inbox history (requires the SMS " +
+                        "with your explicit consent, Sumvalo can scan your inbox history (requires the SMS " +
                         "permission) and read incoming bank notifications (requires notification-listener " +
                         "access). Both are granted by you in system dialogs, both are revocable, and every " +
                         "access is explained on a consent screen before anything is enabled.",
@@ -121,20 +121,20 @@ fun PrivacyPolicyScreen(nav: NavController) {
 
 @Composable
 fun TermsScreen(nav: NavController) {
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Terms of service",
         subtitle = "The plain terms of using Sumvalo",
         onBack = { nav.popBackSafely() },
     ) { padding ->
         LegalPageScaffold {
             Column(Modifier.padding(padding)) {
-                LegalHeading("What Acuranza is")
+                LegalHeading("What Sumvalo is")
                 LegalParagraph(
                     "Sumvalo is free, open-source software for personal bookkeeping, provided as-is, " +
                         "free of charge. It runs entirely on your device; there is no account, no service " +
                         "and no support contract behind it.",
                 )
-                LegalHeading("What Acuranza is not")
+                LegalHeading("What Sumvalo is not")
                 LegalParagraph(
                     "It keeps books and draws charts; nothing in it is financial advice. Numbers it " +
                         "extracts from bank messages or statements can be wrong — review them. Decisions " +

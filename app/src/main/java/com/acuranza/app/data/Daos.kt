@@ -226,7 +226,7 @@ interface TransactionDao {
     suspend fun excludeAccountFromStats(accountId: Long)
 
     /**
-     * Counts an account's transactions again after the user stops ignoring it. Everything else Acuranza leaves out of
+     * Counts an account's transactions again after the user stops ignoring it. Everything else Sumvalo leaves out of
      * totals is a transfer between own accounts, so those stay out.
      */
     @Query(

@@ -43,18 +43,18 @@ import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.BankBadge
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SecondaryButton
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.domain.BalanceSource
 import com.acuranza.app.repo.AccountWithBalance
 import com.acuranza.app.ui.common.AmountSheet
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloScreen
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.launchGuarded
@@ -97,11 +97,11 @@ fun PendingAccountsBanner(count: Int, onClick: () -> Unit, modifier: Modifier = 
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
-        color = AcuranzaTheme.colors.warning.copy(alpha = 0.10f),
+        color = SumvaloTheme.colors.warning.copy(alpha = 0.10f),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.TravelExplore, contentDescription = null, tint = AcuranzaTheme.colors.warning)
+            Icon(Icons.Outlined.TravelExplore, contentDescription = null, tint = SumvaloTheme.colors.warning)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
@@ -112,10 +112,10 @@ fun PendingAccountsBanner(count: Int, onClick: () -> Unit, modifier: Modifier = 
                 Text(
                     "Not counted in net worth until you confirm",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
-            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Review accounts", tint = AcuranzaTheme.colors.subtleText)
+            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Review accounts", tint = SumvaloTheme.colors.subtleText)
         }
     }
 }
@@ -132,11 +132,11 @@ fun IgnoredSmsBanner(count: Int, onClick: () -> Unit, onDismiss: () -> Unit, mod
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
-        color = AcuranzaTheme.colors.alert.copy(alpha = 0.08f),
+        color = SumvaloTheme.colors.alert.copy(alpha = 0.08f),
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(Modifier.padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.VisibilityOff, contentDescription = null, tint = AcuranzaTheme.colors.alert)
+            Icon(Icons.Outlined.VisibilityOff, contentDescription = null, tint = SumvaloTheme.colors.alert)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(
@@ -147,11 +147,11 @@ fun IgnoredSmsBanner(count: Int, onClick: () -> Unit, onDismiss: () -> Unit, mod
                 Text(
                     "They went to accounts you ignored. Tap to count them",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             IconButton(onClick = onDismiss) {
-                Icon(Icons.Outlined.Close, contentDescription = "Dismiss", tint = AcuranzaTheme.colors.subtleText)
+                Icon(Icons.Outlined.Close, contentDescription = "Dismiss", tint = SumvaloTheme.colors.subtleText)
             }
         }
     }
@@ -181,14 +181,14 @@ fun PendingAccountsScreen(nav: NavController) {
     var adding by remember { mutableStateOf<AccountWithBalance?>(null) }
     var ignoring by remember { mutableStateOf<AccountWithBalance?>(null) }
 
-    AcuranzaScreen(title = "Accounts found in SMS", onBack = { nav.popBackSafely() }) { padding ->
+    SumvaloScreen(title = "Accounts found in SMS", onBack = { nav.popBackSafely() }) { padding ->
         if (state.loaded && state.pending.isEmpty()) {
             EmptyState(
                 "All sorted",
-                "Every account Acuranza found in your messages is confirmed, merged or ignored.",
+                "Every account Sumvalo found in your messages is confirmed, merged or ignored.",
                 Modifier.padding(padding).padding(top = 60.dp),
             )
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
@@ -197,20 +197,20 @@ fun PendingAccountsScreen(nav: NavController) {
         ) {
             item(key = "intro") {
                 Text(
-                    "These accounts appear in your bank messages but aren't set up in Acuranza. Their imported history has no " +
-                        "known starting balance, so they don't count towards net worth until you tell Acuranza what they are.",
+                    "These accounts appear in your bank messages but aren't set up in Sumvalo. Their imported history has no " +
+                        "known starting balance, so they don't count towards net worth until you tell Sumvalo what they are.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             items(state.pending, key = { it.id }) { a ->
-                AcuranzaCard {
+                SumvaloCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         BankBadge(a.bank, size = 40.dp)
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text(a.account.label(), fontWeight = FontWeight.SemiBold)
-                            Text(a.sourceLine(), style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                            Text(a.sourceLine(), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                         }
                         if (a.balanceKnown) {
                             AmountText(if (a.isCard) a.outstanding else a.balance, style = AmountStyles.medium, hidden = hidden)
@@ -262,7 +262,7 @@ fun PendingAccountsScreen(nav: NavController) {
                     Text(
                         "Its transactions move into the account you pick, and future messages go there too.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                     options.forEach { target ->
                         Surface(
@@ -273,7 +273,7 @@ fun PendingAccountsScreen(nav: NavController) {
                                     vm.merge(pending.id, target.id)
                                     merging = null
                                 },
-                            color = AcuranzaTheme.colors.cardSurfaceHigh,
+                            color = SumvaloTheme.colors.cardSurfaceHigh,
                             shape = RoundedCornerShape(12.dp),
                         ) {
                             Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -299,12 +299,12 @@ fun PendingAccountsScreen(nav: NavController) {
                 title = { Text("Add as a new account") },
                 text = {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        AcuranzaTextField(value = name, onValue = { name = it }, label = "Name")
+                        SumvaloTextField(value = name, onValue = { name = it }, label = "Name")
                         Text(
                             if (pending.isCard) "Next, enter the amount you owe on this card today."
                             else "Next, enter the balance your bank app shows today. Only transactions after today change it.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 },

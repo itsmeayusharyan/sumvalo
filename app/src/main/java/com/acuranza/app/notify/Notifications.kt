@@ -31,7 +31,7 @@ class Notifications(private val context: Context) {
                     .apply { description = "Budget and goal alerts" },
                 NotificationChannel(CH_DETECTED, "Detected transactions", NotificationManager.IMPORTANCE_DEFAULT),
                 NotificationChannel(CH_REMINDERS, "Transaction reminders", NotificationManager.IMPORTANCE_DEFAULT)
-                    .apply { description = "Bank transactions Acuranza detected from notifications, waiting for your review" },
+                    .apply { description = "Bank transactions Sumvalo detected from notifications, waiting for your review" },
             ),
         )
     }
@@ -50,7 +50,7 @@ class Notifications(private val context: Context) {
     fun txnReminder(title: String, text: String) = post(CH_REMINDERS, NOTIF_TXN_REMINDER, title, text, ROUTE_ADD_EXPENSE)
 
     /**
-     * A bank transaction Acuranza detected from an incoming notification, parked for review.
+     * A bank transaction Sumvalo detected from an incoming notification, parked for review.
      * Called ONLY from the notification-listener path — manual entries, CSV imports and SMS
      * scans never post this. [key] is the pending-import id: stable, so a reposted alert
      * replaces itself instead of stacking.
@@ -72,7 +72,7 @@ class Notifications(private val context: Context) {
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle("Sumvalo")
             .setContentText(PUBLIC_TEXT[channel] ?: "New activity")
-            .setColor(BrandPalette.Blue.toArgb())
+            .setColor(BrandPalette.SumvaloBlue.toArgb())
             .build()
         val notification = NotificationCompat.Builder(context, channel)
             .setSmallIcon(R.drawable.ic_notification)
@@ -81,7 +81,7 @@ class Notifications(private val context: Context) {
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
             .setContentIntent(pending)
             .setAutoCancel(true)
-            .setColor(BrandPalette.Blue.toArgb())
+            .setColor(BrandPalette.SumvaloBlue.toArgb())
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setPublicVersion(publicVersion)
             .build()

@@ -35,20 +35,20 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.DebtEntity
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.repo.DebtRepository
 import com.acuranza.app.ui.common.AmountField
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.rememberHaptic
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.Pill
@@ -71,12 +71,12 @@ fun DebtsScreen(nav: NavController) {
     var repaying by remember { mutableStateOf<DebtEntity?>(null) }
     val today = Time.today()
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Lent & borrowed",
         onBack = { nav.popBackSafely() },
         floating = { ExtendedFloatingActionButton(onClick = { haptic.tick(); adding = true }, icon = { Icon(Icons.Outlined.Add, null) }, text = { Text("Add") }) },
     ) { pad ->
-        val list = debts ?: return@AcuranzaScreen
+        val list = debts ?: return@SumvaloScreen
         val open = list.filter { !it.closed }
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
@@ -84,17 +84,17 @@ fun DebtsScreen(nav: NavController) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                AcuranzaCard {
+                SumvaloCard {
                     Row {
                         Column(Modifier.weight(1f)) {
-                            Text("Others owe you", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                            Text("Others owe you", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                             AmountText(open.filter { it.direction == DebtRepository.LENT }.sumOf { it.amount - it.repaid }, style = AmountStyles.large,
-                                color = AcuranzaTheme.colors.good, hidden = hidden)
+                                color = SumvaloTheme.colors.good, hidden = hidden)
                         }
                         Column(Modifier.weight(1f)) {
-                            Text("You owe", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                            Text("You owe", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                             AmountText(open.filter { it.direction == DebtRepository.BORROWED }.sumOf { it.amount - it.repaid }, style = AmountStyles.large,
-                                color = AcuranzaTheme.colors.alert, hidden = hidden)
+                                color = SumvaloTheme.colors.alert, hidden = hidden)
                         }
                     }
                 }
@@ -138,23 +138,23 @@ fun DebtsScreen(nav: NavController) {
 @Composable
 private fun DebtCard(d: DebtEntity, hidden: Boolean, today: LocalDate, onClick: () -> Unit, onRepay: (() -> Unit)?) {
     val lent = d.direction == DebtRepository.LENT
-    AcuranzaCard(onClick = onClick) {
+    SumvaloCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(d.person, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                 Text(
                     (if (lent) "You lent" else "You borrowed") + " · " + Fmt.date(LocalDate.ofEpochDay(d.date)) + (d.note?.let { " · $it" } ?: ""),
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            AmountText(d.amount - d.repaid, style = AmountStyles.medium, color = if (lent) AcuranzaTheme.colors.good else AcuranzaTheme.colors.alert, hidden = hidden)
+            AmountText(d.amount - d.repaid, style = AmountStyles.medium, color = if (lent) SumvaloTheme.colors.good else SumvaloTheme.colors.alert, hidden = hidden)
         }
         if (d.repaid > 0 && !d.closed) {
             Spacer(Modifier.height(8.dp))
-            ThinProgressBar(d.repaid.toFloat() / d.amount, color = AcuranzaTheme.colors.accent)
+            ThinProgressBar(d.repaid.toFloat() / d.amount, color = SumvaloTheme.colors.accent)
         }
         val due = d.dueDate?.let { LocalDate.ofEpochDay(it) }
         if (!d.closed && (due != null || onRepay != null)) {
@@ -162,7 +162,7 @@ private fun DebtCard(d: DebtEntity, hidden: Boolean, today: LocalDate, onClick: 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (due != null) {
                     val overdue = due.isBefore(today)
-                    Pill(if (overdue) "Was due ${Fmt.date(due)}" else "Due ${Fmt.date(due)}", if (overdue) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.tip)
+                    Pill(if (overdue) "Was due ${Fmt.date(due)}" else "Due ${Fmt.date(due)}", if (overdue) SumvaloTheme.colors.alert else SumvaloTheme.colors.tip)
                 }
                 Spacer(Modifier.weight(1f))
                 if (onRepay != null) TextButton(onClick = onRepay) { Text("Record repayment") }
@@ -185,7 +185,7 @@ private fun DebtDialog(existing: DebtEntity?, onDismiss: () -> Unit, onSave: (De
         text = {
             FormColumn {
                 SegmentedTabs(listOf("I lent", "I borrowed"), if (lent) 0 else 1, onSelect = { lent = it == 0 })
-                AcuranzaTextField(person, { person = it.take(40) }, "Person")
+                SumvaloTextField(person, { person = it.take(40) }, "Person")
                 AmountField("Amount", amount, { amount = it }, allowZero = false)
                 DateField("On", date, { date = it })
                 if (due != null) {
@@ -194,7 +194,7 @@ private fun DebtDialog(existing: DebtEntity?, onDismiss: () -> Unit, onSave: (De
                 } else {
                     TextButton(onClick = { due = date.plusMonths(1) }) { Text("Add a due date") }
                 }
-                AcuranzaTextField(note, { note = it.take(100) }, "Note (optional)")
+                SumvaloTextField(note, { note = it.take(100) }, "Note (optional)")
             }
         },
         confirmButton = {
@@ -219,7 +219,7 @@ private fun DebtDialog(existing: DebtEntity?, onDismiss: () -> Unit, onSave: (De
         },
         dismissButton = {
             Row {
-                if (existing != null) TextButton(onClick = { onDelete(existing) }) { Text("Delete", color = AcuranzaTheme.colors.alert) }
+                if (existing != null) TextButton(onClick = { onDelete(existing) }) { Text("Delete", color = SumvaloTheme.colors.alert) }
                 Spacer(Modifier.width(4.dp))
                 TextButton(onClick = onDismiss) { Text("Cancel") }
             }

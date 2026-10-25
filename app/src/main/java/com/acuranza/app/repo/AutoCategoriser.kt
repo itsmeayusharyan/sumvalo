@@ -1,13 +1,13 @@
 package com.acuranza.app.repo
 
 import androidx.room.withTransaction
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.domain.SmsMapping
 
 /** Gives uncategorised imported transactions a real category; see [SmsMapping.recategorised]. */
 object AutoCategoriser {
     /** Returns how many transactions changed category. */
-    suspend fun run(db: AcuranzaDatabase): Int {
+    suspend fun run(db: SumvaloDatabase): Int {
         val rules = db.merchantRules().all().associate { it.merchant to it.categoryKey }
         // Without taught rules nothing can be recategorised — skip the per-launch table scan.
         if (rules.isEmpty()) return 0

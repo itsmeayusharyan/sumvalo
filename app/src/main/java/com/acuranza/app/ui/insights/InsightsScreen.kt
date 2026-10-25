@@ -57,15 +57,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.MiniBarChart
 import com.acuranza.app.designsystem.components.MiniLineChart
 import com.acuranza.app.designsystem.components.ProgressRing
 import com.acuranza.app.designsystem.components.SecondaryButton
 import com.acuranza.app.designsystem.components.SwipeActionsRow
 import com.acuranza.app.designsystem.components.accent
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.finance.Insight
 import com.acuranza.app.finance.InsightAction
@@ -73,7 +73,7 @@ import com.acuranza.app.finance.InsightChart
 import com.acuranza.app.finance.InsightMetric
 import com.acuranza.app.finance.InsightRoute
 import com.acuranza.app.finance.Severity
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.rememberHaptic
@@ -184,7 +184,7 @@ fun InsightsScreen(nav: NavController) {
     val haptic = rememberHaptic()
     var refreshing by remember { mutableStateOf(false) }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Insights",
         subtitle = "Worked out on your phone, from your own data",
         actions = { IconButton(onClick = vm::restoreDismissed) { Icon(Icons.Outlined.Restore, contentDescription = "Show dismissed insights") } },
@@ -231,7 +231,7 @@ fun InsightsContent(
     if (list != null && list.isEmpty()) {
         EmptyState(
             "No insights right now",
-            "As you add transactions, budgets and goals, Acuranza spots overspending, subscriptions, idle cash and more.",
+            "As you add transactions, budgets and goals, Sumvalo spots overspending, subscriptions, idle cash and more.",
             Modifier.padding(top = 60.dp),
             icon = Icons.Outlined.AutoAwesome,
         )
@@ -274,7 +274,7 @@ fun InsightsContent(
         if (cards.isNotEmpty()) {
             item(key = "hint") {
                 Text("Tap an insight for details · swipe left to dismiss", style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(top = 12.dp, start = 4.dp))
+                    color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(top = 12.dp, start = 4.dp))
             }
         }
     }
@@ -283,9 +283,9 @@ fun InsightsContent(
 /** Income vs spending for the selected window, with deltas against the previous window. */
 @Composable
 private fun ComparisonCard(cmp: PeriodComparison, hidden: Boolean) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     fun money(v: Long): String = if (hidden) "₹ ••••" else com.acuranza.app.model.Money.format(v, showPaise = false)
-    com.acuranza.app.designsystem.components.AcuranzaCard(Modifier.padding(horizontal = 0.dp)) {
+    com.acuranza.app.designsystem.components.SumvaloCard(Modifier.padding(horizontal = 0.dp)) {
         Column(Modifier.fillMaxWidth().padding(16.dp)) {
             Text(
                 "Income vs spending · ${cmp.range.label}",
@@ -316,7 +316,7 @@ private fun ComparisonCard(cmp: PeriodComparison, hidden: Boolean) {
 
 @Composable
 private fun ComparisonMetric(label: String, value: String, deltaPct: Double?, tint: androidx.compose.ui.graphics.Color, modifier: Modifier = Modifier) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     Column(modifier) {
         Text(label, style = MaterialTheme.typography.labelSmall, color = colors.subtleText)
         Text(value, style = MaterialTheme.typography.titleMedium, color = tint)
@@ -337,19 +337,19 @@ private fun ComparisonMetric(label: String, value: String, deltaPct: Double?, ti
 @Composable
 private fun SummaryCard(s: Insight, hidden: Boolean, onAction: (InsightAction) -> Unit) {
     val score = s.metrics.firstOrNull { it.label == "Score" }?.value?.substringBefore('/')?.toIntOrNull()
-    AcuranzaCard {
+    SumvaloCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (score != null) {
                 ProgressRing(score / 100f, size = 64.dp, thickness = 6.dp) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("$score", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                        Text("score", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.tertiaryText)
+                        Text("score", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.tertiaryText)
                     }
                 }
                 Spacer(Modifier.width(16.dp))
             }
             Column(Modifier.weight(1f)) {
-                Text("THIS MONTH", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                Text("THIS MONTH", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                 Text(s.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             }
         }
@@ -378,8 +378,8 @@ private fun InsightDetailCard(i: Insight, hidden: Boolean, onAction: (InsightAct
         Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(AcuranzaTheme.colors.cardSurface)
-            .border(1.dp, AcuranzaTheme.colors.hairline, shape)
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, shape)
             .clickable(enabled = hasMore) { expanded = !expanded }
             .animateContentSize(com.acuranza.app.designsystem.theme.motionTween(com.acuranza.app.designsystem.theme.Motion.STANDARD))
             .padding(16.dp),
@@ -395,7 +395,7 @@ private fun InsightDetailCard(i: Insight, hidden: Boolean, onAction: (InsightAct
                 Text(
                     if (hidden) i.message.maskAmounts() else i.message,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     maxLines = if (expanded) Int.MAX_VALUE else 3,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -404,7 +404,7 @@ private fun InsightDetailCard(i: Insight, hidden: Boolean, onAction: (InsightAct
                 Icon(
                     if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
                     contentDescription = if (expanded) "Show less" else "Show more",
-                    tint = AcuranzaTheme.colors.tertiaryText,
+                    tint = SumvaloTheme.colors.tertiaryText,
                 )
             }
         }
@@ -440,10 +440,10 @@ private fun MetricChips(metrics: List<InsightMetric>, hidden: Boolean) {
             Column(
                 Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(AcuranzaTheme.colors.fill)
+                    .background(SumvaloTheme.colors.fill)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             ) {
-                Text(m.label, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(m.label, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(if (hidden) m.value.maskAmounts() else m.value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
         }
@@ -453,7 +453,7 @@ private fun MetricChips(metrics: List<InsightMetric>, hidden: Boolean) {
 @Composable
 private fun InsightChartView(chart: InsightChart, hidden: Boolean) {
     Column {
-        chart.caption?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.tertiaryText) }
+        chart.caption?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.tertiaryText) }
         when (chart.kind) {
             InsightChart.Kind.BARS -> MiniBarChart(chart.labels, chart.values, reference = chart.reference, hidden = hidden)
             InsightChart.Kind.LINE -> MiniLineChart(

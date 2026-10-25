@@ -56,13 +56,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.acuranza.app.designsystem.components.AcuranzaLogo
+import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Bank
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.label
-import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.theme.SumvaloText
 import kotlinx.coroutines.launch
 
 private const val STEPS = 4
@@ -119,7 +119,7 @@ private fun StepDots(step: Int, total: Int, modifier: Modifier) {
         repeat(total) { i ->
             val w by animateDpAsState(if (i == step) 22.dp else 8.dp, label = "dot")
             val color by animateColorAsState(
-                if (i <= step) MaterialTheme.colorScheme.primary else AcuranzaTheme.colors.divider,
+                if (i <= step) MaterialTheme.colorScheme.primary else SumvaloTheme.colors.divider,
                 label = "dotColor",
             )
             Box(Modifier.height(8.dp).width(w).clip(CircleShape).background(color))
@@ -147,14 +147,14 @@ private fun StepPage(
                         .padding(top = 8.dp)
                         .size(56.dp)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(AcuranzaTheme.colors.ink),
+                        .background(SumvaloTheme.colors.ink),
                     contentAlignment = Alignment.Center,
-                ) { Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.onInk) }
+                ) { Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.onInk) }
                 Spacer(Modifier.height(16.dp))
             }
-            Text(title, style = AcuranzaText.screenTitle)
+            Text(title, style = SumvaloText.screenTitle)
             Spacer(Modifier.height(6.dp))
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.height(20.dp))
             content()
             Spacer(Modifier.height(16.dp))
@@ -171,13 +171,13 @@ private fun StepPage(
 internal fun Welcome(onNext: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.6f))
-        AcuranzaLogo(size = 108.dp)
+        SumvaloLogo(size = 108.dp)
         Spacer(Modifier.height(24.dp))
-        Text("Welcome to Sumvalo", style = AcuranzaText.screenTitle, textAlign = TextAlign.Center)
+        Text("Welcome to Sumvalo", style = SumvaloText.screenTitle, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
         Text(
             "Track income, expenses, budgets and goals — privately, on your phone.",
-            style = MaterialTheme.typography.bodyLarge, color = AcuranzaTheme.colors.subtleText, textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge, color = SumvaloTheme.colors.subtleText, textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(28.dp))
         ValueProp(Icons.Outlined.Assessment, "Track everything", "Income, expenses and card dues in one place, entered in seconds.")
@@ -199,7 +199,7 @@ private fun ValueProp(icon: ImageVector, title: String, text: String) {
         Spacer(Modifier.width(14.dp))
         Column {
             Text(title, fontWeight = FontWeight.SemiBold)
-            Text(text, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+            Text(text, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
     }
 }
@@ -225,7 +225,7 @@ private fun NotificationsStep(onNext: () -> Unit) {
         if (granted) {
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = AcuranzaTheme.colors.good)
+                Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SumvaloTheme.colors.good)
                 Spacer(Modifier.width(8.dp))
                 Text("Notifications are on", fontWeight = FontWeight.Medium)
             }
@@ -258,14 +258,14 @@ private fun ImportStep(onNext: () -> Unit) {
 private fun DoneStep(onFinish: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(Modifier.weight(0.7f))
-        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = AcuranzaTheme.colors.good, modifier = Modifier.size(84.dp))
+        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SumvaloTheme.colors.good, modifier = Modifier.size(84.dp))
         Spacer(Modifier.height(16.dp))
-        Text("You're all set", style = AcuranzaText.screenTitle)
+        Text("You're all set", style = SumvaloText.screenTitle)
         Spacer(Modifier.height(8.dp))
         Text(
             "Add bank accounts and cards any time from Accounts, or jump straight in and add transactions as you go.",
             style = MaterialTheme.typography.bodyLarge,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.weight(1f))

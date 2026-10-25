@@ -14,7 +14,7 @@ import com.acuranza.app.sms.SmsConfidence
 /** Android side of scanning: the inbox source and the runner that ties everything together. */
 
 /**
- * Reads the device inbox through the SMS content provider. Only the four fields Acuranza needs
+ * Reads the device inbox through the SMS content provider. Only the four fields Sumvalo needs
  * are projected; the body is used to parse and then dropped — it is never written anywhere.
  */
 class AndroidSmsInboxSource(private val resolver: ContentResolver) : SmsInboxSource {
@@ -69,7 +69,7 @@ class AndroidSmsInboxSource(private val resolver: ContentResolver) : SmsInboxSou
 fun Context.hasSmsPermission(): Boolean =
     ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED
 
-/** A candidate as the review screen sees it: the graded parse plus Acuranza's suggestions. */
+/** A candidate as the review screen sees it: the graded parse plus Sumvalo's suggestions. */
 data class ScanCandidate(
     val graded: GradedCandidate,
     /** The account that already matches, if any; resolved (and created, when needed) at import. */

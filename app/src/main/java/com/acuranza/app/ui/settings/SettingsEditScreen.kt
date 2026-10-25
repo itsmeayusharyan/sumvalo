@@ -34,10 +34,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.Routes
 import com.acuranza.app.ui.nav.popBackSafely
 import kotlinx.coroutines.launch
@@ -57,7 +57,7 @@ fun SettingsEditScreen(nav: NavController) {
     val saved = LocalSettings.current.settingsLayout
     var working by remember { mutableStateOf(SettingsHubLayout.decodeWithHidden(saved)) }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Customize settings",
         subtitle = "Order, hide and rename — nothing is deleted",
         onBack = { nav.popBackSafely() },
@@ -100,7 +100,7 @@ fun SettingsEditContent(
                 "Move, hide or rename sections and shortcuts. Hidden shortcuts stay reachable " +
                     "from the Settings search, and renaming only changes the label you see.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
         layout.sections.forEachIndexed { index, section ->
@@ -108,7 +108,7 @@ fun SettingsEditContent(
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text(section.title, style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                            Text(section.title, style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                         }
                         RenameButton(section) { title -> onLayout(SettingsHubLayout.renameSection(layout, section.key, title)) }
                         MoveButton(
@@ -119,15 +119,15 @@ fun SettingsEditContent(
                         )
                     }
                     Spacer(Modifier.height(6.dp))
-                    AcuranzaCard(contentPadding = PaddingValues(0.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(0.dp)) {
                         section.entries.forEachIndexed { entryIndex, key ->
                             val entry = SettingsEntryDisplay[key] ?: return@forEachIndexed
                             Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(entry.icon, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(22.dp))
+                                Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(22.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(entry.title, style = MaterialTheme.typography.bodyLarge)
-                                    Text(entry.description, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                    Text(entry.description, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                                 }
                                 MoveButton(
                                     upEnabled = entryIndex > 0,
@@ -148,17 +148,17 @@ fun SettingsEditContent(
         if (layout.hidden.isNotEmpty()) {
             item(key = "hidden") {
                 Column {
-                    Text("Hidden from the hub", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                    Text("Hidden from the hub", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                     Spacer(Modifier.height(6.dp))
-                    AcuranzaCard(contentPadding = PaddingValues(0.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(0.dp)) {
                         layout.hidden.forEach { key ->
                             val entry = SettingsEntryDisplay[key] ?: return@forEach
                             Row(Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-                                Icon(entry.icon, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(22.dp))
+                                Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(22.dp))
                                 Spacer(Modifier.width(12.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(entry.title, style = MaterialTheme.typography.bodyLarge)
-                                    Text("Reachable from Settings search while hidden", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                    Text("Reachable from Settings search while hidden", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                                 }
                                 IconButton(
                                     onClick = { onLayout(SettingsHubLayout.showEntry(layout, key)) },
@@ -171,13 +171,13 @@ fun SettingsEditContent(
             }
         }
         item(key = "reset") {
-            AcuranzaCard {
+            SumvaloCard {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
                     Text("Reset to default", style = MaterialTheme.typography.titleSmall)
                     Text(
                         "Restores the original sections, order and names. Your data and every other setting are untouched.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onReset) { Text("Reset") }

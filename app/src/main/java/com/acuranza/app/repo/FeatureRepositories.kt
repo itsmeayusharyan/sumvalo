@@ -4,7 +4,7 @@ import android.net.Uri
 import com.acuranza.app.data.AttachmentEntity
 import com.acuranza.app.data.AttachmentStore
 import com.acuranza.app.data.DebtEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.LoanEntity
 import com.acuranza.app.finance.Loans
 import com.acuranza.app.model.Paise
@@ -17,7 +17,7 @@ import org.json.JSONObject
 import java.time.LocalDate
 
 /** Money lent to friends and family, or borrowed from them. */
-class DebtRepository(private val db: AcuranzaDatabase) {
+class DebtRepository(private val db: SumvaloDatabase) {
     fun observe(): Flow<List<DebtEntity>> = db.debts().observeAll()
 
     suspend fun save(debt: DebtEntity): Long = db.debts().upsert(debt)
@@ -49,7 +49,7 @@ data class LoanStatus(
     val totalInterest: Paise,
 )
 
-class LoanRepository(private val db: AcuranzaDatabase) {
+class LoanRepository(private val db: SumvaloDatabase) {
     fun observe(): Flow<List<LoanStatus>> = db.loans().observeActive().map { list -> list.map { status(it) } }
 
     fun observe(id: Long): Flow<LoanStatus?> = db.loans().observe(id).map { it?.let(::status) }
@@ -116,7 +116,7 @@ class LoanRepository(private val db: AcuranzaDatabase) {
 }
 
 /** Receipt files (photos, PDFs) linked to transactions. */
-class AttachmentRepository(private val db: AcuranzaDatabase, private val store: AttachmentStore) {
+class AttachmentRepository(private val db: SumvaloDatabase, private val store: AttachmentStore) {
     fun observeFor(txnId: Long): Flow<List<AttachmentEntity>> = db.attachments().observeFor(txnId)
 
     suspend fun add(txnId: Long, uri: Uri, label: String? = null): Long {

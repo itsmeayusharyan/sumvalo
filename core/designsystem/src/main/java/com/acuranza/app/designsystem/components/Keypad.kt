@@ -34,7 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnType
@@ -167,8 +167,8 @@ private fun KeypadKey(key: String, onKey: (String) -> Unit, modifier: Modifier) 
     )
     val isOp = key in setOf("+", "-", "×", "÷")
     val bg = when {
-        isOp -> AcuranzaTheme.colors.fill
-        else -> AcuranzaTheme.colors.cardSurface
+        isOp -> SumvaloTheme.colors.fill
+        else -> SumvaloTheme.colors.cardSurface
     }
     val label = when (key) {
         "⌫" -> "Backspace"
@@ -185,7 +185,7 @@ private fun KeypadKey(key: String, onKey: (String) -> Unit, modifier: Modifier) 
             .scale(scale)
             .clip(RoundedCornerShape(16.dp))
             .background(bg)
-            .border(1.dp, AcuranzaTheme.colors.hairline, RoundedCornerShape(16.dp))
+            .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(16.dp))
             .clickable(interactionSource = interaction, indication = androidx.compose.material3.ripple(), role = Role.Button) {
                 // Gated by the keypad's own preference (master AND keypad switches), provided by
                 // the app shell; previously this fired unconditionally even with haptics off.
@@ -220,15 +220,15 @@ fun AmountInputDisplay(
     showResult: Boolean = false,
 ) {
     val color = when (type) {
-        TxnType.INCOME -> AcuranzaTheme.colors.income
+        TxnType.INCOME -> SumvaloTheme.colors.income
         TxnType.EXPENSE -> MaterialTheme.colorScheme.onSurface
-        TxnType.TRANSFER -> AcuranzaTheme.colors.transfer
+        TxnType.TRANSFER -> SumvaloTheme.colors.transfer
     }
     Column(modifier = modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "₹" + expression.ifEmpty { "0" },
             style = AmountStyles.hero,
-            color = if (expression.isEmpty()) AcuranzaTheme.colors.subtleText else color,
+            color = if (expression.isEmpty()) SumvaloTheme.colors.subtleText else color,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -236,7 +236,7 @@ fun AmountInputDisplay(
             Text(
                 "= " + Money.format(valuePaise),
                 style = AmountStyles.medium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }

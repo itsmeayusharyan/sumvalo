@@ -129,7 +129,7 @@ Sumvalo/
 │       │   ├── tools/            # Widgets, Quick Settings tile, digest
 │       │   ├── ui/               # Jetpack Compose screens and components
 │       │   ├── work/             # Background workers (SMS scanning)
-│       │   └── AcuranzaApp.kt    # Application class
+│       │   └── SumvaloApp.kt    # Application class
 │       └── res/                  # Resources, layouts, drawables, themes
 ├── core/
 │   ├── designsystem/             # Shared UI components and theming

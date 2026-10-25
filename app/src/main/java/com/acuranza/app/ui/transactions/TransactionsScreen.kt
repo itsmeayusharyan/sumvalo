@@ -1,7 +1,7 @@
 package com.acuranza.app.ui.transactions
 
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.theme.SumvaloText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,7 +46,7 @@ import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.repo.TxnFilter
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.rememberHaptic
@@ -62,7 +62,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.repo.TransactionRepository
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -266,7 +266,7 @@ fun TransactionsContent(
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 110.dp)) {
             item(key = "head") {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) {
-                    Text("Activity", style = AcuranzaText.screenTitle)
+                    Text("Activity", style = SumvaloText.screenTitle)
                     MonthSwitcher(
                         label = Fmt.periodLabel(state.period),
                         onPrevious = onPrevious,
@@ -274,12 +274,12 @@ fun TransactionsContent(
                         canGoNext = canGoNext,
                         modifier = Modifier.padding(vertical = 8.dp),
                     )
-                    AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
                         if (state.narrowed) {
                             Text(
                                 (state.categoryName?.let { "$it · " } ?: "") + "totals for the transactions shown",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                                 modifier = Modifier.padding(bottom = 6.dp),
                             )
                         }
@@ -289,7 +289,7 @@ fun TransactionsContent(
                             StatChip("Net", state.income - state.expense, Modifier.weight(1f), hidden = hidden)
                         }
                     }
-                    AcuranzaTextField(
+                    SumvaloTextField(
                         value = state.query,
                         onValue = onQuery,
                         label = "Search merchant, note, category or #tag",

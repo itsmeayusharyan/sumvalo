@@ -45,7 +45,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import androidx.compose.animation.core.EaseOut
 import com.acuranza.app.designsystem.theme.LocalReducedMotion
 import com.acuranza.app.designsystem.theme.Motion
@@ -94,7 +94,7 @@ fun TransactionRow(
                         .background(MaterialTheme.colorScheme.background)
                         .padding(2.dp)
                         .clip(CircleShape)
-                        .background(AcuranzaTheme.colors.accent)
+                        .background(SumvaloTheme.colors.accent)
                         .semantics { contentDescription = "Needs review" },
                 )
             }
@@ -115,7 +115,7 @@ fun TransactionRow(
                 Text(
                     subtitle,
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -125,7 +125,7 @@ fun TransactionRow(
         Column(horizontalAlignment = Alignment.End) {
             AmountText(paise = amount, type = type, hidden = hidden, style = AmountStyles.medium)
             if (trailingNote != null) {
-                Text(trailingNote, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+                Text(trailingNote, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
             }
         }
     }
@@ -135,10 +135,10 @@ fun TransactionRow(
 @Composable
 fun SourceBadge(source: TxnSource, modifier: Modifier = Modifier) {
     val (label, color) = when (source) {
-        TxnSource.SMS -> "SMS" to AcuranzaTheme.colors.subtleText
-        TxnSource.EMAIL -> "EMAIL" to AcuranzaTheme.colors.subtleText
-        TxnSource.AUTO -> "AUTO" to AcuranzaTheme.colors.subtleText
-        TxnSource.MANUAL -> "MANUAL" to AcuranzaTheme.colors.subtleText
+        TxnSource.SMS -> "SMS" to SumvaloTheme.colors.subtleText
+        TxnSource.EMAIL -> "EMAIL" to SumvaloTheme.colors.subtleText
+        TxnSource.AUTO -> "AUTO" to SumvaloTheme.colors.subtleText
+        TxnSource.MANUAL -> "MANUAL" to SumvaloTheme.colors.subtleText
     }
     Text(
         text = label,
@@ -146,7 +146,7 @@ fun SourceBadge(source: TxnSource, modifier: Modifier = Modifier) {
         color = color,
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
-            .background(AcuranzaTheme.colors.fill)
+            .background(SumvaloTheme.colors.fill)
             .padding(horizontal = 4.dp, vertical = 1.dp),
     )
 }
@@ -168,7 +168,7 @@ fun DateHeader(
         Text(
             label.uppercase(),
             style = MaterialTheme.typography.labelMedium,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
             modifier = Modifier.weight(1f),
         )
         if (netPaise != null) {
@@ -176,7 +176,7 @@ fun DateHeader(
                 paise = netPaise,
                 style = AmountStyles.small,
                 hidden = hidden,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }
@@ -212,8 +212,8 @@ fun SwipeActionsRow(
             val direction = state.dismissDirection
             val color by animateColorAsState(
                 when (direction) {
-                    SwipeToDismissBoxValue.EndToStart -> AcuranzaTheme.colors.alert
-                    SwipeToDismissBoxValue.StartToEnd -> AcuranzaTheme.colors.income
+                    SwipeToDismissBoxValue.EndToStart -> SumvaloTheme.colors.alert
+                    SwipeToDismissBoxValue.StartToEnd -> SumvaloTheme.colors.income
                     SwipeToDismissBoxValue.Settled -> Color.Transparent
                 },
                 label = "swipe-bg",

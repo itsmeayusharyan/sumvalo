@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.designsystem.components.CategoryIcon
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.color
 
 /** A grid of categories; the selected one is outlined. */
@@ -56,7 +56,7 @@ fun CategoryGrid(
             val selected = cat.key == selectedKey
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = if (selected) cat.color().copy(alpha = 0.18f) else AcuranzaTheme.colors.cardSurface,
+                color = if (selected) cat.color().copy(alpha = 0.18f) else SumvaloTheme.colors.cardSurface,
                 border = if (selected) BorderStroke(1.5.dp, cat.color()) else null,
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
@@ -100,7 +100,7 @@ fun RecategoriseSheet(
                 Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Apply to all from $merchant", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                        Text("Future imports will follow this too", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                        Text("Future imports will follow this too", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     }
                     Switch(checked = applyAll, onCheckedChange = { applyAll = it })
                 }

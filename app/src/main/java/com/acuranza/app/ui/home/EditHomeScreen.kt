@@ -45,11 +45,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.IconBubble
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.nav.popBackSafely
@@ -90,7 +90,7 @@ fun EditHomeScreen(nav: NavController) {
         if (dirty) confirmDiscard = true else nav.popBackSafely()
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Edit home",
         subtitle = "Reorder, add and remove dashboard sections",
         onBack = attemptLeave,
@@ -169,7 +169,7 @@ fun EditHomeContent(
                 Text(
                     "Nothing here yet — add sections below.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(start = 4.dp),
                 )
             }
@@ -181,7 +181,7 @@ fun EditHomeContent(
                 if (isDragging) with(density) { dragOffset.toDp() } else 0.dp,
                 label = "drag-offset",
             )
-            AcuranzaCard(
+            SumvaloCard(
                 Modifier
                     .fillMaxWidth()
                     .animateItem()
@@ -234,14 +234,14 @@ fun EditHomeContent(
                 Text(
                     "Everything is on your homepage.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(start = 4.dp),
                 )
             }
         }
         items(hidden.size, key = { "h-" + hidden[it].first.id }) { index ->
             val (section, _) = hidden[index]
-            AcuranzaCard(
+            SumvaloCard(
                 Modifier
                     .fillMaxWidth()
                     .animateItem(),
@@ -257,13 +257,13 @@ fun EditHomeContent(
             }
         }
         item(key = "reset") {
-            AcuranzaCard {
+            SumvaloCard {
                 Row(
                     Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconBubble(color = AcuranzaTheme.colors.fill, size = 36.dp, shape = RoundedCornerShape(12.dp)) {
-                        Icon(Icons.Outlined.RestartAlt, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(20.dp))
+                    IconBubble(color = SumvaloTheme.colors.fill, size = 36.dp, shape = RoundedCornerShape(12.dp)) {
+                        Icon(Icons.Outlined.RestartAlt, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(20.dp))
                     }
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
@@ -271,7 +271,7 @@ fun EditHomeContent(
                         Text(
                             "Restores the stock dashboard — your data is untouched",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -288,8 +288,8 @@ fun EditHomeContent(
 private fun SectionLabel(text: String, top: androidx.compose.ui.unit.Dp) {
     Text(
         text,
-        style = AcuranzaText.sectionLabel,
-        color = AcuranzaTheme.colors.subtleText,
+        style = SumvaloText.sectionLabel,
+        color = SumvaloTheme.colors.subtleText,
         modifier = Modifier.padding(start = 4.dp, top = top, bottom = 2.dp),
     )
 }
@@ -303,7 +303,7 @@ private fun EditHomeRow(
     onDownEnabled: Boolean,
     onToggle: () -> Unit,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     Row(
         Modifier
             .fillMaxWidth()

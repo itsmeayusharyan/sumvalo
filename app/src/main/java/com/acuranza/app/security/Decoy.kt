@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.acuranza.app.data.DefaultCategories
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.di.AppContainer
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ private val Context.decoySettingsStore: DataStore<Preferences> by preferencesDat
 
 /** What a sandboxed (decoy) [AppContainer] uses instead of the real database and settings. */
 class DecoySandbox(
-    val db: AcuranzaDatabase,
+    val db: SumvaloDatabase,
     val settings: SettingsStore,
 )
 
@@ -54,7 +54,7 @@ object DecoySession {
     }
 
     private suspend fun build(app: Context): AppContainer {
-        val db = Room.inMemoryDatabaseBuilder(app, AcuranzaDatabase::class.java).build()
+        val db = Room.inMemoryDatabaseBuilder(app, SumvaloDatabase::class.java).build()
         val sandbox = DecoySandbox(db, SettingsStore(app, app.decoySettingsStore))
         val c = AppContainer(app, sandbox)
         db.categories().insertAll(DefaultCategories.all)

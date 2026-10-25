@@ -20,7 +20,6 @@ import com.acuranza.app.data.NetWorthSnapshotEntity
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.designsystem.components.RangeChips
 import com.acuranza.app.designsystem.components.TrendChart
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
 import com.acuranza.app.finance.AccountInput
 import com.acuranza.app.finance.BillInput
 import com.acuranza.app.finance.BudgetInput
@@ -101,7 +100,7 @@ class ChartsScreenshotTest {
 
     @Composable
     private fun Screen(content: @Composable () -> Unit) {
-        AcuranzaTheme(darkTheme = false) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = false) {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { content() }
             }
@@ -172,7 +171,7 @@ class ChartsScreenshotTest {
 
     @Test
     fun trend_chart_selected_dark() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             CompositionLocalProvider(LocalInspectionMode provides true) {
                 Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) { TrendBlock() }
             }

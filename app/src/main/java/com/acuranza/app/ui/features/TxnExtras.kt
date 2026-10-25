@@ -56,16 +56,16 @@ import com.acuranza.app.data.SplitEntity
 import com.acuranza.app.data.Tags
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.designsystem.components.AmountText
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.domain.Splits
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.ui.common.AmountField
 import com.acuranza.app.ui.common.ChoiceField
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.nav.popBackSafely
@@ -88,7 +88,7 @@ private fun TagsCard(t: TransactionEntity) {
     val scope = rememberCoroutineScope()
     val tags = Tags.decode(t.tags)
     var adding by remember { mutableStateOf(false) }
-    AcuranzaCard {
+    SumvaloCard {
         SectionHeader("Tags")
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             tags.forEach { tag ->
@@ -103,7 +103,7 @@ private fun TagsCard(t: TransactionEntity) {
         }
         if (tags.isEmpty()) {
             Text("Group spending across categories, like a trip or work expenses to claim. Search #tag in Activity.",
-                style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
     }
     if (adding) {
@@ -117,7 +117,7 @@ private fun TagsCard(t: TransactionEntity) {
             title = { Text("Add tag") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AcuranzaTextField(text, { text = it.take(Tags.MAX_LENGTH) }, "Tag", supporting = "e.g. Goa trip, Reimbursable")
+                    SumvaloTextField(text, { text = it.take(Tags.MAX_LENGTH) }, "Tag", supporting = "e.g. Goa trip, Reimbursable")
                     if (suggestions.isNotEmpty()) {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             suggestions.forEach { s ->
@@ -148,14 +148,14 @@ private fun SplitCard(t: TransactionEntity, categories: List<CategoryEntity>) {
     val splits by remember(t.id) { c.transactions.observeSplitsFor(t.id) }.collectAsState(initial = emptyList())
     var editing by remember { mutableStateOf(false) }
     val byKey = categories.associateBy { it.key }
-    AcuranzaCard {
+    SumvaloCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SectionHeader("Split", Modifier.weight(1f))
             TextButton(onClick = { editing = true }) { Text(if (splits.isEmpty()) "Split" else "Edit") }
         }
         if (splits.isEmpty()) {
             Text("Split one payment across categories, e.g. a supermarket bill that was part groceries, part household.",
-                style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         } else {
             Splits.parts(t, splits).forEach { part ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
@@ -197,7 +197,7 @@ private fun SplitDialog(t: TransactionEntity, current: List<SplitEntity>, catego
                 Text(
                     if (over) "The parts add up to more than the payment." else "${Money.format(left, showPaise = false)} stays in $ownName.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (over) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.subtleText,
+                    color = if (over) SumvaloTheme.colors.alert else SumvaloTheme.colors.subtleText,
                 )
             }
         },
@@ -244,25 +244,25 @@ private fun ReceiptsCard(t: TransactionEntity) {
     val savePhoto = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(AttachmentStore.JPEG), onSaved)
     val savePdf = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument(AttachmentStore.PDF), onSaved)
 
-    AcuranzaCard {
+    SumvaloCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SectionHeader("Receipts", Modifier.weight(1f))
             TextButton(onClick = { if (!pick.launchOrFalse(arrayOf("image/*", "application/pdf"))) error = NO_FILE_PICKER }) { Text("Add") }
         }
         if (files.isEmpty()) {
             Text("Keep the bill or receipt photo with the payment. Files are encrypted and stay on this phone.",
-                style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
         files.forEach { a ->
             Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(if (a.mimeType == AttachmentStore.PDF) Icons.Outlined.Description else Icons.Outlined.Image, null, tint = AcuranzaTheme.colors.subtleText)
+                Icon(if (a.mimeType == AttachmentStore.PDF) Icons.Outlined.Description else Icons.Outlined.Image, null, tint = SumvaloTheme.colors.subtleText)
                 Column(Modifier.weight(1f).padding(start = 12.dp)) {
                     Text(a.label ?: if (a.mimeType == AttachmentStore.PDF) "PDF" else "Photo", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                     Text(
                         listOfNotNull("${a.sizeBytes / 1024} KB")
                             .joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
                 if (a.mimeType != AttachmentStore.PDF) TextButton(onClick = { viewing = a }) { Text("View") }
@@ -274,7 +274,7 @@ private fun ReceiptsCard(t: TransactionEntity) {
                 IconButton(onClick = { scope.launch { c.attachments.delete(a) } }) { Icon(Icons.Outlined.Delete, "Delete") }
             }
         }
-        error?.let { Text(it, color = AcuranzaTheme.colors.alert, style = MaterialTheme.typography.bodySmall) }
+        error?.let { Text(it, color = SumvaloTheme.colors.alert, style = MaterialTheme.typography.bodySmall) }
     }
 
     picked?.let { uri ->
@@ -285,7 +285,7 @@ private fun ReceiptsCard(t: TransactionEntity) {
             title = { Text("Add receipt") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AcuranzaTextField(label, { label = it.take(40) }, "Label (optional)", supporting = "e.g. Bill, receipt")
+                    SumvaloTextField(label, { label = it.take(40) }, "Label (optional)", supporting = "e.g. Bill, receipt")
                 }
             },
             confirmButton = {

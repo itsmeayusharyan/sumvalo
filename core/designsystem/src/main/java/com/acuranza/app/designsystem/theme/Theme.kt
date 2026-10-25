@@ -22,85 +22,85 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 private val DarkScheme: ColorScheme = darkColorScheme(
-    primary = BrandPalette.BlueBright,
-    onPrimary = BrandPalette.Night,
-    primaryContainer = BrandPalette.BlueTintDark,
-    onPrimaryContainer = Color(0xFFBFDBFE),
-    secondary = BrandPalette.EmeraldBright,
-    onSecondary = BrandPalette.Night,
-    secondaryContainer = BrandPalette.EmeraldTintDark,
-    onSecondaryContainer = Color(0xFFA7F3D0),
-    tertiary = BrandPalette.BlueBright,
-    onTertiary = BrandPalette.Night,
-    tertiaryContainer = BrandPalette.BlueTintDark,
-    onTertiaryContainer = Color(0xFFBFDBFE),
+    primary = BrandPalette.SumvaloBlue,
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = BrandPalette.SumvaloBlueTint,
+    onPrimaryContainer = BrandPalette.SumvaloNight,
+    secondary = BrandPalette.SumvaloEmerald,
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = BrandPalette.SumvaloBlueTint,
+    onSecondaryContainer = BrandPalette.SumvaloNight,
+    tertiary = BrandPalette.SumvaloBlue,
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = BrandPalette.SumvaloBlueTint,
+    onTertiaryContainer = BrandPalette.SumvaloNight,
     error = Color(0xFFF87171),
-    onError = BrandPalette.Night,
+    onError = BrandPalette.SumvaloNight,
     errorContainer = Color(0xFF2A1414),
     onErrorContainer = Color(0xFFFECACA),
-    background = BrandPalette.Night,
-    onBackground = BrandPalette.Snow,
-    surface = BrandPalette.Night,
-    onSurface = BrandPalette.Snow,
-    surfaceVariant = BrandPalette.NightFill,
-    onSurfaceVariant = BrandPalette.SnowSecondary,
+    background = BrandPalette.SumvaloNight,
+    onBackground = BrandPalette.SumvaloSnow,
+    surface = BrandPalette.SumvaloNight,
+    onSurface = BrandPalette.SumvaloSnow,
+    surfaceVariant = BrandPalette.SumvaloNightFill,
+    onSurfaceVariant = BrandPalette.SumvaloSnowSecondary,
     surfaceTint = Color.Transparent,
-    surfaceContainerLowest = BrandPalette.Night,
-    surfaceContainerLow = BrandPalette.NightCard,
-    surfaceContainer = BrandPalette.NightCard,
-    surfaceContainerHigh = BrandPalette.NightCard,
-    surfaceContainerHighest = BrandPalette.NightFill,
-    outline = BrandPalette.NightHairline,
-    outlineVariant = BrandPalette.NightHairline,
-    inverseSurface = BrandPalette.Snow,
-    inverseOnSurface = BrandPalette.Night,
-    inversePrimary = BrandPalette.BlueDeep,
+    surfaceContainerLowest = BrandPalette.SumvaloNight,
+    surfaceContainerLow = BrandPalette.SumvaloNightCard,
+    surfaceContainer = BrandPalette.SumvaloNightCard,
+    surfaceContainerHigh = BrandPalette.SumvaloNightCard,
+    surfaceContainerHighest = BrandPalette.SumvaloNightFill,
+    outline = BrandPalette.SumvaloNightHairline,
+    outlineVariant = BrandPalette.SumvaloNightHairline,
+    inverseSurface = BrandPalette.SumvaloSnow,
+    inverseOnSurface = BrandPalette.SumvaloNight,
+    inversePrimary = BrandPalette.SumvaloBlueDeep,
     scrim = Color.Black,
 )
 
 private val LightScheme: ColorScheme = lightColorScheme(
-    primary = BrandPalette.Blue,
-    onPrimary = Color.White,
-    primaryContainer = BrandPalette.BlueTint,
-    onPrimaryContainer = BrandPalette.BlueDeep,
-    secondary = BrandPalette.Emerald,
-    onSecondary = Color.White,
-    secondaryContainer = BrandPalette.EmeraldTint,
-    onSecondaryContainer = BrandPalette.EmeraldDeep,
-    tertiary = BrandPalette.Blue,
-    onTertiary = Color.White,
-    tertiaryContainer = BrandPalette.BlueTint,
-    onTertiaryContainer = BrandPalette.BlueDeep,
-    error = BrandPalette.Red,
-    onError = Color.White,
-    errorContainer = BrandPalette.RedTint,
+    primary = BrandPalette.SumvaloBlue,
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = BrandPalette.SumvaloBlueTint,
+    onPrimaryContainer = BrandPalette.SumvaloBlueDeep,
+    secondary = BrandPalette.SumvaloEmerald,
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = BrandPalette.SumvaloBlueTint,
+    onSecondaryContainer = BrandPalette.SumvaloBlueDeep,
+    tertiary = BrandPalette.SumvaloBlue,
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = BrandPalette.SumvaloBlueTint,
+    onTertiaryContainer = BrandPalette.SumvaloBlueDeep,
+    error = BrandPalette.SumvaloRed,
+    onError = Color(0xFFFFFFFF),
+    errorContainer = BrandPalette.SumvaloRedTint,
     onErrorContainer = Color(0xFF7F1D1D),
-    background = BrandPalette.Paper,
-    onBackground = BrandPalette.Ink,
-    surface = BrandPalette.Paper,
-    onSurface = BrandPalette.Ink,
-    surfaceVariant = BrandPalette.Fill,
-    onSurfaceVariant = BrandPalette.InkSecondary,
+    background = BrandPalette.SumvaloPaper,
+    onBackground = BrandPalette.SumvaloInk,
+    surface = BrandPalette.SumvaloPaper,
+    onSurface = BrandPalette.SumvaloInk,
+    surfaceVariant = BrandPalette.SumvaloFill,
+    onSurfaceVariant = BrandPalette.SumvaloInkSecondary,
     surfaceTint = Color.Transparent,
     surfaceContainerLowest = Color.White,
     surfaceContainerLow = Color.White,
     surfaceContainer = Color.White,
     surfaceContainerHigh = Color.White,
-    surfaceContainerHighest = BrandPalette.Fill,
-    outline = BrandPalette.Hairline,
-    outlineVariant = BrandPalette.Divider,
-    inverseSurface = BrandPalette.Ink,
-    inverseOnSurface = Color.White,
-    inversePrimary = BrandPalette.BlueDeep,
+    surfaceContainerHighest = BrandPalette.SumvaloFill,
+    outline = BrandPalette.SumvaloHairline,
+    outlineVariant = BrandPalette.SumvaloDivider,
+    inverseSurface = BrandPalette.SumvaloInk,
+    inverseOnSurface = Color(0xFFFFFFFF),
+    inversePrimary = BrandPalette.SumvaloBlueDeep,
     scrim = Color.Black,
 )
 
-internal val AcuranzaShapes = Shapes(
+internal val SumvaloShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
     small = RoundedCornerShape(12.dp),
     medium = RoundedCornerShape(16.dp),
     large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(24.dp),
+    extraLarge = RoundedCornerShape(28.dp),
 )
 
 /** Spacing scale used across the app (4dp grid). */
@@ -116,7 +116,7 @@ data class Spacing(
     val xxxl: Dp = 32.dp,
     /** Horizontal padding for screen content. */
     val screen: Dp = 20.dp,
-    /** Corner radius of standard cards — 20dp everywhere, large surfaces read expressive, not fussy. */
+    /** Corner radius of standard cards. */
     val cardRadius: Dp = 20.dp,
     /** Vertical gap between sections. */
     val section: Dp = 24.dp,
@@ -125,20 +125,20 @@ data class Spacing(
 val LocalSpacing = staticCompositionLocalOf { Spacing() }
 
 /**
- * The Acuranza theme. Wrap all app content in it:
+ * The Sumvalo theme. Wrap all app content in it:
  *
+ * ```kotlin
+ * SumvaloTheme { AppNavHost() }
  * ```
- * AcuranzaTheme { AppNavHost() }
- * ```
  *
- * Material slots come from [MaterialTheme]; extra semantic colours from [AcuranzaTheme.colors]
- * and spacing from [AcuranzaTheme.spacing].
- *
- * @param darkTheme dark by default (Acuranza's first-launch appearance); pass `false` for light.
+ * @param darkTheme dark by default (Sumvalo's first-launch appearance); pass `false` for light.
  * @param dynamicColor use Material You wallpaper colours on Android 12+ (brand colours otherwise).
+ * @param accent brand accent colour.
+ * @param colorTheme colour theme variant.
+ * @param amoled pure-black surfaces (AMOLED), dark mode only.
  */
 @Composable
-fun AcuranzaTheme(
+fun SumvaloTheme(
     darkTheme: Boolean = true,
     dynamicColor: Boolean = false,
     accent: AccentColor = AccentColor.BLUE,
@@ -153,7 +153,7 @@ fun AcuranzaTheme(
             val context = LocalContext.current
             val dyn = if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
             ResolvedPalette(
-                dynamicAcuranzaColors(dyn, darkTheme).copy(
+                dynamicSumvaloColors(dyn, darkTheme).copy(
                     accent = accent.accentColor(darkTheme),
                     accentTint = accent.accentTint(darkTheme),
                 ),
@@ -163,41 +163,40 @@ fun AcuranzaTheme(
         }
         colorTheme != ColorTheme.DEFAULT -> builtInPalette(colorTheme, darkTheme)
         else -> {
-            val tokens = (if (darkTheme) DarkAcuranzaColors else LightAcuranzaColors)
+            val tokens = (if (darkTheme) DarkSumvaloColors else LightSumvaloColors)
                 .copy(accent = accent.accentColor(darkTheme), accentTint = accent.accentTint(darkTheme))
             ResolvedPalette(
                 tokens,
                 (if (darkTheme) DarkScheme else LightScheme).copy(primary = tokens.accent),
-                if (darkTheme) BrandPalette.Night else BrandPalette.Paper,
+                if (darkTheme) BrandPalette.SumvaloNight else BrandPalette.SumvaloPaper,
             )
         }
     }
-    // AMOLED black: pure-black canvas with near-black layers, dark mode only. In light mode the
-    // preference is preserved but inactive (the UI says so) — no washed-out pseudo-dark. Works
-    // over every palette including Dynamic (it re-tints surfaces, accents stay).
+    // AMOLED black: pure-black canvas with near-black layers, dark mode only.
     val applyAmoled = amoled && darkTheme
-    val acuranza = if (applyAmoled) resolved.tokens.amoled() else resolved.tokens
+    val tokens = if (applyAmoled) resolved.tokens.amoled() else resolved.tokens
     val scheme = if (applyAmoled) resolved.scheme.amoled() else resolved.scheme
     CompositionLocalProvider(
-        LocalAcuranzaColors provides acuranza,
+        LocalSumvaloColors provides tokens,
         LocalSpacing provides Spacing(),
     ) {
         MaterialTheme(
             colorScheme = scheme,
-            typography = AcuranzaTypography,
-            shapes = AcuranzaShapes,
+            typography = SumvaloTypography,
+            shapes = SumvaloShapes,
         ) {
-            // Text outside a Surface would otherwise default to black, which vanishes on the dark theme.
             CompositionLocalProvider(androidx.compose.material3.LocalContentColor provides scheme.onBackground, content = content)
         }
     }
 }
 
-/** Accessors for the Acuranza-specific theme values. */
-object AcuranzaTheme {
-    val colors: AcuranzaColors
-        @Composable @ReadOnlyComposable get() = LocalAcuranzaColors.current
+/** Accessors for the Sumvalo theme values. */
+object SumvaloTheme {
+    val colors: SumvaloColors
+        @Composable @ReadOnlyComposable get() = LocalSumvaloColors.current
 
     val spacing: Spacing
         @Composable @ReadOnlyComposable get() = LocalSpacing.current
 }
+
+/** Backward-compatible aliases removed: SumvaloTheme and SumvaloText are already objects. */

@@ -16,7 +16,7 @@ package com.acuranza.app.data.sms
  */
 object SmsNotificationFilter {
 
-    /** The default SMS apps Acuranza watches: stock AOSP, Google Messages, Samsung, OnePlus/Oppo, Xiaomi, Huawei. */
+    /** The default SMS apps Sumvalo watches: stock AOSP, Google Messages, Samsung, OnePlus/Oppo, Xiaomi, Huawei. */
     val SMS_PACKAGES: Set<String> = setOf(
         "com.google.android.apps.messaging",
         "com.android.mms",

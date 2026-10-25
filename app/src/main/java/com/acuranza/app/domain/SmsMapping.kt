@@ -23,11 +23,11 @@ object SmsMapping {
      * when both are known. If the message has no digits and the user has exactly one such account, use it;
      * with several, reuse the account already created for digitless messages so only one is ever made.
      * A bank in [BANKS_FORMERLY_OTHER] with no account of its own falls back to an "Other" account with the
-     * same digits, which is where its messages went before Acuranza recognised the bank.
+     * same digits, which is where its messages went before Sumvalo recognised the bank.
      */
     fun matchAccount(accounts: List<AccountEntity>, bank: Bank, last4: String?, isCard: Boolean): AccountEntity? {
         matchSameBank(accounts, bank, last4, isCard)?.let { return it }
-        // Banks Acuranza used to file under "Other": keep using the Other account that already has these digits,
+        // Banks Sumvalo used to file under "Other": keep using the Other account that already has these digits,
         // so an existing user's history and balance don't split into a second account.
         if (last4 == null || bank !in BANKS_FORMERLY_OTHER) return null
         val type = if (isCard) AccountType.CREDIT_CARD else AccountType.BANK

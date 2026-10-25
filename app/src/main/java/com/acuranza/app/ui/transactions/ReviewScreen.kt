@@ -45,14 +45,14 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.tombstones
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SourceBadge
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.domain.SmsMapping
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.rememberHaptic
@@ -95,7 +95,7 @@ fun ReviewScreen(nav: NavController) {
     var editing by remember { mutableStateOf<TransactionItem?>(null) }
     var transferring by remember { mutableStateOf<TransactionItem?>(null) }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Review",
         subtitle = if (state.items.isEmpty()) null else "${state.items.size} imported from SMS & email",
         onBack = { nav.popBackSafely() },
@@ -136,17 +136,17 @@ fun ReviewScreen(nav: NavController) {
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 items(state.items, key = { it.txn.id }) { t ->
-                    AcuranzaCard(Modifier.animateContentSize(), contentPadding = PaddingValues(12.dp)) {
+                    SumvaloCard(Modifier.animateContentSize(), contentPadding = PaddingValues(12.dp)) {
                         if (t.txn.suspicious) {
                             Text(
                                 "This amount looks unusually large, maybe a reference number read as an amount. It isn't " +
                                     "counted in balances or totals until you confirm it — \"Looks right\" or \"Confirm all\" clears the flag.",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.warning,
+                                color = SumvaloTheme.colors.warning,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(AcuranzaTheme.colors.warning.copy(alpha = 0.10f))
+                                    .background(SumvaloTheme.colors.warning.copy(alpha = 0.10f))
                                     .padding(horizontal = 10.dp, vertical = 8.dp),
                             )
                         }
@@ -157,7 +157,7 @@ fun ReviewScreen(nav: NavController) {
                             Text(
                                 "${Fmt.dayLabel(t.date)} · ${t.category?.name ?: t.txn.categoryKey}",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                                 maxLines = 1,
                                 overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f),
@@ -169,13 +169,13 @@ fun ReviewScreen(nav: NavController) {
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalArrangement = Arrangement.spacedBy(0.dp),
                         ) {
-                            ReviewAction(if (t.txn.suspicious) "Looks right" else "Confirm", Icons.Outlined.Check, AcuranzaTheme.colors.good) {
+                            ReviewAction(if (t.txn.suspicious) "Looks right" else "Confirm", Icons.Outlined.Check, SumvaloTheme.colors.good) {
                                 haptic()
                                 vm.confirm(t.txn.id)
                             }
                             ReviewAction("Category", Icons.Outlined.Category, MaterialTheme.colorScheme.primary) { editing = t }
-                            ReviewAction("Transfer", Icons.Outlined.SwapHoriz, AcuranzaTheme.colors.transfer) { transferring = t }
-                            ReviewAction("Delete", Icons.Outlined.DeleteOutline, AcuranzaTheme.colors.alert) { vm.delete(t.txn.id) }
+                            ReviewAction("Transfer", Icons.Outlined.SwapHoriz, SumvaloTheme.colors.transfer) { transferring = t }
+                            ReviewAction("Delete", Icons.Outlined.DeleteOutline, SumvaloTheme.colors.alert) { vm.delete(t.txn.id) }
                         }
                     }
                 }

@@ -47,17 +47,17 @@ import com.acuranza.app.data.MerchantRuleEntity
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SecondaryButton
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.domain.SmsMapping
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnSource
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.util.Time
@@ -124,17 +124,17 @@ fun UncategorisedBanner(count: Int, onClick: () -> Unit, modifier: Modifier = Mo
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
-        color = AcuranzaTheme.colors.cardSurfaceHigh,
+        color = SumvaloTheme.colors.cardSurfaceHigh,
         shape = RoundedCornerShape(16.dp),
     ) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Category, contentDescription = null, tint = AcuranzaTheme.colors.subtleText)
+            Icon(Icons.Outlined.Category, contentDescription = null, tint = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text("$count transactions in \"Other\" this month", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                Text("Fix them by payee in one tap", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text("Fix them by payee in one tap", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
-            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Fix uncategorised", tint = AcuranzaTheme.colors.subtleText)
+            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Fix uncategorised", tint = SumvaloTheme.colors.subtleText)
         }
     }
 }
@@ -150,7 +150,7 @@ fun UncategorisedScreen(nav: NavController) {
     val snackbar = remember { SnackbarHostState() }
     var picking by remember { mutableStateOf<PayeeGroup?>(null) }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Fix uncategorised",
         subtitle = "Pick a category once per payee",
         onBack = { nav.popBackSafely() },
@@ -162,7 +162,7 @@ fun UncategorisedScreen(nav: NavController) {
                 "Every imported transaction has a category.",
                 Modifier.padding(padding).padding(top = 60.dp),
             )
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
@@ -175,24 +175,24 @@ fun UncategorisedScreen(nav: NavController) {
                         "Sumvalo couldn't tell what these were for. Choose a category for a payee and every transaction to them " +
                             "moves; future messages from them will be categorised automatically.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
             }
             items(state.groups, key = { it.key }) { g ->
-                AcuranzaCard(onClick = { picking = g }, contentPadding = PaddingValues(16.dp)) {
+                SumvaloCard(onClick = { picking = g }, contentPadding = PaddingValues(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(g.label, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
                             Text(
                                 "${g.count} transaction${if (g.count == 1) "" else "s"} · last ${Fmt.date(Time.toDate(g.latest))}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                             )
                         }
                         AmountText(g.total, style = AmountStyles.small, hidden = hidden)
                         Spacer(Modifier.width(6.dp))
-                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Choose category", tint = AcuranzaTheme.colors.subtleText)
+                        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = "Choose category", tint = SumvaloTheme.colors.subtleText)
                     }
                 }
             }
@@ -207,7 +207,7 @@ fun UncategorisedScreen(nav: NavController) {
                     if (group.merchant != null) "Applies to all ${group.count} transactions and future ones from this payee."
                     else "Applies to these ${group.count} transactions.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 CategoryGrid(categories = state.categories.filter { it.key != "other" }, selectedKey = null, onSelect = {
                     vm.assign(group, it.key)

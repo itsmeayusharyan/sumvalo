@@ -13,7 +13,7 @@ import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.ui.text.style.TextAlign
 import com.acuranza.app.designsystem.components.StackedBar
-import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.theme.SumvaloText
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -66,14 +66,14 @@ import com.acuranza.app.designsystem.components.ChartSlice
 import com.acuranza.app.designsystem.components.DonutChart
 import com.acuranza.app.designsystem.components.EmptyState
 import com.acuranza.app.designsystem.components.InsightCard
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.StatChip
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.components.TransactionRow
 import com.acuranza.app.designsystem.components.staggeredEntrance
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.finance.Insight
 import com.acuranza.app.model.TxnType
@@ -388,7 +388,7 @@ const val IGNORED_NOTICE_DAYS = 7L
 @Composable
 private fun InsightsBulbButton(onInsights: () -> Unit) {
     IconButton(onClick = onInsights) {
-        Icon(Icons.Outlined.Lightbulb, contentDescription = "Insights", tint = AcuranzaTheme.colors.subtleText)
+        Icon(Icons.Outlined.Lightbulb, contentDescription = "Insights", tint = SumvaloTheme.colors.subtleText)
     }
 }
 
@@ -403,8 +403,8 @@ private fun NotificationsBellButton(unread: Int, onOpen: () -> Unit) {
             badge = {
                 if (unread > 0) {
                     Badge(
-                        containerColor = AcuranzaTheme.colors.accent,
-                        contentColor = AcuranzaTheme.colors.onInk,
+                        containerColor = SumvaloTheme.colors.accent,
+                        contentColor = SumvaloTheme.colors.onInk,
                     ) {
                         Text("$unread")
                     }
@@ -414,7 +414,7 @@ private fun NotificationsBellButton(unread: Int, onOpen: () -> Unit) {
             Icon(
                 Icons.Outlined.Notifications,
                 contentDescription = if (unread > 0) "Notifications, $unread unread" else "Notifications",
-                tint = AcuranzaTheme.colors.subtleText,
+                tint = SumvaloTheme.colors.subtleText,
             )
         }
     }
@@ -471,12 +471,12 @@ fun HomeContent(
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(Fmt.todayLong(), style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text(Fmt.todayLong(), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     // Two lines keeps "Good evening, <long name>" readable at any width or font
                     // scale instead of hard-clipping; icons can never overlap it (weight(1f)).
                     Text(
                         Fmt.greeting() + (state.profileName?.takeIf { it.isNotBlank() }?.let { ", $it" } ?: ""),
-                        style = AcuranzaText.screenTitle,
+                        style = SumvaloText.screenTitle,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -489,7 +489,7 @@ fun HomeContent(
                         Row(
                             Modifier
                                 .clip(RoundedCornerShape(999.dp))
-                                .background(AcuranzaTheme.colors.accent.copy(alpha = 0.12f))
+                                .background(SumvaloTheme.colors.accent.copy(alpha = 0.12f))
                                 .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onSafeToSpend)
                                 .padding(horizontal = 10.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
@@ -497,14 +497,14 @@ fun HomeContent(
                             Icon(
                                 Icons.Outlined.Bolt,
                                 contentDescription = null,
-                                tint = if (safe.available < 0) AcuranzaTheme.colors.expense else AcuranzaTheme.colors.accent,
+                                tint = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
                                 modifier = Modifier.size(14.dp),
                             )
                             Spacer(Modifier.width(5.dp))
                             Text(
                                 if (safe.available < 0) "Overspent" else "Safe to spend",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = if (safe.available < 0) AcuranzaTheme.colors.expense else AcuranzaTheme.colors.accent,
+                                color = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
                             )
                             Spacer(Modifier.width(4.dp))
                             AmountText(
@@ -512,13 +512,13 @@ fun HomeContent(
                                 style = MaterialTheme.typography.labelMedium,
                                 compact = true,
                                 hidden = hidden,
-                                color = if (safe.available < 0) AcuranzaTheme.colors.expense else AcuranzaTheme.colors.accent,
+                                color = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
                             )
                             Spacer(Modifier.width(4.dp))
                             Text(
                                 "· ${safe.days}d",
                                 style = MaterialTheme.typography.labelMedium,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                             )
                         }
                     }
@@ -527,7 +527,7 @@ fun HomeContent(
                     Icon(
                         if (hidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                         contentDescription = if (hidden) "Show amounts" else "Hide amounts",
-                        tint = AcuranzaTheme.colors.subtleText,
+                        tint = SumvaloTheme.colors.subtleText,
                     )
                 }
                 NotificationsBellButton(unread = state.notificationsUnread, onOpen = onNotifications)
@@ -598,7 +598,7 @@ item(key = "uncategorised") {
         }
         if (state.isEmpty) {
 item(key = "empty") {
-                AcuranzaCard(pad.padding(top = AcuranzaTheme.spacing.section)) {
+                SumvaloCard(pad.padding(top = SumvaloTheme.spacing.section)) {
                     EmptyState(
                         title = "Set up Sumvalo",
                         message = "Add your bank accounts, or scan your SMS inbox to pull in transactions automatically.",
@@ -613,7 +613,7 @@ item(key = "empty") {
                             .clip(RoundedCornerShape(12.dp))
                             .clickable(enabled = !loadingDemo, onClick = onLoadDemo)
                             .padding(12.dp),
-                        color = AcuranzaTheme.colors.accent,
+                        color = SumvaloTheme.colors.accent,
                         style = MaterialTheme.typography.labelLarge,
                         textAlign = TextAlign.Center,
                     )
@@ -635,15 +635,15 @@ item(key = "empty") {
             }
         }
                 HomeSection.SAFE -> state.safeToSpend?.let { safe -> item(key = "safe") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SafeToSpendCard(safe, hidden, onSafeToSpend)
                 }
             } }
                 HomeSection.STATS -> item(key = "stats") {
             val s = state.summary
-            Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+            Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                 SectionHeader("This month")
-                AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
+                SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
                     Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
                         StatChip("Income", s?.income ?: 0, Modifier.weight(1f), type = TxnType.INCOME, hidden = hidden)
                         VerticalHairline()
@@ -653,15 +653,15 @@ item(key = "empty") {
                     }
                     moneyInNote(s?.givenBack ?: 0, s?.received ?: 0, hidden)?.let {
                         Spacer(Modifier.height(10.dp))
-                        Text(it, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                        Text(it, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     }
                 }
             }
         }
                 HomeSection.PACE -> if (state.charts.hasPace) item(key = "pace") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Spending pace", actionLabel = "Details", onAction = onActivity)
-                    AcuranzaCard {
+                    SumvaloCard {
                         SpendPaceChart(
                             current = state.charts.paceCurrent,
                             previous = state.charts.pacePrevious,
@@ -673,9 +673,9 @@ item(key = "empty") {
                 }
             }
                 HomeSection.BILLS -> if (state.bills.isNotEmpty()) item(key = "bills") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Upcoming bills", actionLabel = "See all", onAction = onBills)
-                    AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
                         state.bills.take(3).forEachIndexed { i, b ->
                             if (i > 0) ListHairline()
                             BillListRow(b, hidden, onBills)
@@ -684,7 +684,7 @@ item(key = "empty") {
                 }
             }
                 HomeSection.INSIGHT -> state.insights.firstOrNull()?.let { top -> item(key = "insight") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Insight", actionLabel = if (state.insights.size > 1) "All ${state.insights.size}" else null, onAction = onInsights)
                     InsightCard(
                         severity = top.severity.toUi(),
@@ -701,9 +701,9 @@ item(key = "empty") {
                 val slices = remember(spend) {
                     spend.take(6).map { ChartSlice(it.category?.name ?: it.categoryKey, it.total, it.category.color()) }
                 }
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Where it went", actionLabel = "Details", onAction = onActivity)
-                    AcuranzaCard {
+                    SumvaloCard {
                         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                             DonutChart(
                                 slices = slices,
@@ -728,10 +728,10 @@ item(key = "empty") {
                                     Box(Modifier.size(8.dp).clip(CircleShape).background(c.category.color()))
                                     Spacer(Modifier.width(10.dp))
                                     Text(c.category?.name ?: c.categoryKey, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(Fmt.pct(c.share * 100, 0), style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.tertiaryText)
+                                    Text(Fmt.pct(c.share * 100, 0), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.tertiaryText)
                                     Spacer(Modifier.width(12.dp))
                                     AmountText(c.total, style = AmountStyles.small, hidden = hidden, compact = true)
-                                    Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = AcuranzaTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
+                                    Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
                                 }
                                 Spacer(Modifier.height(8.dp))
                                 // Share of the month's spend, as in the reference breakdown.
@@ -740,14 +740,14 @@ item(key = "empty") {
                                         .fillMaxWidth()
                                         .height(4.dp)
                                         .clip(CircleShape)
-                                        .background(AcuranzaTheme.colors.fill),
+                                        .background(SumvaloTheme.colors.fill),
                                 ) {
                                     Box(
                                         Modifier
                                             .fillMaxWidth(c.share.coerceIn(0.0, 1.0).toFloat())
                                             .height(4.dp)
                                             .clip(CircleShape)
-                                            .background(AcuranzaTheme.colors.accent),
+                                            .background(SumvaloTheme.colors.accent),
                                     )
                                 }
                             }
@@ -757,12 +757,12 @@ item(key = "empty") {
             }
                 }
                 HomeSection.SIX -> if (state.charts.hasSixMonths) item(key = "six") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Income vs spending")
-                    AcuranzaCard {
+                    SumvaloCard {
                         BarChart(groups = state.charts.sixMonths, height = 170.dp, hidden = hidden)
                         Spacer(Modifier.height(10.dp))
-                        Text("SAVINGS RATE", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                        Text("SAVINGS RATE", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                         Spacer(Modifier.height(4.dp))
                         Row(Modifier.fillMaxWidth()) {
                             state.charts.savingsRates.forEach { r ->
@@ -770,7 +770,7 @@ item(key = "empty") {
                                     r,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = if (r.startsWith("-")) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.ink,
+                                    color = if (r.startsWith("-")) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier.weight(1f),
                                 )
@@ -780,9 +780,9 @@ item(key = "empty") {
                 }
             }
                 HomeSection.HEAT -> if (state.charts.hasHeat) item(key = "heat") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Daily spending")
-                    AcuranzaCard {
+                    SumvaloCard {
                         SpendHeatmap(weeks = state.charts.heatWeeks, dayLabels = state.charts.heatLabels, hidden = hidden)
                     }
                 }
@@ -793,9 +793,9 @@ item(key = "empty") {
                 val points = remember(state.charts.netWorth, state.charts.todayHourly, range) {
                     state.charts.trendPoints(range)
                 }
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Net worth trend")
-                    AcuranzaCard {
+                    SumvaloCard {
                         AmountText(
                             paise = points.getOrNull(selectedIdx ?: points.lastIndex)?.value
                                 ?: state.netWorth?.total ?: 0,
@@ -807,7 +807,7 @@ item(key = "empty") {
                         if (points.size >= 2) {
                             TrendChart(points = points, height = 150.dp, hidden = hidden, onSelectionChanged = { selectedIdx = it })
                         } else {
-                            Text("Not enough history for this range yet.", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                            Text("Not enough history for this range yet.", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                         }
                         Spacer(Modifier.height(14.dp))
                         RangeChips(listOf("1D", "1W", "1M", "1Y", "ALL"), range.ordinal, onSelect = { range = TrendRange.values()[it] })
@@ -815,9 +815,9 @@ item(key = "empty") {
                 }
             }
                 HomeSection.RECENT -> if (state.recent.isNotEmpty()) item(key = "recent") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Recent", actionLabel = "See all", onAction = onActivity)
-                    AcuranzaCard(contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
                         state.recent.forEachIndexed { i, t ->
                             if (i > 0) ListHairline(start = 56.dp)
                             TxnRow(t, hidden) { onTransaction(t.txn.id) }
@@ -826,9 +826,9 @@ item(key = "empty") {
                 }
             }
                 HomeSection.ACCOUNTS -> if (state.accounts.isNotEmpty()) item(key = "accounts") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = AcuranzaTheme.spacing.section)) {
+                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
                     SectionHeader("Accounts", actionLabel = "Manage", onAction = onAccounts)
-                    AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
                         state.accounts.forEachIndexed { i, a ->
                             if (i > 0) ListHairline(start = 48.dp)
                             AccountListRow(a, hidden) { onAccount(a.id) }
@@ -843,8 +843,8 @@ item(key = "empty") {
 
 @Composable
 private fun MiniFigure(label: String, value: Long, hidden: Boolean, onDark: Boolean = false) {
-    val labelColor = if (onDark) Color.White.copy(alpha = 0.72f) else AcuranzaTheme.colors.subtleText
-    val valueColor = if (onDark) Color.White else AcuranzaTheme.colors.ink
+    val labelColor = if (onDark) Color.White.copy(alpha = 0.72f) else SumvaloTheme.colors.subtleText
+    val valueColor = if (onDark) Color.White else SumvaloTheme.colors.ink
     Column {
         Text(label, style = MaterialTheme.typography.bodySmall, color = labelColor)
         AmountText(value, style = AmountStyles.small, compact = true, hidden = hidden, color = valueColor)
@@ -853,13 +853,13 @@ private fun MiniFigure(label: String, value: Long, hidden: Boolean, onDark: Bool
 
 @Composable
 private fun VerticalHairline() {
-    Box(Modifier.fillMaxHeight().width(1.dp).background(AcuranzaTheme.colors.divider))
+    Box(Modifier.fillMaxHeight().width(1.dp).background(SumvaloTheme.colors.divider))
 }
 
 /** A 1dp divider for rows inside a card, optionally inset from the start. */
 @Composable
 fun ListHairline(start: androidx.compose.ui.unit.Dp = 0.dp) {
-    Box(Modifier.fillMaxWidth().padding(start = start).height(1.dp).background(AcuranzaTheme.colors.divider))
+    Box(Modifier.fillMaxWidth().padding(start = start).height(1.dp).background(SumvaloTheme.colors.divider))
 }
 
 @Composable
@@ -868,30 +868,30 @@ private fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, fr
         modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(AcuranzaTheme.colors.accentTint)
+            .background(SumvaloTheme.colors.accentTint)
             .clickable(onClick = onClick)
             .padding(horizontal = 14.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(Modifier.size(8.dp).clip(CircleShape).background(AcuranzaTheme.colors.accent))
+        Box(Modifier.size(8.dp).clip(CircleShape).background(SumvaloTheme.colors.accent))
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
             Text(
                 "$count transaction${if (count == 1) "" else "s"} to review",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
-                color = AcuranzaTheme.colors.ink,
+                color = SumvaloTheme.colors.ink,
             )
             if (fromSms > 0) {
                 Text(
                     if (fromEmail > 0) "Imported from SMS ($fromSms) and earlier email imports ($fromEmail)" else "$fromSms imported from SMS",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
         }
-        Text("Review", style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.accent)
-        Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = AcuranzaTheme.colors.accent, modifier = Modifier.size(18.dp))
+        Text("Review", style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.accent)
+        Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = SumvaloTheme.colors.accent, modifier = Modifier.size(18.dp))
     }
 }
 
@@ -900,9 +900,9 @@ private fun BillListRow(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
     val days = b.daysLeft
     val urgent = days != null && days <= 3
     val dueColor = when {
-        days != null && days < 0 -> AcuranzaTheme.colors.alert
-        urgent -> AcuranzaTheme.colors.warning
-        else -> AcuranzaTheme.colors.subtleText
+        days != null && days < 0 -> SumvaloTheme.colors.alert
+        urgent -> SumvaloTheme.colors.warning
+        else -> SumvaloTheme.colors.subtleText
     }
     val bank = b.card?.bankEnum() ?: com.acuranza.app.model.Bank.OTHER
     Row(
@@ -932,7 +932,7 @@ private fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -
             Text(
                 if (a.isCard) "Outstanding" else a.account.type.label(),
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
         AmountText(if (a.isCard) a.outstanding else a.balance, style = AmountStyles.medium, hidden = hidden)
@@ -941,7 +941,7 @@ private fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -
 
 @Composable
 fun BillMiniCard(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
-    AcuranzaCard(Modifier.width(220.dp), onClick = onClick, contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
+    SumvaloCard(Modifier.width(220.dp), onClick = onClick, contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
         BillListRow(b, hidden, onClick)
     }
 }
@@ -972,7 +972,7 @@ fun TxnRow(t: TransactionItem, hidden: Boolean, modifier: Modifier = Modifier, o
     )
 }
 
-/** Inputs of the salary-plan sheet: what the user entered and what Acuranza detected. */
+/** Inputs of the salary-plan sheet: what the user entered and what Sumvalo detected. */
 data class SalaryPlanInfo(
     val salaryEntered: Long? = null,
     val salaryDetected: Long? = null,
@@ -995,24 +995,24 @@ internal fun paydayNote(cycle: com.acuranza.app.finance.PayCycle, holidayNames: 
 private fun SafeToSpendCard(safe: com.acuranza.app.repo.SafeToSpend.Result, hidden: Boolean, onClick: () -> Unit) {
     val over = safe.available < 0
     val money = { p: Long -> if (hidden) "₹ ••••" else com.acuranza.app.model.Money.format(p, showPaise = false) }
-    AcuranzaCard(onClick = onClick) {
+    SumvaloCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f)) {
-                Text(if (over) "Over plan" else "Left to spend", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                Text(if (over) "Over plan" else "Left to spend", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                 AmountText(
                     if (over) -safe.available else safe.available,
                     style = AmountStyles.large,
                     hidden = hidden,
-                    color = if (over) AcuranzaTheme.colors.alert else androidx.compose.ui.graphics.Color.Unspecified,
+                    color = if (over) SumvaloTheme.colors.alert else androidx.compose.ui.graphics.Color.Unspecified,
                 )
                 if (!over) {
-                    Text("≈ ${money(safe.perDay)} a day", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("≈ ${money(safe.perDay)} a day", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("until payday", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text("until payday", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                 Text(Fmt.date(safe.payday), style = MaterialTheme.typography.bodyMedium, fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold)
-                Text(if (safe.days == 1) "1 day" else "${safe.days} days", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text(if (safe.days == 1) "1 day" else "${safe.days} days", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
         }
         Spacer(Modifier.height(10.dp))
@@ -1026,13 +1026,13 @@ private fun SafeToSpendCard(safe: com.acuranza.app.repo.SafeToSpend.Result, hidd
         Text(
             "$start − ${money(safe.spent)} spent since payday$due",
             style = MaterialTheme.typography.bodySmall,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
         )
         if (safe.cashLimited) {
             Text(
                 "Capped by your bank balance after card bills.",
                 style = MaterialTheme.typography.bodySmall,
-                color = if (over) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.subtleText,
+                color = if (over) SumvaloTheme.colors.alert else SumvaloTheme.colors.subtleText,
             )
         }
         if (safe.basis != com.acuranza.app.repo.SafeToSpend.Basis.SALARY) {
@@ -1041,7 +1041,7 @@ private fun SafeToSpendCard(safe: com.acuranza.app.repo.SafeToSpend.Result, hidd
                 "Set your salary and savings target →",
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
-                color = AcuranzaTheme.colors.accent,
+                color = SumvaloTheme.colors.accent,
             )
         }
     }
@@ -1070,20 +1070,20 @@ private fun SalaryPlanSheet(
             Text(
                 "Sumvalo takes what you want to save off your salary first, then shows what's left to spend until your next payday.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
             com.acuranza.app.ui.common.AmountField("Take-home salary", salary, { salary = it }, allowZero = false)
             info.salaryDetected?.let {
-                Text("Sumvalo saw ${money(it)} credited as salary.", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text("Sumvalo saw ${money(it)} credited as salary.", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
             com.acuranza.app.ui.common.ChoiceField("Salary arrives on", (1..28).toList(), payDay, { "Day $it of the month" }, { payDay = it })
             if (payDay > 1) {
                 Text(
                     (info.paydayNote?.takeIf { payDay == info.payDay }?.let { "$it. " } ?: "") +
-                        "On a weekend or holiday, Acuranza expects salary the working day before, and follows the day it actually " +
+                        "On a weekend or holiday, Sumvalo expects salary the working day before, and follows the day it actually " +
                         "arrives. Weekends and holidays are in More › Budget month.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             com.acuranza.app.ui.common.AmountField("Save each month", save, { save = it })
@@ -1105,7 +1105,7 @@ private fun SalaryPlanSheet(
                         if (s2 > base) "That's more than your salary."
                         else "That leaves ${money(base - s2)} a month for spending, bills and EMIs.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (s2 > base) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.subtleText,
+                        color = if (s2 > base) SumvaloTheme.colors.alert else SumvaloTheme.colors.subtleText,
                     )
                 }
             }
@@ -1114,7 +1114,7 @@ private fun SalaryPlanSheet(
                 enabled = (salary ?: 0) > 0 && save != null && (save ?: 0) <= (salary ?: 0),
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    // A salary equal to what Acuranza detected is left automatic, so a raise is picked up by itself.
+                    // A salary equal to what Sumvalo detected is left automatic, so a raise is picked up by itself.
                     val entered = salary?.takeIf { it != info.salaryDetected }
                     onSave(entered, save ?: 0, payDay)
                 },
@@ -1122,7 +1122,7 @@ private fun SalaryPlanSheet(
             Row {
                 androidx.compose.material3.TextButton(onClick = onUpcoming) { Text("See payments due") }
                 Spacer(Modifier.weight(1f))
-                if (info.savingsTarget != null) androidx.compose.material3.TextButton(onClick = onClear) { Text("Clear plan", color = AcuranzaTheme.colors.alert) }
+                if (info.savingsTarget != null) androidx.compose.material3.TextButton(onClick = onClear) { Text("Clear plan", color = SumvaloTheme.colors.alert) }
             }
             Spacer(Modifier.height(12.dp))
         }

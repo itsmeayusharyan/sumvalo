@@ -40,10 +40,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.PaddingValues
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.IconBubble
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 
 /**
  * The settings row kit: labelled groups of rows on cards, each row led by an icon tile (the
@@ -72,7 +72,7 @@ fun SettingsDivider(startInset: Dp = 52.dp) {
             .padding(start = startInset)
             .fillMaxWidth()
             .height(1.dp)
-            .background(AcuranzaTheme.colors.divider),
+            .background(SumvaloTheme.colors.divider),
     )
 }
 
@@ -82,10 +82,10 @@ fun SettingsSection(title: String?, content: @Composable ColumnScope.() -> Unit)
     Column(Modifier.fillMaxWidth().padding(top = 24.dp)) {
         // On subpages the page title already names the group, so the in-card label is dropped.
         if (title != null) {
-            Text(title.uppercase(), style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+            Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.height(8.dp))
         }
-        AcuranzaCard(contentPadding = PaddingValues(0.dp)) {
+        SumvaloCard(contentPadding = PaddingValues(0.dp)) {
             content()
         }
     }
@@ -93,7 +93,7 @@ fun SettingsSection(title: String?, content: @Composable ColumnScope.() -> Unit)
 
 @Composable
 private fun RowTile(icon: ImageVector, tone: RowTone, enabled: Boolean) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val (tile, tint) = when (tone) {
         RowTone.NORMAL -> colors.fill to colors.ink
         RowTone.MUTED -> colors.fill to colors.tertiaryText
@@ -111,7 +111,7 @@ private fun RowTile(icon: ImageVector, tone: RowTone, enabled: Boolean) {
 
 @Composable
 private fun SettingsSwitch(checked: Boolean, enabled: Boolean) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     Switch(
         checked = checked,
         onCheckedChange = null, // the row itself is the tap target
@@ -140,7 +140,7 @@ private fun RowSkeleton(
     trailing: (@Composable RowScope.() -> Unit)? = null,
     onClick: (() -> Unit)? = null,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val tick = com.acuranza.app.ui.common.rememberHaptic()
     Column {
         Row(
@@ -210,7 +210,7 @@ fun SettingsRow(
         tone = tone,
         enabled = enabled,
         divider = divider,
-        titleColor = if (tone == RowTone.DESTRUCTIVE) AcuranzaTheme.colors.alert else null,
+        titleColor = if (tone == RowTone.DESTRUCTIVE) SumvaloTheme.colors.alert else null,
         footer = footer,
         onClick = onClick,
         trailing = {
@@ -223,7 +223,7 @@ fun SettingsRow(
                     Text(
                         value,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.widthIn(max = 150.dp),
@@ -233,7 +233,7 @@ fun SettingsRow(
                 Icon(
                     Icons.Outlined.ChevronRight,
                     contentDescription = null,
-                    tint = AcuranzaTheme.colors.tertiaryText.copy(alpha = if (enabled) 1f else 0.4f),
+                    tint = SumvaloTheme.colors.tertiaryText.copy(alpha = if (enabled) 1f else 0.4f),
                     modifier = Modifier.size(20.dp),
                 )
             }

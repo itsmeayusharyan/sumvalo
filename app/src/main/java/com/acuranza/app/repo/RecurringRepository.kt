@@ -1,6 +1,6 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.RecurringRuleEntity
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.data.prefs.FeaturePrefs
@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.flowOn
 import java.time.LocalDate
 
 /**
- * Recurring payments: the ones Acuranza spots in past spending (subscriptions, EMIs, UPI AutoPay) and the ones the user
+ * Recurring payments: the ones Sumvalo spots in past spending (subscriptions, EMIs, UPI AutoPay) and the ones the user
  * schedules, which the daily refresh records as transactions when they fall due.
  */
-class RecurringRepository(private val db: AcuranzaDatabase, private val features: FeaturePrefs) {
+class RecurringRepository(private val db: SumvaloDatabase, private val features: FeaturePrefs) {
 
     fun observeRules(): Flow<List<RecurringRuleEntity>> = db.recurringRules().observeAll()
 
@@ -137,7 +137,7 @@ class RecurringRepository(private val db: AcuranzaDatabase, private val features
             today,
         )
 
-    /** Occurrences Acuranza recorded from a schedule are already known; they aren't "detected" again. */
+    /** Occurrences Sumvalo recorded from a schedule are already known; they aren't "detected" again. */
     private fun isScheduled(t: TransactionEntity) = t.fingerprint?.startsWith("rec:") == true
 
     private fun cadenceOf(rule: RecurringRuleEntity): Recurring.Cadence? =

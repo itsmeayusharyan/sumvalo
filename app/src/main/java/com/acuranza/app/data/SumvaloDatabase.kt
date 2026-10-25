@@ -30,7 +30,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
     version = 13,
     exportSchema = true,
 )
-abstract class AcuranzaDatabase : RoomDatabase() {
+abstract class SumvaloDatabase : RoomDatabase() {
     abstract fun accounts(): AccountDao
     abstract fun categories(): CategoryDao
     abstract fun transactions(): TransactionDao
@@ -204,7 +204,7 @@ abstract class AcuranzaDatabase : RoomDatabase() {
         /** v9 only adds indexes, so balances and SMS imports stop scanning every transaction. */
         val MIGRATION_9_10 = object : Migration(9, 10) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                // Acuranza tracks spending, not holdings: the FD/EPF/NPS tables and the household
+                // Sumvalo tracks spending, not holdings: the FD/EPF/NPS tables and the household
                 // sync space are gone. Net worth keeps only liquid balances and debt.
                 db.execSQL("DROP TABLE IF EXISTS `investments`")
                 db.execSQL("DROP TABLE IF EXISTS `investment_history`")
@@ -227,8 +227,8 @@ abstract class AcuranzaDatabase : RoomDatabase() {
          * database is converted once; if that can't be done, the plaintext one keeps working and the
          * conversion is retried on the next launch.
          */
-        fun create(context: Context): AcuranzaDatabase {
-            val builder = Room.databaseBuilder(context, AcuranzaDatabase::class.java, DatabaseEncryption.NAME)
+        fun create(context: Context): SumvaloDatabase {
+            val builder = Room.databaseBuilder(context, SumvaloDatabase::class.java, DatabaseEncryption.NAME)
                 .addMigrations(*ALL_MIGRATIONS)
             val passphrase = runCatching { com.acuranza.app.security.DatabaseKey.passphrase(context) }.getOrNull()
             if (passphrase == null) DatabaseEncryption.quarantineUnreadable(context)

@@ -1,7 +1,7 @@
 package com.acuranza.app.security
 
 import android.net.Uri
-import com.acuranza.app.AcuranzaApp
+import com.acuranza.app.SumvaloApp
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.repo.DataRepairs
 import kotlinx.coroutines.CompletableDeferred
@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
  * Runs export and restore in the application scope, so leaving the screen, rotating the phone or switching tabs
  * mid-way can't cancel them, and finishes a restore by bringing the rest of the app in line with the restored data.
  */
-class BackupFlow(private val app: AcuranzaApp) {
+class BackupFlow(private val app: SumvaloApp) {
     private val container: AppContainer get() = app.container
 
     suspend fun export(uri: Uri, password: CharArray): BackupStats = inAppScope {

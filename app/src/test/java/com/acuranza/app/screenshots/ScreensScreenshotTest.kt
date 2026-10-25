@@ -47,12 +47,12 @@ import app.cash.paparazzi.DeviceConfig
 import app.cash.paparazzi.Paparazzi
 import com.acuranza.app.data.BudgetEntity
 import com.acuranza.app.data.GoalEntity
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.components.AcuranzaLogo
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.LogoShape
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme as SumvaloThemeObject
 import com.acuranza.app.finance.Budgets
 import com.acuranza.app.finance.Goals
 import com.acuranza.app.model.TxnType
@@ -60,7 +60,7 @@ import com.acuranza.app.repo.BudgetStatus
 import com.acuranza.app.repo.NotificationItem
 import com.acuranza.app.repo.NotificationItem.Kind
 import com.acuranza.app.repo.GoalStatus
-import com.acuranza.app.ui.AcuranzaBottomBar
+import com.acuranza.app.ui.SumvaloBottomBar
 import com.acuranza.app.ui.notifications.NotificationsContent
 import com.acuranza.app.ui.bills.BillsContent
 import com.acuranza.app.ui.bills.BillsState
@@ -102,13 +102,13 @@ class ScreensScreenshotTest {
     /** A phone frame: screen content above the real bottom bar, like the running app. */
     @Composable
     private fun Frame(dark: Boolean = false, tab: String? = null, content: @Composable () -> Unit) {
-        AcuranzaTheme(darkTheme = dark) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = dark) {
           androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalInspectionMode provides true) {
             Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
                 Box(Modifier.weight(1f)) {
                     content()
                 }
-                if (tab != null) AcuranzaBottomBar(tab, onTab = {})
+                if (tab != null) SumvaloBottomBar(tab, onTab = {})
             }
           }
         }
@@ -131,9 +131,9 @@ class ScreensScreenshotTest {
      *  inside the card, ellipsize gracefully, and never starve the title column. */
     @Test
     fun settings_row_long_text() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             Column(Modifier.padding(horizontal = 20.dp)) {
-                AcuranzaCard(contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)) {
+                SumvaloCard(contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)) {
                     com.acuranza.app.ui.settings.SettingsRow(
                         title = "Recurring transactions with an unusually long setting name that keeps going and going",
                         subtitle = "A description far longer than one line, which used to hard-clip mid-word at the row's edge before the ellipsis sweep; it now wraps within its two lines",
@@ -296,7 +296,7 @@ class ScreensScreenshotTest {
      *  Device-height bounded: covers header → Notifications (the tail has its own golden). */
     @Test
     fun settings_dark() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) { settingsBody() }
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) { settingsBody() }
     }
 
     /** The profile editor with a configured name — dark is the shipped default. */
@@ -349,11 +349,11 @@ class ScreensScreenshotTest {
     private fun settingsBody() {
         Column(Modifier.padding(horizontal = 20.dp)) {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                AcuranzaLogo(size = 44.dp)
+                SumvaloLogo(size = 44.dp)
                 Spacer(Modifier.width(14.dp))
                 Column {
-                    Text("Settings", style = AcuranzaText.screenTitle)
-                    Text("Your money, on your phone", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("Settings", style = SumvaloText.screenTitle)
+                    Text("Your money, on your phone", style = MaterialTheme.typography.bodySmall, color = SumvaloThemeObject.colors.subtleText)
                 }
             }
             com.acuranza.app.ui.settings.ProfileCard(name = null, avatarPath = null, onClick = {})
@@ -371,7 +371,7 @@ class ScreensScreenshotTest {
 
     @Test
     fun about() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             AboutContent(
                 onBack = {},
                 onPrivacy = {},
@@ -383,7 +383,7 @@ class ScreensScreenshotTest {
 
     @Test
     fun categories() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             com.acuranza.app.ui.settings.CategoriesContent(
                 cats = listOf(
                     com.acuranza.app.data.CategoryEntity(key = "food", name = "Food & Dining", type = TxnType.EXPENSE, icon = "restaurant", colorArgb = 0xFFFF7A59),
@@ -396,7 +396,7 @@ class ScreensScreenshotTest {
 
     @Test
     fun edit_home() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             EditHomeContent(
                 layout = HomeLayout.decode("quick,!heat,stats"),
             )
@@ -405,7 +405,7 @@ class ScreensScreenshotTest {
 
     @Test
     fun notifications() = paparazzi.snapshot {
-        AcuranzaTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
             NotificationsContent(
                 items = listOf(
                     NotificationItem(
@@ -559,20 +559,20 @@ class ScreensScreenshotTest {
 
     @Test
     fun splash_and_logo() = paparazzi.snapshot {
-        AcuranzaTheme {
+        com.acuranza.app.designsystem.theme.SumvaloTheme {
             Column(
                 Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(Modifier.weight(1f))
-                AcuranzaLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
+                SumvaloLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
                 Spacer(Modifier.height(12.dp))
-                Text("Acuranza", fontSize = 20.sp, style = MaterialTheme.typography.titleLarge, color = AcuranzaTheme.colors.ink)
+                Text("Sumvalo", fontSize = 20.sp, style = MaterialTheme.typography.titleLarge, color = SumvaloThemeObject.colors.ink)
                 Spacer(Modifier.weight(1f))
                 Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(20.dp), verticalAlignment = Alignment.CenterVertically) {
-                    AcuranzaLogo(size = 96.dp, shape = LogoShape.RoundedSquare)
-                    AcuranzaLogo(size = 64.dp, shape = LogoShape.Circle)
-                    AcuranzaLogo(size = 40.dp, shape = LogoShape.RoundedSquare)
+                    SumvaloLogo(size = 96.dp, shape = LogoShape.RoundedSquare)
+                    SumvaloLogo(size = 64.dp, shape = LogoShape.Circle)
+                    SumvaloLogo(size = 40.dp, shape = LogoShape.RoundedSquare)
                 }
                 Spacer(Modifier.height(48.dp))
                 Box(Modifier.fillMaxWidth())

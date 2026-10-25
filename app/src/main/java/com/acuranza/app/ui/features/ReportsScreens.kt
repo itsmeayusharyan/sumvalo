@@ -45,13 +45,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.AmountText
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.MonthSwitcher
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.Paise
 import com.acuranza.app.reports.ReportPdf
@@ -60,7 +60,7 @@ import com.acuranza.app.repo.TxnFilter
 import com.acuranza.app.repo.YearReview
 import com.acuranza.app.ui.common.ActionRow
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.home.TxnRow
@@ -123,7 +123,7 @@ fun ReportsScreen(nav: NavController) {
         }
     }
 
-    AcuranzaScreen(title = "Reports", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
+    SumvaloScreen(title = "Reports", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
         LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 48.dp)) {
             item {
                 Section("Monthly PDF") {
@@ -137,7 +137,7 @@ fun ReportsScreen(nav: NavController) {
                         Text(
                             "Income, spending by category, top merchants and every transaction of the month.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                         PrimaryButton(if (busy) "Preparing…" else "Save PDF", enabled = !busy, icon = Icons.Outlined.PictureAsPdf, modifier = Modifier.fillMaxWidth(), onClick = {
                             export("acuranza-$month.pdf") { c.reports.monthly(month) }
@@ -183,7 +183,7 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
         review = null
         review = runCatching { c.reports.yearInReview(year) }.getOrNull()
     }
-    AcuranzaScreen(title = "Year in review", onBack = { nav.popBackSafely() }) { pad ->
+    SumvaloScreen(title = "Year in review", onBack = { nav.popBackSafely() }) { pad ->
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 48.dp),
@@ -196,19 +196,19 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
             }
             val r = review
             if (r == null) {
-                item { Text("Adding it up…", color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(16.dp)) }
+                item { Text("Adding it up…", color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(16.dp)) }
                 return@LazyColumn
             }
             if (r.transactions == 0) {
-                item { Text("No transactions in $year.", color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(16.dp)) }
+                item { Text("No transactions in $year.", color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(16.dp)) }
                 return@LazyColumn
             }
             item {
-                AcuranzaCard {
-                    Text("You saved", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                SumvaloCard {
+                    Text("You saved", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     AmountText(r.saved, style = AmountStyles.hero, hidden = hidden)
                     r.savingsRate?.let {
-                        Text("${Fmt.pct(it * 100, 0)} of what came in", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                        Text("${Fmt.pct(it * 100, 0)} of what came in", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     }
                     Spacer(Modifier.height(12.dp))
                     Fact("Came in", money(r.income, hidden))
@@ -217,7 +217,7 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
                 }
             }
             item {
-                AcuranzaCard {
+                SumvaloCard {
                     SectionHeader("Highlights")
                     r.bestMonth?.let { Fact("Best month for saving", Fmt.month(it.period.label) + " · " + money(it.savings, hidden)) }
                     r.costliestMonth?.let { Fact("Biggest spending month", Fmt.month(it.period.label) + " · " + money(it.expense, hidden)) }
@@ -229,7 +229,7 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
             }
             if (r.topCategories.isNotEmpty()) {
                 item {
-                    AcuranzaCard {
+                    SumvaloCard {
                         SectionHeader("Where it went")
                         r.topCategories.forEach { Fact(it.category?.name ?: it.categoryKey, money(it.total, hidden) + " · " + Fmt.pct(it.share * 100, 0)) }
                     }
@@ -237,7 +237,7 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
             }
             if (r.topMerchants.isNotEmpty()) {
                 item {
-                    AcuranzaCard {
+                    SumvaloCard {
                         SectionHeader("Favourite places")
                         r.topMerchants.forEach { Fact(it.merchant, "${money(it.total, hidden)} · ${it.count}×") }
                     }
@@ -250,7 +250,7 @@ fun YearReviewScreen(nav: NavController, initialYear: Int) {
 @Composable
 private fun Fact(label: String, value: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.Top) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
         Text(value, Modifier.weight(1.3f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, textAlign = TextAlign.End)
     }
 }
@@ -279,7 +279,7 @@ fun CalendarScreen(nav: NavController) {
         c.transactions.observe(TxnFilter(period = Period(selected, selected.plusDays(1))))
     }.collectAsState(initial = emptyList())
 
-    AcuranzaScreen(title = "Calendar", onBack = { nav.popBackSafely() }) { pad ->
+    SumvaloScreen(title = "Calendar", onBack = { nav.popBackSafely() }) { pad ->
         LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 48.dp)) {
             item {
                 Box(Modifier.fillMaxWidth().padding(bottom = 12.dp), contentAlignment = Alignment.Center) {
@@ -290,7 +290,7 @@ fun CalendarScreen(nav: NavController) {
             item {
                 val total = spend.values.sum()
                 Row(Modifier.fillMaxWidth().padding(top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Spent in ${Fmt.shortMonth(month)}", Modifier.weight(1f), color = AcuranzaTheme.colors.subtleText)
+                    Text("Spent in ${Fmt.shortMonth(month)}", Modifier.weight(1f), color = SumvaloTheme.colors.subtleText)
                     AmountText(total, style = AmountStyles.medium, hidden = hidden)
                 }
             }
@@ -300,14 +300,14 @@ fun CalendarScreen(nav: NavController) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(d.label, style = MaterialTheme.typography.bodyLarge)
-                        Text("Expected", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.warning)
+                        Text("Expected", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.warning)
                     }
                     AmountText(d.amount, style = AmountStyles.medium, hidden = hidden)
                 }
             }
             items(dayItems, key = { it.txn.id }) { t -> TxnRow(t, hidden) { nav.navigate(Routes.txn(t.txn.id)) } }
             if (dayItems.isEmpty() && dayDues.isEmpty()) {
-                item { Text("Nothing on this day.", color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(vertical = 12.dp)) }
+                item { Text("Nothing on this day.", color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(vertical = 12.dp)) }
             }
         }
     }
@@ -323,7 +323,7 @@ private fun MonthGrid(
     hidden: Boolean,
     onDay: (LocalDate) -> Unit,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val max = spend.values.maxOrNull()?.coerceAtLeast(1) ?: 1
     val lead = month.atDay(1).dayOfWeek.value - DayOfWeek.MONDAY.value
     val cells = List(lead) { null } + (1..month.lengthOfMonth()).map { month.atDay(it) }

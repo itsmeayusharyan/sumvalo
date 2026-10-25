@@ -49,10 +49,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.components.AcuranzaLogo
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.components.SumvaloLogo
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.designsystem.theme.StaggeredEntrance
 import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.nav.Routes
@@ -98,11 +98,11 @@ fun MoreScreen(nav: NavController) {
     ) {
         item(key = "head") {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                AcuranzaLogo(size = 44.dp)
+                SumvaloLogo(size = 44.dp)
                 Spacer(Modifier.width(14.dp))
                 Column(Modifier.weight(1f)) {
-                    Text("Settings", style = AcuranzaText.screenTitle)
-                    Text("Your money, on your phone", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("Settings", style = SumvaloText.screenTitle)
+                    Text("Your money, on your phone", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                 }
                 androidx.compose.material3.IconButton(onClick = { nav.navigate(Routes.SETTINGS_EDIT) }) {
                     androidx.compose.material3.Icon(Icons.Outlined.Tune, contentDescription = "Customize settings")
@@ -114,21 +114,21 @@ fun MoreScreen(nav: NavController) {
                 value = query,
                 onValueChange = { query = it },
                 placeholder = { Text("Search settings", style = MaterialTheme.typography.bodyMedium) },
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = AcuranzaTheme.colors.tertiaryText) },
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { query = "" }, modifier = Modifier.size(40.dp)) {
-                            Icon(Icons.Outlined.Close, contentDescription = "Clear search", tint = AcuranzaTheme.colors.tertiaryText)
+                            Icon(Icons.Outlined.Close, contentDescription = "Clear search", tint = SumvaloTheme.colors.tertiaryText)
                         }
                     }
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                    focusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                    unfocusedBorderColor = AcuranzaTheme.colors.hairline,
-                    focusedBorderColor = AcuranzaTheme.colors.accent,
+                    unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+                    focusedContainerColor = SumvaloTheme.colors.cardSurface,
+                    unfocusedBorderColor = SumvaloTheme.colors.hairline,
+                    focusedBorderColor = SumvaloTheme.colors.accent,
                 ),
                 modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
             )
@@ -140,12 +140,12 @@ fun MoreScreen(nav: NavController) {
         if (q.isNotEmpty() && hits.isEmpty()) {
             item(key = "empty") {
                 Column(Modifier.fillMaxWidth().padding(vertical = 40.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("No settings match “${query.trim()}”", style = MaterialTheme.typography.titleSmall, color = AcuranzaTheme.colors.ink)
+                    Text("No settings match “${query.trim()}”", style = MaterialTheme.typography.titleSmall, color = SumvaloTheme.colors.ink)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         "Try a shorter word — everything is also one tap away in the groups below.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
             }
@@ -153,13 +153,13 @@ fun MoreScreen(nav: NavController) {
             item(key = "results-label") {
                 Text(
                     "${hits.size} result" + if (hits.size == 1) "" else "s",
-                    style = AcuranzaText.sectionLabel,
-                    color = AcuranzaTheme.colors.subtleText,
+                    style = SumvaloText.sectionLabel,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(top = 10.dp, bottom = 8.dp),
                 )
             }
             items(hits, key = { "${it.group}/${it.page}/${it.title}" }) { hit ->
-                AcuranzaCard(Modifier.padding(vertical = 5.dp)) {
+                SumvaloCard(Modifier.padding(vertical = 5.dp)) {
                     SettingsRow(
                         hit.title,
                         hit.description,
@@ -185,8 +185,8 @@ fun MoreScreen(nav: NavController) {
         }
         item(key = "footer") {
             Column(Modifier.fillMaxWidth().padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Made in India for Indians", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
-                Text("Built with Love & Late-Night Commits.", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+                Text("Made in India for Indians", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
+                Text("Built with Love & Late-Night Commits.", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
             }
         }
     }
@@ -211,14 +211,14 @@ fun SettingsGridRow(pair: List<SettingsEntryKey>, onNavigate: (String) -> Unit) 
                     .weight(1f)
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(16.dp))
-                    .background(AcuranzaTheme.colors.cardSurface)
-                    .border(1.dp, AcuranzaTheme.colors.hairline, RoundedCornerShape(16.dp))
+                    .background(SumvaloTheme.colors.cardSurface)
+                    .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(16.dp))
                     .clickable { onNavigate(entry.route) }
                     .padding(horizontal = 14.dp, vertical = 14.dp),
             ) {
-                Icon(entry.icon, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(22.dp))
+                Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(22.dp))
                 Spacer(Modifier.height(8.dp))
-                Text(entry.title, style = MaterialTheme.typography.titleSmall, color = AcuranzaTheme.colors.ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(entry.title, style = MaterialTheme.typography.titleSmall, color = SumvaloTheme.colors.ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
             }
         }
         if (pair.size == 1) Spacer(Modifier.weight(1f))
@@ -229,8 +229,8 @@ fun SettingsGridRow(pair: List<SettingsEntryKey>, onNavigate: (String) -> Unit) 
 @Composable
 fun Section(title: String, content: @Composable () -> Unit) {
     Column(Modifier.padding(top = 24.dp)) {
-        Text(title.uppercase(), style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+        Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
         Spacer(Modifier.height(8.dp))
-        AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { content() }
+        SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { content() }
     }
 }

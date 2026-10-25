@@ -41,13 +41,13 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.LoanEntity
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.finance.Loans
 import com.acuranza.app.model.Money
 import com.acuranza.app.repo.LoanRepository
@@ -58,9 +58,9 @@ import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.rememberHaptic
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.SwitchRow
@@ -86,14 +86,14 @@ fun LoansScreen(nav: NavController) {
     val c = LocalContainer.current
     val hidden = LocalHideAmounts.current
     val loans by c.loans.observe().collectAsState(initial = null)
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Loans & EMIs",
         onBack = { nav.popBackSafely() },
         floating = {
             ExtendedFloatingActionButton(onClick = { haptic.tick(); nav.navigate(Routes.editLoan()) }, icon = { Icon(Icons.Outlined.Add, null) }, text = { Text("Add loan") })
         },
     ) { pad ->
-        val list = loans ?: return@AcuranzaScreen
+        val list = loans ?: return@SumvaloScreen
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 110.dp),
@@ -110,13 +110,13 @@ fun LoansScreen(nav: NavController) {
                 return@LazyColumn
             }
             item {
-                AcuranzaCard {
-                    Text("Still owed", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                SumvaloCard {
+                    Text("Still owed", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     AmountText(list.sumOf { it.outstanding }, style = AmountStyles.large, hidden = hidden)
                     Text(
                         "EMIs about ${if (hidden) "₹ ••••" else Money.format(list.filter { it.outstanding > 0 }.sumOf { it.emi }, showPaise = false)} a month",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
             }
@@ -127,28 +127,28 @@ fun LoansScreen(nav: NavController) {
 
 @Composable
 private fun LoanCard(s: LoanStatus, hidden: Boolean, onClick: () -> Unit) {
-    AcuranzaCard(onClick = onClick) {
+    SumvaloCard(onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(s.loan.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                 Text(
                     listOfNotNull(loanKindTitle(s.loan.kind), s.loan.lender.takeIf { it.isNotBlank() }, "${fmtRate(s.loan.ratePct)}%").joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             AmountText(s.outstanding, style = AmountStyles.medium, hidden = hidden)
         }
         Spacer(Modifier.height(10.dp))
         val f = if (s.loan.principal > 0) 1f - s.outstanding.toFloat() / s.loan.principal else 0f
-        ThinProgressBar(f, color = AcuranzaTheme.colors.accent)
+        ThinProgressBar(f, color = SumvaloTheme.colors.accent)
         Spacer(Modifier.height(6.dp))
         Text(
             if (s.spec == null) "Check the loan details: they don't make a valid schedule"
             else if (s.outstanding == 0L) "Fully repaid"
             else "${s.paidMonths} of ${s.totalMonths} EMIs paid · ends ${s.endDate?.let(Fmt::date) ?: "—"}",
             style = MaterialTheme.typography.bodySmall,
-            color = if (s.spec == null) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.subtleText,
+            color = if (s.spec == null) SumvaloTheme.colors.alert else SumvaloTheme.colors.subtleText,
         )
     }
 }
@@ -168,12 +168,12 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
     var confirmRecord by remember { mutableStateOf(false) }
 
     val s = status
-    AcuranzaScreen(
+    SumvaloScreen(
         title = s?.loan?.name ?: "Loan",
         onBack = { nav.popBackSafely() },
         actions = { IconButton(onClick = { nav.navigate(Routes.editLoan(id)) }) { Icon(Icons.Outlined.Edit, "Edit") } },
     ) { pad ->
-        if (s == null) return@AcuranzaScreen
+        if (s == null) return@SumvaloScreen
         val spec = s.spec
         val rows = remember(spec) { spec?.let { runCatching { Loans.schedule(it) }.getOrNull() }.orEmpty() }
         LazyColumn(
@@ -182,8 +182,8 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {
-                AcuranzaCard {
-                    Text("Still owed", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                SumvaloCard {
+                    Text("Still owed", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     AmountText(s.outstanding, style = AmountStyles.hero, hidden = hidden)
                     Spacer(Modifier.height(8.dp))
                     Line("EMI", money(s.emi, hidden))
@@ -196,19 +196,19 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
                         Text(
                             "Interest counts under 24(b) and principal under 80C in the tax planner.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
             }
             if (spec == null) {
-                item { Text("These details don't make a valid schedule. Check the EMI covers the monthly interest.", color = AcuranzaTheme.colors.alert) }
+                item { Text("These details don't make a valid schedule. Check the EMI covers the monthly interest.", color = SumvaloTheme.colors.alert) }
                 return@LazyColumn
             }
             item { SegmentedTabs(listOf("Prepay", "Schedule"), tab, onSelect = { tab = it }) }
             if (tab == 0) {
                 item {
-                    AcuranzaCard {
+                    SumvaloCard {
                         SectionHeader("What if I prepay?")
                         FormColumn {
                             AmountField("Prepayment", prepayAmount, { prepayAmount = it }, allowZero = false)
@@ -223,7 +223,7 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
                             }
                             if (impact != null) {
                                 Spacer(Modifier.height(12.dp))
-                                Line("Interest saved", money(impact.interestSaved, hidden), AcuranzaTheme.colors.good)
+                                Line("Interest saved", money(impact.interestSaved, hidden), SumvaloTheme.colors.good)
                                 if (impact.monthsSaved > 0) Line("EMIs saved", "${impact.monthsSaved} (${impact.monthsSaved / 12} y ${impact.monthsSaved % 12} m)")
                                 Line("EMI after", money(impact.newEmi, hidden))
                                 Line("Loan ends", Fmt.fullDate(impact.newEndDate))
@@ -240,7 +240,7 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(Fmt.fullDate(p.date), style = MaterialTheme.typography.bodyLarge)
-                                Text(if (p.reduce == Loans.Reduce.TENURE) "Fewer EMIs" else "Lower EMI", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                Text(if (p.reduce == Loans.Reduce.TENURE) "Fewer EMIs" else "Lower EMI", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                             }
                             AmountText(p.amount, style = AmountStyles.medium, hidden = hidden)
                             IconButton(onClick = {
@@ -256,14 +256,14 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
                 item {
                     Row(Modifier.fillMaxWidth()) {
                         listOf("Date", "Interest", "Principal", "Balance").forEachIndexed { i, h ->
-                            Text(h, Modifier.weight(if (i == 0) 1.1f else 1f), style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+                            Text(h, Modifier.weight(if (i == 0) 1.1f else 1f), style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
                         }
                     }
                 }
                 val today = Time.today()
                 items(rows, key = { it.index }) { r ->
                     val past = !r.date.isAfter(today)
-                    val color = if (past) AcuranzaTheme.colors.subtleText else MaterialTheme.colorScheme.onSurface
+                    val color = if (past) SumvaloTheme.colors.subtleText else MaterialTheme.colorScheme.onSurface
                     Row(Modifier.fillMaxWidth()) {
                         Text(Fmt.date(r.date), Modifier.weight(1.1f), style = MaterialTheme.typography.bodySmall, color = color)
                         Text(compact(r.interest, hidden), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = color)
@@ -296,7 +296,7 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
 @Composable
 private fun Line(label: String, value: String, color: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Unspecified) {
     Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
         Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, color = color)
     }
 }
@@ -337,29 +337,29 @@ fun LoanEditScreen(nav: NavController, id: Long?) {
     val ratePct = rate.replace(',', '.').toDoubleOrNull()
     val computedEmi = if ((principal ?: 0) > 0 && ratePct != null && ratePct >= 0 && months > 0) runCatching { Loans.emi(principal!!, ratePct, months) }.getOrNull() else null
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = if (id == null) "Add loan" else "Edit loan",
         onBack = { nav.popBackSafely() },
         actions = { if (existing != null) IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Outlined.Delete, "Delete") } },
     ) { pad ->
-        if (!loaded) return@AcuranzaScreen
+        if (!loaded) return@SumvaloScreen
         Column(Modifier.fillMaxSize().padding(pad).verticalScroll(rememberScrollState()).padding(20.dp)) {
             FormColumn {
                 ChoiceField("Type", LoanRepository.KINDS, kind, ::loanKindTitle, { kind = it })
-                AcuranzaTextField(name, { name = it.take(40) }, "Name", supporting = "e.g. Flat in Pune")
-                AcuranzaTextField(lender, { lender = it.take(40) }, "Lender (optional)")
+                SumvaloTextField(name, { name = it.take(40) }, "Name", supporting = "e.g. Flat in Pune")
+                SumvaloTextField(lender, { lender = it.take(40) }, "Lender (optional)")
                 AmountField("Amount borrowed", principal, { principal = it }, allowZero = false)
-                AcuranzaTextField(rate, { rate = it.take(6) }, "Interest rate", keyboardType = KeyboardType.Decimal, suffix = "% a year")
+                SumvaloTextField(rate, { rate = it.take(6) }, "Interest rate", keyboardType = KeyboardType.Decimal, suffix = "% a year")
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    AcuranzaTextField(tenureYears, { tenureYears = it.filter(Char::isDigit).take(2) }, "Years", Modifier.weight(1f), keyboardType = KeyboardType.Number)
-                    AcuranzaTextField(tenureMonths, { tenureMonths = it.filter(Char::isDigit).take(2) }, "Months", Modifier.weight(1f), keyboardType = KeyboardType.Number)
+                    SumvaloTextField(tenureYears, { tenureYears = it.filter(Char::isDigit).take(2) }, "Years", Modifier.weight(1f), keyboardType = KeyboardType.Number)
+                    SumvaloTextField(tenureMonths, { tenureMonths = it.filter(Char::isDigit).take(2) }, "Months", Modifier.weight(1f), keyboardType = KeyboardType.Number)
                 }
                 DateField("First EMI", firstEmi, { firstEmi = it })
                 AmountField("EMI charged by the lender (optional)", emi, { emi = it.takeIf { v -> v > 0 } }, placeholder = computedEmi?.let { "Calculated: ${Money.format(it, showPaise = false)}" } ?: "Tap to enter")
                 if (kind == LoanRepository.HOME) {
                     SwitchRow("I live in this home", "Self-occupied: interest deduction capped at ₹2 lakh under 24(b)", selfOccupied, { selfOccupied = it })
                 }
-                error?.let { Text(it, color = AcuranzaTheme.colors.alert, style = MaterialTheme.typography.bodySmall) }
+                error?.let { Text(it, color = SumvaloTheme.colors.alert, style = MaterialTheme.typography.bodySmall) }
                 PrimaryButton("Save", enabled = name.isNotBlank() && (principal ?: 0) > 0 && ratePct != null && months > 0, modifier = Modifier.fillMaxWidth(), onClick = {
                     val loan = LoanEntity(
                         id = existing?.id ?: 0,

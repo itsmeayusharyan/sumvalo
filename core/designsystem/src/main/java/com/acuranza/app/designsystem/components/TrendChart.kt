@@ -30,7 +30,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 
 /**
  * The net worth trend line: a thin, un-smoothed polyline with no grid, fill or axes — just the
@@ -50,7 +50,7 @@ fun TrendChart(
     initialSelection: Int? = null,
     onSelectionChanged: ((Int?) -> Unit)? = null,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val progress by rememberEntrance(900)
     var selected by remember(points) { mutableStateOf(initialSelection) }
     val lineColor = colors.ink

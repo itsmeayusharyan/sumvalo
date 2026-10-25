@@ -52,7 +52,7 @@ data class FeatureSettings(
     val hiddenRecurring: Set<String> = emptySet(),
     /** Budget id → epoch day of the first period that rolls over (when rollover was turned on). */
     val rolloverSince: Map<Long, Long> = emptyMap(),
-    /** Monthly take-home salary the user entered; null means use the salary credits Acuranza sees. */
+    /** Monthly take-home salary the user entered; null means use the salary credits Sumvalo sees. */
     val salary: Long? = null,
     /** What the user wants to save out of each month's salary; null until they set it. */
     val savingsTarget: Long? = null,

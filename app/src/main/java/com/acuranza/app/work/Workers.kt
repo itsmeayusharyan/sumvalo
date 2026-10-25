@@ -8,7 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.acuranza.app.AcuranzaApp
+import com.acuranza.app.SumvaloApp
 import com.acuranza.app.finance.Severity
 import com.acuranza.app.model.Money
 import com.acuranza.app.util.Time
@@ -23,7 +23,7 @@ import java.time.LocalTime
 class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as AcuranzaApp).container
+        val c = (applicationContext as SumvaloApp).container
         val settings = c.settings.current()
         val today = Time.today()
 
@@ -46,7 +46,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
                 for (alert in alerts) {
                     if (posted >= MAX_INSIGHT_NOTIFICATIONS) break
                     if (alert.id !in c.settings.claimNewInsightNotifications(listOf(alert.id))) continue
-                    val text = if (settings.hideAmounts) "Open Acuranza to see the details." else alert.message
+                    val text = if (settings.hideAmounts) "Open Sumvalo to see the details." else alert.message
                     c.notifications.insight(alert.id.hashCode() and 0xFFFF, alert.title, text)
                     posted++
                 }
@@ -58,7 +58,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
                 }
                 val fresh = c.featurePrefs.claimNotificationIds(changed.map { "p-${it.key}-${it.lastDate}" })
                 changed.filter { "p-${it.key}-${it.lastDate}" in fresh }.take(MAX_INSIGHT_NOTIFICATIONS).forEach { s ->
-                    val text = if (settings.hideAmounts) "Open Acuranza to see the details."
+                    val text = if (settings.hideAmounts) "Open Sumvalo to see the details."
                     else "${Money.format(s.previousAmount ?: 0, showPaise = false)} → ${Money.format(s.lastAmount, showPaise = false)}. Still worth it?"
                     c.notifications.reminder(s.key.hashCode() and 0xFFFF, "${s.merchant} costs ${Math.round(s.priceChangePct ?: 0.0)}% more", text)
                 }
@@ -94,7 +94,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
 class SmsScanWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         if (!com.acuranza.app.BuildConfig.SMS_FULL) return Result.success()
-        val c = (applicationContext as AcuranzaApp).container
+        val c = (applicationContext as SumvaloApp).container
         val runner = c.smsScanRunner ?: return Result.success()
         runCatching { runner.run(auto = true) }
             .onFailure { runCatching { c.settings.recordSmsScan("failed") } }
@@ -106,7 +106,7 @@ class SmsScanWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
 class BillReminderWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as AcuranzaApp).container
+        val c = (applicationContext as SumvaloApp).container
         val settings = c.settings.current()
         if (!settings.notifyBills) return Result.success()
         val due = c.bills.unpaid().filter { it.daysLeft != null && (it.daysLeft in REMIND_DAYS || it.daysLeft < 0) }
@@ -141,7 +141,7 @@ class BillReminderWorker(appContext: Context, params: WorkerParameters) : Corout
 class TransactionReminderWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as AcuranzaApp).container
+        val c = (applicationContext as SumvaloApp).container
         val settings = c.settings.current()
         if (!settings.txnReminderEnabled) return Result.success()
         val today = Time.today()

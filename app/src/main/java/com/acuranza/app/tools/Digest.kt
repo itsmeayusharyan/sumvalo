@@ -14,7 +14,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.acuranza.app.AcuranzaApp
+import com.acuranza.app.SumvaloApp
 import com.acuranza.app.R
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.domain.SmsMapping
@@ -116,7 +116,7 @@ class DigestWorker(appContext: Context, params: WorkerParameters) : CoroutineWor
     }
 
     private suspend fun post(prefs: ToolsPrefs) {
-        val c = (applicationContext as AcuranzaApp).container
+        val c = (applicationContext as SumvaloApp).container
         if (!c.notifications.canNotify()) return
         val settings = c.settings.current()
         val today = Time.today()
@@ -143,7 +143,7 @@ class DigestWorker(appContext: Context, params: WorkerParameters) : CoroutineWor
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle("Sumvalo")
                 .setContentText("Your daily summary is ready")
-                .setColor(BrandPalette.Blue.toArgb())
+                .setColor(BrandPalette.SumvaloBlue.toArgb())
                 .build()
             val n = NotificationCompat.Builder(context, CHANNEL)
                 .setSmallIcon(R.drawable.ic_notification)
@@ -152,7 +152,7 @@ class DigestWorker(appContext: Context, params: WorkerParameters) : CoroutineWor
                 .setStyle(NotificationCompat.BigTextStyle().bigText(text))
                 .setContentIntent(open)
                 .setAutoCancel(true)
-                .setColor(BrandPalette.Blue.toArgb())
+                .setColor(BrandPalette.SumvaloBlue.toArgb())
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setPublicVersion(publicVersion)
                 .build()

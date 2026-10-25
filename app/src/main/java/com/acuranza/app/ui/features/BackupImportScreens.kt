@@ -41,20 +41,20 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.AmountText
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.StatementImporter
 import com.acuranza.app.security.AutoBackup
 import com.acuranza.app.ui.common.ActionRow
 import com.acuranza.app.ui.common.ChoiceField
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.AcuranzaScreen
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloScreen
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.SwitchRow
@@ -91,15 +91,15 @@ fun AutoBackupScreen(nav: NavController) {
         }
     }
 
-    AcuranzaScreen(title = "Automatic backups", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
-        val a = features?.autoBackup ?: return@AcuranzaScreen
+    SumvaloScreen(title = "Automatic backups", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
+        val a = features?.autoBackup ?: return@SumvaloScreen
         LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 48.dp)) {
             item {
                 Text(
                     "Sumvalo writes an encrypted backup to the folder you choose, and keeps the newest few. Pick a folder that " +
                         "a cloud app syncs (Drive, OneDrive) to keep a copy off the phone. Restore any of them from More → Restore.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
@@ -144,7 +144,7 @@ fun AutoBackupScreen(nav: NavController) {
                         )
                         a.lastError?.let {
                             Spacer(Modifier.height(4.dp))
-                            Text("Last attempt failed: $it", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.alert)
+                            Text("Last attempt failed: $it", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.alert)
                         }
                         Spacer(Modifier.height(12.dp))
                         PrimaryButton(
@@ -178,8 +178,8 @@ fun AutoBackupScreen(nav: NavController) {
                         "Every automatic backup is encrypted with this password. You need it to restore, so keep it somewhere safe.",
                         style = MaterialTheme.typography.bodySmall,
                     )
-                    AcuranzaTextField(pw, { pw = it }, "Password", keyboardType = KeyboardType.Password)
-                    AcuranzaTextField(pw2, { pw2 = it }, "Repeat password", keyboardType = KeyboardType.Password)
+                    SumvaloTextField(pw, { pw = it }, "Password", keyboardType = KeyboardType.Password)
+                    SumvaloTextField(pw2, { pw2 = it }, "Repeat password", keyboardType = KeyboardType.Password)
                 }
             },
             confirmButton = {
@@ -243,7 +243,7 @@ fun StatementImportScreen(nav: NavController) {
         }
     }
 
-    AcuranzaScreen(title = "Import statement", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
+    SumvaloScreen(title = "Import statement", onBack = { nav.popBackSafely() }, snackbar = snackbar) { pad ->
         val usable = accounts.filter { !it.isPending }
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
@@ -252,10 +252,10 @@ fun StatementImportScreen(nav: NavController) {
         ) {
             item {
                 Text(
-                    "Download your statement as CSV (or Excel saved as CSV) from net banking, then pick it here. Acuranza reads " +
+                    "Download your statement as CSV (or Excel saved as CSV) from net banking, then pick it here. Sumvalo reads " +
                         "it on the phone, skips rows it already has from SMS, and adds the rest for you to review.",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                     modifier = Modifier.padding(top = 8.dp),
                 )
             }
@@ -272,34 +272,34 @@ fun StatementImportScreen(nav: NavController) {
                 })
             }
             val p = preview
-            if (busy) item { Text("Reading…", color = AcuranzaTheme.colors.subtleText) }
+            if (busy) item { Text("Reading…", color = SumvaloTheme.colors.subtleText) }
             if (p != null && text != null) {
                 if (p.parsed.rows.isEmpty()) {
                     item {
                         Text(
-                            "No transactions found. Acuranza looks for a header row with Date, Narration/Description and Debit/Credit " +
+                            "No transactions found. Sumvalo looks for a header row with Date, Narration/Description and Debit/Credit " +
                                 "(or Amount) columns.",
-                            color = AcuranzaTheme.colors.alert,
+                            color = SumvaloTheme.colors.alert,
                         )
                     }
                 } else {
                     item {
-                        AcuranzaCard {
+                        SumvaloCard {
                             Text("${p.fresh.size} new · ${p.duplicates} already in Sumvalo", style = MaterialTheme.typography.titleMedium)
                             if (p.parsed.skippedLines > 0) {
                                 Text("${p.parsed.skippedLines} lines skipped (totals, balances or unreadable rows)", style = MaterialTheme.typography.bodySmall,
-                                    color = AcuranzaTheme.colors.subtleText)
+                                    color = SumvaloTheme.colors.subtleText)
                             }
                             val out = p.fresh.filter { it.type == TxnType.EXPENSE }.sumOf { it.amount }
                             val inn = p.fresh.filter { it.type == TxnType.INCOME }.sumOf { it.amount }
                             Spacer(Modifier.height(8.dp))
                             Row {
                                 Column(Modifier.weight(1f)) {
-                                    Text("Money out", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                    Text("Money out", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                                     AmountText(out, type = TxnType.EXPENSE, hidden = hidden)
                                 }
                                 Column(Modifier.weight(1f)) {
-                                    Text("Money in", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                    Text("Money in", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                                     AmountText(inn, type = TxnType.INCOME, hidden = hidden)
                                 }
                             }
@@ -324,13 +324,13 @@ fun StatementImportScreen(nav: NavController) {
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(r.description, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                Text(Fmt.fullDate(r.date), style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                                Text(Fmt.fullDate(r.date), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                             }
                             AmountText(r.amount, style = AmountStyles.medium, type = r.type, hidden = hidden)
                         }
                     }
                     if (p.fresh.size > PREVIEW_ROWS) {
-                        item { Text("and ${p.fresh.size - PREVIEW_ROWS} more", color = AcuranzaTheme.colors.subtleText, fontWeight = FontWeight.Medium) }
+                        item { Text("and ${p.fresh.size - PREVIEW_ROWS} more", color = SumvaloTheme.colors.subtleText, fontWeight = FontWeight.Medium) }
                     }
                 }
             }

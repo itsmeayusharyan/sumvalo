@@ -15,7 +15,7 @@ import com.acuranza.app.data.CardBillEntity
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.DeletedFingerprintEntity
 import com.acuranza.app.data.GoalEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.MerchantRuleEntity
 import com.acuranza.app.data.NetWorthSnapshotEntity
 import com.acuranza.app.data.TransactionEntity
@@ -41,7 +41,7 @@ data class BackupMeta(val format: Int, val exportedAt: Long?, val repairVersion:
  * Encrypted export/import of everything in the database. Files are written and read through Storage Access
  * Framework URIs (ACTION_CREATE_DOCUMENT / ACTION_OPEN_DOCUMENT), so the user picks where the backup lives.
  */
-class BackupManager(private val context: Context, private val db: AcuranzaDatabase, private val files: AttachmentStore) {
+class BackupManager(private val context: Context, private val db: SumvaloDatabase, private val files: AttachmentStore) {
 
     suspend fun export(uri: Uri, password: CharArray, repairVersion: Int? = null): BackupStats = withContext(Dispatchers.IO) {
         val (bytes, stats) = encrypted(password, repairVersion)
@@ -294,7 +294,7 @@ object BackupJson {
             },
             rules = list(o, "rules") { r -> MerchantRuleEntity(r.getLong("id"), r.getString("merchant"), r.getString("categoryKey")) },
             netWorth = list(o, "netWorth") { n ->
-                // Old Acuranza backups carry an extra "investments" column; it is simply dropped here.
+                // Old Sumvalo backups carry an extra "investments" column; it is simply dropped here.
                 NetWorthSnapshotEntity(n.getLong("epochDay"), n.getLong("liquid"), n.getLong("cardDebt"), n.getLong("total"))
             },
             tombstones = list(o, "deletedFingerprints") { t ->

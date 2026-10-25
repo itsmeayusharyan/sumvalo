@@ -44,7 +44,7 @@ import com.acuranza.app.designsystem.components.KeypadExpression
 import com.acuranza.app.designsystem.components.NumberKeypad
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SegmentedTabs
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.domain.SmsMapping
 import com.acuranza.app.model.TxnSource
@@ -53,8 +53,8 @@ import com.acuranza.app.ui.common.ChoiceField
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.FieldBox
-import com.acuranza.app.ui.common.AcuranzaScreen
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloScreen
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.bankEnum
 import com.acuranza.app.ui.common.color
 import com.acuranza.app.data.tombstones
@@ -207,7 +207,7 @@ fun AddTransactionContent(
     val canSave = value != null && value > 0 && account != null &&
         (if (type == TxnType.TRANSFER) toAccount != null && toAccount.id != account.id else category != null)
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = if (existing == null) "New transaction" else "Edit transaction",
         onBack = onBack,
         actions = {
@@ -258,15 +258,15 @@ fun AddTransactionContent(
                         }
                         AccountChoice("Account", refs.accounts, account, Modifier.weight(1f)) { accountId = it.id }
                     }
-                    AcuranzaTextField(merchant, { merchant = it }, if (type == TxnType.INCOME) "From (payer)" else "Paid to (merchant)")
+                    SumvaloTextField(merchant, { merchant = it }, if (type == TxnType.INCOME) "From (payer)" else "Paid to (merchant)")
                 }
                 DateField("Date", date, { date = it })
-                AcuranzaTextField(note, { note = it }, "Note (optional)")
+                SumvaloTextField(note, { note = it }, "Note (optional)")
                 if (existing != null) {
                     Text(
                         existing!!.source.label(),
                         style = MaterialTheme.typography.labelSmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
                 Spacer(Modifier.height(4.dp))

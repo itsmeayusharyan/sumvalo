@@ -28,7 +28,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.Paise
 
@@ -49,10 +49,10 @@ fun FanChart(
 ) {
     if (bands.size < 2) return
     val progress by rememberEntrance(900)
-    val accent = AcuranzaTheme.colors.accent
-    val ink = AcuranzaTheme.colors.ink
-    val subtle = AcuranzaTheme.colors.subtleText
-    val grid = AcuranzaTheme.colors.divider
+    val accent = SumvaloTheme.colors.accent
+    val ink = SumvaloTheme.colors.ink
+    val subtle = SumvaloTheme.colors.subtleText
+    val grid = SumvaloTheme.colors.divider
     val maxV = bands.maxOf { maxOf(it.p90, it.target) }.coerceAtLeast(1).toFloat()
     val last = bands.last()
     Column(modifier.semantics {
@@ -105,6 +105,6 @@ private fun Legend(color: Color, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(8.dp).background(color, CircleShape))
         Spacer(Modifier.width(5.dp))
-        Text(text, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+        Text(text, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
     }
 }

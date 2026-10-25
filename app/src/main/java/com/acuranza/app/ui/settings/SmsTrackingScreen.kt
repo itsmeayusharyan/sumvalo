@@ -46,16 +46,16 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.SmsImportBatchEntity
 import com.acuranza.app.data.SmsImportDao
 import com.acuranza.app.data.SmsImportEntity
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SecondaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.SmsImportRepository
 import com.acuranza.app.sms.SmsConfidence
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.nav.popBackSafely
@@ -110,7 +110,7 @@ fun SmsTrackingScreen(nav: NavController) {
         pending = if (s.smsConsent && !c.decoy) c.smsImports.pending() else emptyList()
     }
 
-    // In-app upgrade to the Full build (standard build only): the user picks an Acuranza APK
+    // In-app upgrade to the Full build (standard build only): the user picks an Sumvalo APK
     // from storage; the app verifies package + signature + version and stages Android's own
     // install confirmation. The OS security check runs as usual; nothing is disabled.
     // Session outcomes arrive on a process-scoped event flow, so a screen recreation while
@@ -138,7 +138,7 @@ fun SmsTrackingScreen(nav: NavController) {
                         is com.acuranza.app.install.PackageUpgradeInstaller.Verified.Rejected -> {
                             message = when (verified.reason) {
                                 com.acuranza.app.install.PackageUpgradeValidator.Decision.SignatureMismatch ->
-                                    "That APK isn't signed with Acuranza's key — refusing"
+                                    "That APK isn't signed with Sumvalo's key — refusing"
                                 com.acuranza.app.install.PackageUpgradeValidator.Decision.WrongPackage ->
                                     "That APK isn't Sumvalo"
                                 com.acuranza.app.install.PackageUpgradeValidator.Decision.Downgrade ->
@@ -175,7 +175,7 @@ fun SmsTrackingScreen(nav: NavController) {
         }
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "SMS transaction tracking",
         subtitle = "Bank messages, shared by you, read on this device only",
         onBack = { nav.popBackSafely() },
@@ -239,7 +239,7 @@ fun SmsTrackingScreen(nav: NavController) {
                             message = "SMS tracking withdrawn. Removed $removed imported transactions."
                             refresh++
                         }
-                    }) { Text("Withdraw and delete", color = AcuranzaTheme.colors.alert) }
+                    }) { Text("Withdraw and delete", color = SumvaloTheme.colors.alert) }
                 },
                 dismissButton = { TextButton(onClick = { showWithdrawDialog = false }) { Text("Keep tracking") } },
             )
@@ -248,9 +248,9 @@ fun SmsTrackingScreen(nav: NavController) {
         when {
             c.decoy -> Column(Modifier.padding(padding).padding(horizontal = 20.dp)) {
                 Spacer(Modifier.height(24.dp))
-                Text("Unavailable", style = AcuranzaText.screenTitle)
+                Text("Unavailable", style = SumvaloText.screenTitle)
                 Spacer(Modifier.height(8.dp))
-                Text("SMS tracking is disabled in this profile.", color = AcuranzaTheme.colors.subtleText)
+                Text("SMS tracking is disabled in this profile.", color = SumvaloTheme.colors.subtleText)
             }
             !s.smsConsent -> SmsConsentContent(
                 modifier = Modifier.padding(padding),
@@ -387,14 +387,14 @@ internal fun UpgradeDialog(
                         UpgradeDialogMessage()
                     }
                     event is com.acuranza.app.install.InstallEvent.Success -> Text(
-                        "Update installed. Acuranza is restarting as the Full build — your transactions, accounts and settings are exactly as you left them.",
+                        "Update installed. Sumvalo is restarting as the Full build — your transactions, accounts and settings are exactly as you left them.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AcuranzaTheme.colors.income,
+                        color = SumvaloTheme.colors.income,
                     )
                     event is com.acuranza.app.install.InstallEvent.Failed -> Text(
                         (event as com.acuranza.app.install.InstallEvent.Failed).reason,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AcuranzaTheme.colors.alert,
+                        color = SumvaloTheme.colors.alert,
                     )
                 }
             }
@@ -405,11 +405,11 @@ internal fun UpgradeDialog(
 @Composable
 private fun UpgradeDialogMessage() {
     Text(
-        "You're upgrading Acuranza to the Full Build, which enables automatic SMS transaction " +
+        "You're upgrading Sumvalo to the Full Build, which enables automatic SMS transaction " +
             "tracking. Your existing transactions, accounts and settings will be preserved. Android " +
             "will ask you to approve the installation before the update can proceed.",
         style = MaterialTheme.typography.bodyMedium,
-        color = AcuranzaTheme.colors.subtleText,
+        color = SumvaloTheme.colors.subtleText,
     )
 }
 
@@ -418,17 +418,17 @@ private fun UpgradeDialogMessage() {
 fun SmsConsentContent(modifier: Modifier, onAgree: () -> Unit) {
     Column(modifier.fillMaxSize().padding(horizontal = 20.dp)) {
         Spacer(Modifier.height(12.dp))
-        AcuranzaCard {
+        SumvaloCard {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Icon(Icons.Outlined.Sms, contentDescription = null, tint = AcuranzaTheme.colors.accent)
+                    Icon(Icons.Outlined.Sms, contentDescription = null, tint = SumvaloTheme.colors.accent)
                     Text("How it works", style = MaterialTheme.typography.titleMedium)
                 }
-                Bullet("Share a bank message from your Messages app to Acuranza (long-press → Share → Acuranza), or paste one here.")
+                Bullet("Share a bank message from your Messages app to Sumvalo (long-press → Share → Sumvalo), or paste one here.")
                 Bullet("Sumvalo extracts the amount, date, merchant and account, and turns the message into a transaction you confirm.")
                 Bullet("OTP, PIN, password and authentication messages are never processed. Promotions and balance alerts are ignored.")
-                Bullet("The message text is parsed and discarded. Only the extracted details are stored — in Acuranza's private, encrypted storage.")
-                Bullet("No SMS permission is requested, so Play Protect installs Acuranza like any other app.")
+                Bullet("The message text is parsed and discarded. Only the extracted details are stored — in Sumvalo's private, encrypted storage.")
+                Bullet("No SMS permission is requested, so Play Protect installs Sumvalo like any other app.")
                 Bullet("Everything runs offline. There is no account, cloud or sync, and you can delete everything at any time.")
             }
         }
@@ -438,7 +438,7 @@ fun SmsConsentContent(modifier: Modifier, onAgree: () -> Unit) {
         Text(
             "Nothing is processed — shared, pasted or otherwise — before you agree.",
             style = MaterialTheme.typography.bodySmall,
-            color = AcuranzaTheme.colors.tertiaryText,
+            color = SumvaloTheme.colors.tertiaryText,
         )
     }
 }
@@ -446,8 +446,8 @@ fun SmsConsentContent(modifier: Modifier, onAgree: () -> Unit) {
 @Composable
 private fun Bullet(text: String) {
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Text("·", color = AcuranzaTheme.colors.accent)
-        Text(text, style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+        Text("·", color = SumvaloTheme.colors.accent)
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
     }
 }
 
@@ -500,7 +500,7 @@ private fun SmsPendingReviewContent(
         Text(
             "Check each one — edit what's wrong, switch off what isn't yours. Nothing is saved until you confirm.",
             style = MaterialTheme.typography.bodyMedium,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
         )
         Spacer(Modifier.height(12.dp))
         LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -508,15 +508,15 @@ private fun SmsPendingReviewContent(
                 when (row) {
                     is PendingList.Header -> Text(
                         row.text.uppercase(),
-                        style = AcuranzaText.sectionLabel,
-                        color = AcuranzaTheme.colors.subtleText,
+                        style = SumvaloText.sectionLabel,
+                        color = SumvaloTheme.colors.subtleText,
                         modifier = Modifier.padding(top = 4.dp),
                     )
                     is PendingList.Row -> {
                         val item = row.item
                         val editState = edits[item.id]!!
                         val edit by editState
-                        AcuranzaCard(onClick = { expanded = if (expanded == item.id) -1L else item.id }) {
+                        SumvaloCard(onClick = { expanded = if (expanded == item.id) -1L else item.id }) {
                             Column(Modifier.padding(vertical = 14.dp)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f)) {
@@ -530,7 +530,7 @@ private fun SmsPendingReviewContent(
                                             "${item.bank}${item.accountLast4?.let { " $it" } ?: ""} · " +
                                                 dateFormat.format(Instant.ofEpochMilli(item.timestamp)),
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = AcuranzaTheme.colors.tertiaryText,
+                                            color = SumvaloTheme.colors.tertiaryText,
                                         )
                                         val targetName = chosen[item.id]?.let { id -> accounts.firstOrNull { it.id == id }?.name }
                                             ?: when (val hint = hints[item.id]) {
@@ -543,7 +543,7 @@ private fun SmsPendingReviewContent(
                                         Text(
                                             if (targetName != null) "→ $targetName" else "→ new account: ${item.bank}${item.accountLast4?.let { " $it" } ?: ""}",
                                             style = MaterialTheme.typography.bodySmall,
-                                            color = if (needsAccountPick) AcuranzaTheme.colors.warning else AcuranzaTheme.colors.accent,
+                                            color = if (needsAccountPick) SumvaloTheme.colors.warning else SumvaloTheme.colors.accent,
                                             modifier = Modifier.padding(top = 1.dp).clickable(
                                                 interactionSource = remember { MutableInteractionSource() },
                                                 indication = null,
@@ -554,7 +554,7 @@ private fun SmsPendingReviewContent(
                                     Text(
                                         Money.format(edit.amount ?: item.amount),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = if (item.type == TxnType.INCOME) AcuranzaTheme.colors.income else AcuranzaTheme.colors.expense,
+                                        color = if (item.type == TxnType.INCOME) SumvaloTheme.colors.income else SumvaloTheme.colors.expense,
                                     )
                                     Spacer(Modifier.width(12.dp))
                                     Switch(checked = !edit.excluded, onCheckedChange = { editState.value = editState.value.copy(excluded = !it) })
@@ -661,13 +661,13 @@ private fun SmsOverviewContent(
         // One-tap: a bank message copied in the Messages app is offered for parsing
         clipboardHit?.let { hit ->
             item {
-                AcuranzaCard {
+                SumvaloCard {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Bank message detected", style = MaterialTheme.typography.titleMedium)
                         Text(
                             "You copied a bank message. Parse it now? The clipboard is cleared after.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             PrimaryButton(
@@ -719,7 +719,7 @@ private fun SmsOverviewContent(
                     .contains(context.packageName)
                 val hasSms = smsGranted
 
-                AcuranzaCard {
+                SumvaloCard {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text("Automatic sources", style = MaterialTheme.typography.titleMedium)
 
@@ -727,7 +727,7 @@ private fun SmsOverviewContent(
                             Text(
                                 "Inbox import needs the SMS permission. It reads bank messages on this phone only — nothing is ever uploaded.",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                             )
                             SecondaryButton(
                                 "Grant SMS permission",
@@ -774,7 +774,7 @@ private fun SmsOverviewContent(
                                 if (settings.smsLastScanAt == 0L) "Never scanned"
                                 else "Last scan ${java.time.Instant.ofEpochMilli(settings.smsLastScanAt)} — ${settings.smsLastScanStatus}",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.tertiaryText,
+                                color = SumvaloTheme.colors.tertiaryText,
                             )
                         }
 
@@ -797,7 +797,7 @@ private fun SmsOverviewContent(
                             SettingsToggle(
                                 title = "Capture from notifications",
                                 subtitle = when {
-                                    !listenerEnabled -> "Needs Notification Access — tap to open system settings, then enable Acuranza there."
+                                    !listenerEnabled -> "Needs Notification Access — tap to open system settings, then enable Sumvalo there."
                                     else -> "New bank SMS in the Messages app's notifications park here for review. Off stops capture immediately."
                                 },
                                 checked = settings.smsAutoCapture && listenerEnabled,
@@ -820,7 +820,7 @@ private fun SmsOverviewContent(
         // Standard build only: switch to the Full build from an APK file on this device.
         if (!com.acuranza.app.BuildConfig.SMS_FULL) {
             item {
-                AcuranzaCard {
+                SumvaloCard {
                     Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Full build with automatic SMS", style = MaterialTheme.typography.titleMedium)
                         Text(
@@ -829,7 +829,7 @@ private fun SmsOverviewContent(
                                 "(package + signature) and starts Android's own install confirmation — Google's security check " +
                                 "still runs, and any prompt it raises is yours to answer.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                         // Status lives in the modal UpgradeDialog, not inline: one place for
                         // preparing, waiting for Android's approval, failure with retry, and
@@ -882,7 +882,7 @@ private fun SmsOverviewContent(
                 "Sumvalo holds no SMS permission. Messages arrive only when you share or paste them; " +
                     "the text is parsed and discarded, and the app has no network permission at all.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.tertiaryText,
+                color = SumvaloTheme.colors.tertiaryText,
             )
             Spacer(Modifier.height(16.dp))
         }
@@ -897,7 +897,7 @@ private fun SmsOverviewContent(
                 TextButton(onClick = {
                     confirmDeleteAll = false
                     onDeleteAll()
-                }) { Text("Delete", color = AcuranzaTheme.colors.alert) }
+                }) { Text("Delete", color = SumvaloTheme.colors.alert) }
             },
             dismissButton = { TextButton(onClick = { confirmDeleteAll = false }) { Text("Keep") } },
         )

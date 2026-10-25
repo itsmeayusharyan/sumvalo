@@ -57,13 +57,13 @@ import com.acuranza.app.designsystem.components.CreditCardVisual
 import com.acuranza.app.designsystem.components.DateHeader
 import com.acuranza.app.designsystem.components.EmptyState
 import com.acuranza.app.designsystem.components.GradientCard
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.model.AccountType
 import com.acuranza.app.model.Bank
@@ -79,8 +79,8 @@ import com.acuranza.app.ui.common.AmountSheet
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaScreen
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloScreen
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.bankEnum
@@ -121,12 +121,12 @@ fun AccountsScreen(nav: NavController) {
     val accounts by vm.accounts.collectAsStateWithLifecycle()
     val ignored by vm.ignored.collectAsStateWithLifecycle()
     val hidden = LocalHideAmounts.current
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Accounts",
         onBack = { nav.popBackSafely() },
         actions = { IconButton(onClick = { nav.navigate(Routes.editAccount()) }) { Icon(Icons.Outlined.Add, contentDescription = "Add account") } },
     ) { padding ->
-        val list = accounts ?: return@AcuranzaScreen
+        val list = accounts ?: return@SumvaloScreen
         if (list.isEmpty() && ignored.isEmpty()) {
             EmptyState(
                 "No accounts yet",
@@ -136,7 +136,7 @@ fun AccountsScreen(nav: NavController) {
                 actionLabel = "Add account",
                 onAction = { nav.navigate(Routes.editAccount()) },
             )
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         val pendingCount = list.count { it.isPending }
         val groups = list.filter { it.counted }.groupBy {
@@ -169,7 +169,7 @@ fun AccountsScreen(nav: NavController) {
                         Text(
                             "Sumvalo still reads their SMS but leaves them out of spending, balances and net worth.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
@@ -187,7 +187,7 @@ fun AccountsScreen(nav: NavController) {
 
 @Composable
 private fun IgnoredAccountRow(ig: IgnoredAccount, onRestore: () -> Unit) {
-    AcuranzaCard(Modifier.padding(vertical = 5.dp), contentPadding = PaddingValues(14.dp)) {
+    SumvaloCard(Modifier.padding(vertical = 5.dp), contentPadding = PaddingValues(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             BankBadge(ig.account.bankEnum(), size = 40.dp)
             Spacer(Modifier.width(12.dp))
@@ -202,7 +202,7 @@ private fun IgnoredAccountRow(ig: IgnoredAccount, onRestore: () -> Unit) {
                         }
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
         }
@@ -217,7 +217,7 @@ private fun IgnoredAccountRow(ig: IgnoredAccount, onRestore: () -> Unit) {
 
 @Composable
 fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
-    AcuranzaCard(Modifier.padding(vertical = 5.dp), onClick = onClick, contentPadding = PaddingValues(14.dp)) {
+    SumvaloCard(Modifier.padding(vertical = 5.dp), onClick = onClick, contentPadding = PaddingValues(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             BankBadge(a.bank, size = 40.dp)
             Spacer(Modifier.width(12.dp))
@@ -230,13 +230,13 @@ fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) 
                         if (a.account.autoCreated) append(" · from SMS")
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 if (a.isCard) {
                     AmountText(a.outstanding, style = AmountStyles.medium, hidden = hidden)
-                    Text("outstanding", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("outstanding", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
                 } else {
                     AmountText(a.balance, style = AmountStyles.medium, hidden = hidden)
                 }
@@ -244,7 +244,7 @@ fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) 
         }
         a.utilisation?.let {
             Spacer(Modifier.height(10.dp))
-            ThinProgressBar(it.toFloat().coerceIn(0f, 1f), color = if (it > 0.3) AcuranzaTheme.colors.warning else AcuranzaTheme.colors.good)
+            ThinProgressBar(it.toFloat().coerceIn(0f, 1f), color = if (it > 0.3) SumvaloTheme.colors.warning else SumvaloTheme.colors.good)
         }
     }
 }
@@ -294,7 +294,7 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
     var paying by remember { mutableStateOf<BillItem?>(null) }
     val a = state.account
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = a?.account?.name ?: "Account",
         subtitle = a?.account?.type?.label(),
         onBack = { nav.popBackSafely() },
@@ -307,18 +307,18 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
     ) { padding ->
         if (a == null) {
             if (state.loaded) EmptyState("Account not found", "It may have been archived.", Modifier.padding(padding).padding(top = 60.dp))
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(16.dp, 0.dp, 16.dp, 40.dp)) {
             if (a.account.autoCreated) {
                 item(key = "auto") {
-                    AcuranzaCard(Modifier.padding(bottom = 12.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
+                    SumvaloCard(Modifier.padding(bottom = 12.dp), color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)) {
                         Text("Found in your SMS · not counted yet", fontWeight = FontWeight.SemiBold)
                         Text(
                             "Sumvalo spotted ${a.bank.shortName} ••${a.account.last4 ?: "?"} in your messages. Tell Sumvalo whether it's one of " +
                                 "your accounts, a new one (with today's balance), or not yours. Until then it isn't in net worth.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                         TextButton(onClick = { nav.navigate(Routes.PENDING_ACCOUNTS) }) { Text("Sort it out") }
                     }
@@ -360,7 +360,7 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
             }
             if (a.isCard) {
                 item(key = "card-info") {
-                    AcuranzaCard(Modifier.padding(bottom = 8.dp)) {
+                    SumvaloCard(Modifier.padding(bottom = 8.dp)) {
                         Row {
                             CardStat("Available", a.availableLimit, hidden, Modifier.weight(1f))
                             CardStat("Limit", a.account.creditLimit, hidden, Modifier.weight(1f))
@@ -373,7 +373,7 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
                                 a.utilisation?.let { if (isNotEmpty()) append(" · "); append("${Fmt.pct(it * 100, 0)} used") }
                             }.ifEmpty { "Add statement and due days in edit" },
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
@@ -387,7 +387,7 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
             item(key = "txn-h") { SectionHeader("Transactions") }
             if (state.transactions.isEmpty()) {
                 item(key = "none") {
-                    Text("No transactions yet", color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(8.dp))
+                    Text("No transactions yet", color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(8.dp))
                 }
             }
             items(state.transactions, key = { "t" + it.txn.id }) { t ->
@@ -432,7 +432,7 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
 @Composable
 private fun CardStat(label: String, value: Long?, hidden: Boolean, modifier: Modifier) {
     Column(modifier) {
-        Text(label, style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
+        Text(label, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
         if (value != null) AmountText(value, style = AmountStyles.medium, hidden = hidden) else Text("—")
     }
 }
@@ -505,7 +505,7 @@ fun AccountEditScreen(nav: NavController, editId: Long?, defaultCard: Boolean) {
     val needsBank = type == AccountType.BANK || isCard
     val valid = name.isNotBlank() && (last4.isEmpty() || last4.length == 4)
 
-    AcuranzaScreen(title = if (existing == null) (if (isCard) "Add credit card" else "Add account") else "Edit account", onBack = { nav.popBackSafely() }) { padding ->
+    SumvaloScreen(title = if (existing == null) (if (isCard) "Add credit card" else "Add account") else "Edit account", onBack = { nav.popBackSafely() }) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -517,7 +517,7 @@ fun AccountEditScreen(nav: NavController, editId: Long?, defaultCard: Boolean) {
             FormColumn {
                 SegmentedTabs(listOf("Bank", "Card", "Cash", "Wallet"), TYPES.indexOf(type), onSelect = { type = TYPES[it] })
                 if (needsBank) {
-                    Text("Bank", style = MaterialTheme.typography.labelLarge, color = AcuranzaTheme.colors.subtleText)
+                    Text("Bank", style = MaterialTheme.typography.labelLarge, color = SumvaloTheme.colors.subtleText)
                     BankPicker(bank) {
                         bank = it
                         if (name.isBlank() || Bank.entries.any { b -> name.startsWith(b.shortName) }) {
@@ -525,9 +525,9 @@ fun AccountEditScreen(nav: NavController, editId: Long?, defaultCard: Boolean) {
                         }
                     }
                 }
-                AcuranzaTextField(name, { name = it }, "Name", supporting = "e.g. HDFC Savings, ICICI Amazon Pay")
+                SumvaloTextField(name, { name = it }, "Name", supporting = "e.g. HDFC Savings, ICICI Amazon Pay")
                 if (needsBank) {
-                    AcuranzaTextField(
+                    SumvaloTextField(
                         last4,
                         { v -> last4 = v.filter(Char::isDigit).take(4) },
                         if (isCard) "Last 4 digits of card" else "Last 4 digits of account",
@@ -541,15 +541,15 @@ fun AccountEditScreen(nav: NavController, editId: Long?, defaultCard: Boolean) {
                     Text(
                         "To change the balance, use “Set balance” on the account screen.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
                 if (isCard) {
                     AmountField("Credit limit", limit, { limit = it })
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        AcuranzaTextField(statementDay, { v -> statementDay = v.filter(Char::isDigit).take(2) }, "Statement day",
+                        SumvaloTextField(statementDay, { v -> statementDay = v.filter(Char::isDigit).take(2) }, "Statement day",
                             Modifier.weight(1f), keyboardType = KeyboardType.Number)
-                        AcuranzaTextField(dueDay, { v -> dueDay = v.filter(Char::isDigit).take(2) }, "Due day",
+                        SumvaloTextField(dueDay, { v -> dueDay = v.filter(Char::isDigit).take(2) }, "Due day",
                             Modifier.weight(1f), keyboardType = KeyboardType.Number)
                     }
                 }
@@ -585,8 +585,8 @@ fun BankPicker(selected: Bank, onSelect: (Bank) -> Unit) {
             val isSel = b == selected
             Surface(
                 shape = RoundedCornerShape(16.dp),
-                color = if (isSel) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f) else AcuranzaTheme.colors.cardSurface,
-                border = if (isSel) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, AcuranzaTheme.colors.divider),
+                color = if (isSel) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f) else SumvaloTheme.colors.cardSurface,
+                border = if (isSel) BorderStroke(1.5.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, SumvaloTheme.colors.divider),
                 modifier = Modifier.clip(RoundedCornerShape(16.dp)).clickable { onSelect(b) },
             ) {
                 Column(Modifier.padding(horizontal = 14.dp, vertical = 10.dp), horizontalAlignment = Alignment.CenterHorizontally) {

@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.components.FanBand
 import com.acuranza.app.designsystem.components.FanChart
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.finance.GoalSimulation
 import com.acuranza.app.model.Money
 import com.acuranza.app.repo.GoalOutlook
@@ -55,14 +55,14 @@ fun GoalOutlookSection(o: GoalOutlook, deadline: LocalDate, hidden: Boolean, onI
     val r = o.result
     val pct = (r.probability * 100).roundToInt()
     val confidence = (GoalSimulation.CONFIDENCE * 100).roundToInt()
-    val color = AcuranzaTheme.colors.accent
+    val color = SumvaloTheme.colors.accent
     fun money(p: Long) = if (hidden) "₹ ••••" else Money.format(p, showPaise = false)
     Column(
         Modifier
             .fillMaxWidth()
             .padding(top = 6.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(AcuranzaTheme.colors.cardSurface)
+            .background(SumvaloTheme.colors.cardSurface)
             .clickable { expanded = !expanded }
             .padding(horizontal = 14.dp, vertical = 10.dp),
     ) {
@@ -78,10 +78,10 @@ fun GoalOutlookSection(o: GoalOutlook, deadline: LocalDate, hidden: Boolean, onI
             Text(
                 "at ${money(r.monthlyForConfidence)}/month by ${monthYear.format(deadline)}",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.weight(1f),
             )
-            Icon(if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, contentDescription = if (expanded) "Hide outlook" else "Show outlook", tint = AcuranzaTheme.colors.subtleText)
+            Icon(if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, contentDescription = if (expanded) "Hide outlook" else "Show outlook", tint = SumvaloTheme.colors.subtleText)
         }
         AnimatedVisibility(expanded) {
             Column(Modifier.padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -102,10 +102,10 @@ fun GoalOutlookSection(o: GoalOutlook, deadline: LocalDate, hidden: Boolean, onI
                         "${GoalSimulation.DEFAULT_PATHS} simulated markets at ${Fmt.pct(o.result.volatilityPct, 1)} yearly volatility, " +
                         "$pct% reach ${money(r.targetAtDeadline)} at that pace, and 1 in 10 end below ${money(r.p10)}.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text("Target", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    Text("Target", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     FilterChip(selected = o.inflationPct == 0.0, onClick = { onInflation(0.0) }, label = { Text("Fixed") })
                     FilterChip(selected = o.inflationPct > 0.0, onClick = { onInflation(6.0) }, label = { Text("Grows 6%/yr") })
                 }

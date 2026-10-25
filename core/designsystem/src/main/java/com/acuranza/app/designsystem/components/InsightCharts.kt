@@ -43,7 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 import kotlin.math.max
 import androidx.compose.ui.text.style.TextOverflow
@@ -67,7 +67,7 @@ fun SpendPaceChart(
     height: Dp = 170.dp,
     hidden: Boolean = false,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val accent = colors.accent
     val grey = colors.tertiaryText.copy(alpha = 0.6f)
     val grid = colors.divider
@@ -164,7 +164,7 @@ private fun LegendItem(color: Color, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(Modifier.size(8.dp).clip(CircleShape).background(color))
         Spacer(Modifier.width(6.dp))
-        Text(label, style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.subtleText)
+        Text(label, style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.subtleText)
     }
 }
 
@@ -182,7 +182,7 @@ fun MiniBarChart(
     hidden: Boolean = false,
     highlightLast: Boolean = true,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val progress by rememberEntrance(700)
     var selected by remember(values) { mutableStateOf<Int?>(null) }
     Column(modifier.semantics { contentDescription = "Bar chart: " + labels.zip(values).joinToString { "${it.first} ${formatAmount(it.second, compact = true)}" } }) {
@@ -237,7 +237,7 @@ fun MiniLineChart(
     endLabel: String? = null,
     hidden: Boolean = false,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val progress by rememberEntrance(800)
     Column(modifier) {
         Row(Modifier.fillMaxWidth().height(20.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -285,7 +285,7 @@ fun SpendHeatmap(
     modifier: Modifier = Modifier,
     hidden: Boolean = false,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     var selected by remember(weeks) { mutableStateOf<Pair<Int, Int>?>(null) }
     val maxValue = weeks.flatten().filterNotNull().maxOrNull()?.coerceAtLeast(1L) ?: 1L
     val rows = listOf("M", "T", "W", "T", "F", "S", "S")

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
  * App-lock state for the running process.
  *
  * It lives outside composition so rotation, a theme change or navigation never re-locks the app or replays the
- * splash, and it is deliberately not saved: after the process dies, Acuranza always starts locked. Time away is
+ * splash, and it is deliberately not saved: after the process dies, Sumvalo always starts locked. Time away is
  * measured with [SystemClock.elapsedRealtime], which the user can't change, unlike the wall clock.
  */
 object AppLock {

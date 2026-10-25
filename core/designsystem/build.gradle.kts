@@ -25,6 +25,7 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
+    implementation("androidx.compose.foundation:foundation")
     debugImplementation(libs.androidx.compose.ui.tooling)
     testImplementation(libs.junit)
 }

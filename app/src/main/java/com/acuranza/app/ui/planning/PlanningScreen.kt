@@ -1,7 +1,7 @@
 package com.acuranza.app.ui.planning
 
 import androidx.compose.foundation.layout.size
-import com.acuranza.app.designsystem.theme.AcuranzaText
+import com.acuranza.app.designsystem.theme.SumvaloText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -52,13 +52,13 @@ import com.acuranza.app.designsystem.components.BudgetProgressBar
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.EmptyState
 import com.acuranza.app.designsystem.components.GoalCard
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.ProgressRing
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.components.staggeredEntrance
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.TxnType
@@ -73,7 +73,7 @@ import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.color
 import com.acuranza.app.ui.common.acuranzaViewModel
@@ -209,11 +209,11 @@ fun PlanningContent(
     Column(Modifier.fillMaxSize()) {
         Column(Modifier.padding(start = 20.dp, end = 12.dp, top = 12.dp, bottom = 8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Plan", style = AcuranzaText.screenTitle, modifier = Modifier.weight(1f))
+                Text("Plan", style = SumvaloText.screenTitle, modifier = Modifier.weight(1f))
                 TextButton(onClick = { if (tab == 0) onAddBudget() else onNewGoal() }) {
-                    Icon(Icons.Outlined.Add, contentDescription = null, tint = AcuranzaTheme.colors.ink, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Outlined.Add, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))
-                    Text(if (tab == 0) "Budget" else "Goal", color = AcuranzaTheme.colors.ink)
+                    Text(if (tab == 0) "Budget" else "Goal", color = SumvaloTheme.colors.ink)
                 }
             }
             SegmentedTabs(listOf("Budgets", "Goals"), tab, onSelect = onTab, modifier = Modifier.padding(top = 8.dp, end = 8.dp))
@@ -240,7 +240,7 @@ private fun BudgetsTab(
     if (state.loaded && state.budgets.isEmpty()) {
         EmptyState(
             "No budgets yet",
-            "Set a monthly limit overall or per category. Acuranza tracks your pace and warns you before you overspend.",
+            "Set a monthly limit overall or per category. Sumvalo tracks your pace and warns you before you overspend.",
             Modifier.padding(top = 40.dp),
             icon = Icons.Outlined.PieChart,
             actionLabel = "Create a budget",
@@ -251,20 +251,20 @@ private fun BudgetsTab(
     LazyColumn(contentPadding = PaddingValues(20.dp, 8.dp, 20.dp, 110.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         state.envelope?.let { env ->
             item(key = "envelope") {
-                AcuranzaCard {
+                SumvaloCard {
                     Text("Give every rupee a job", fontWeight = FontWeight.SemiBold)
                     Spacer(Modifier.height(8.dp))
                     EnvelopeLine("Income this month", env.envelope.income, hidden)
                     EnvelopeLine("Assigned to budgets", env.envelope.assigned, hidden)
                     EnvelopeLine(if (env.envelope.toAssign >= 0) "Left to assign" else "Over-assigned", env.envelope.toAssign, hidden,
-                        color = if (env.envelope.toAssign >= 0) AcuranzaTheme.colors.good else AcuranzaTheme.colors.alert)
+                        color = if (env.envelope.toAssign >= 0) SumvaloTheme.colors.good else SumvaloTheme.colors.alert)
                 }
             }
         }
         items(state.budgets.size, key = { state.budgets[it].budget.id }) { i ->
             val s = state.budgets[i]
             val p = s.projection
-            AcuranzaCard(Modifier.staggeredEntrance(i), onClick = { editing = s }) {
+            SumvaloCard(Modifier.staggeredEntrance(i), onClick = { editing = s }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (s.isOverall) {
                         ProgressRing(p.usedFraction.toFloat().coerceIn(0f, 1f), size = 36.dp, thickness = 4.dp)
@@ -276,14 +276,14 @@ private fun BudgetsTab(
                         Text(if (s.isOverall) "Overall budget" else s.category?.name ?: s.budget.categoryKey.orEmpty(), fontWeight = FontWeight.SemiBold)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             AmountText(s.spent, style = AmountStyles.small, hidden = hidden)
-                            Text(" of ", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
-                            AmountText(s.limit, style = AmountStyles.small, hidden = hidden, color = AcuranzaTheme.colors.subtleText)
+                            Text(" of ", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
+                            AmountText(s.limit, style = AmountStyles.small, hidden = hidden, color = SumvaloTheme.colors.subtleText)
                             if (s.budget.rollover && s.carry != 0L) {
                                 Text(
                                     if (s.carry > 0) " · +${if (hidden) "₹ ••••" else Money.format(s.carry, showPaise = false)} rolled over"
                                     else " · −${if (hidden) "₹ ••••" else Money.format(-s.carry, showPaise = false)} carried",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = AcuranzaTheme.colors.subtleText,
+                                    color = SumvaloTheme.colors.subtleText,
                                 )
                             }
                         }
@@ -292,9 +292,9 @@ private fun BudgetsTab(
                         Fmt.pct(p.usedFraction * 100, 0),
                         fontWeight = FontWeight.SemiBold,
                         color = when {
-                            p.isExceeded -> AcuranzaTheme.colors.alert
-                            p.willExceed -> AcuranzaTheme.colors.warning
-                            else -> AcuranzaTheme.colors.subtleText
+                            p.isExceeded -> SumvaloTheme.colors.alert
+                            p.willExceed -> SumvaloTheme.colors.warning
+                            else -> SumvaloTheme.colors.subtleText
                         },
                     )
                 }
@@ -310,12 +310,12 @@ private fun BudgetsTab(
                             if (hidden) "₹ ••••" else Money.format(p.dailyAllowance, showPaise = false)}/day"
                     },
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
         }
         item(key = "envelope-mode") {
-            AcuranzaCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp)) {
+            SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp)) {
                 com.acuranza.app.ui.common.SwitchRow(
                     "Envelope mode",
                     "Assign this month's income to budgets until nothing is left over",
@@ -369,7 +369,7 @@ private fun EditBudgetSheet(s: BudgetStatus, onDismiss: () -> Unit, onSave: (Lon
                     { rollover = it },
                 )
                 PrimaryButton("Save", enabled = (limit ?: 0) > 0, modifier = Modifier.fillMaxWidth(), onClick = { onSave(limit!!, rollover) })
-                TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) { Text("Delete budget", color = AcuranzaTheme.colors.alert) }
+                TextButton(onClick = onDelete, modifier = Modifier.fillMaxWidth()) { Text("Delete budget", color = SumvaloTheme.colors.alert) }
             }
             Spacer(Modifier.height(16.dp))
         }
@@ -423,7 +423,7 @@ private fun GoalsTab(
     if (state.loaded && state.goals.isEmpty()) {
         EmptyState(
             "No goals yet",
-            "An emergency fund, a trip, a new phone: set a target and a date, and Acuranza tells you how much to save each month.",
+            "An emergency fund, a trip, a new phone: set a target and a date, and Sumvalo tells you how much to save each month.",
             Modifier.padding(top = 40.dp),
             icon = Icons.Outlined.Flag,
             actionLabel = "Create a goal",
@@ -469,7 +469,7 @@ private fun GoalsTab(
                 if (!plan.reached) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                         TextButton(onClick = { contributing = g }) {
-                            Text("+ Add savings", color = AcuranzaTheme.colors.accent, style = MaterialTheme.typography.labelLarge)
+                            Text("+ Add savings", color = SumvaloTheme.colors.accent, style = MaterialTheme.typography.labelLarge)
                         }
                     }
                 }
@@ -509,7 +509,7 @@ private fun GoalSheet(
             Text(if (goal == null) "New goal" else "Edit goal", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Spacer(Modifier.height(12.dp))
             FormColumn {
-                AcuranzaTextField(name, { name = it }, "Goal name", supporting = "e.g. Emergency fund, Goa trip")
+                SumvaloTextField(name, { name = it }, "Goal name", supporting = "e.g. Emergency fund, Goa trip")
                 AmountField("Target amount", target, { target = it }, allowZero = false)
                 AmountField("Already saved", saved, { saved = it })
                 DateField("Target date", deadline, { deadline = it })
@@ -551,7 +551,7 @@ private fun GoalSheet(
                 )
                 if (onDelete != null) {
                     TextButton(onClick = { confirmDelete = true }, modifier = Modifier.fillMaxWidth()) {
-                        Text("Delete goal", color = AcuranzaTheme.colors.alert)
+                        Text("Delete goal", color = SumvaloTheme.colors.alert)
                     }
                 }
             }
@@ -570,13 +570,13 @@ private fun GoalSheet(
 private val RETURN_PRESETS = listOf("Savings account" to 3.0, "FD" to 7.0, "Debt fund" to 7.0, "Equity fund" to 12.0)
 
 /**
- * The yearly return expected on the money set aside for a goal. Acuranza assumes each monthly saving earns this
+ * The yearly return expected on the money set aside for a goal. Sumvalo assumes each monthly saving earns this
  * return until the target date, so a higher return means a smaller monthly saving is needed.
  */
 @Composable
 private fun ReturnField(value: String, onValue: (String) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        AcuranzaTextField(
+        SumvaloTextField(
             value,
             { onValue(it.filter { ch -> ch.isDigit() || ch == '.' }) },
             "Expected return on your savings (% per year)",
@@ -587,7 +587,7 @@ private fun ReturnField(value: String, onValue: (String) -> Unit) {
             "The yearly return you expect on the money you put aside for this goal, depending on where you keep it. " +
                 "Sumvalo uses it to work out how much to save each month.",
             style = MaterialTheme.typography.bodySmall,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
         )
         androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             items(RETURN_PRESETS.size) { i ->
@@ -622,7 +622,7 @@ private fun LoanSection(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text("Loan at purchase", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
-                Text("Part of the cost you're OK to borrow when you buy", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text("Part of the cost you're OK to borrow when you buy", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
             androidx.compose.material3.Switch(checked = enabled, onCheckedChange = onEnabled)
         }
@@ -631,7 +631,7 @@ private fun LoanSection(
         val pct = if (t > 0) ((amount ?: 0).toDouble() / t * 100).coerceIn(0.0, 80.0) else 0.0
         AmountField("Loan amount", amount, onAmount)
         if (t > 0) {
-            Text("${pct.toInt()}% of the target", style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.subtleText)
+            Text("${pct.toInt()}% of the target", style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.subtleText)
             androidx.compose.material3.Slider(
                 value = pct.toFloat(),
                 onValueChange = { onAmount((t * it / 100.0).toLong() / 100 * 100) },
@@ -640,9 +640,9 @@ private fun LoanSection(
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            AcuranzaTextField(rate, { onRate(it.filter { ch -> ch.isDigit() || ch == '.' }) }, "Interest", Modifier.weight(1f),
+            SumvaloTextField(rate, { onRate(it.filter { ch -> ch.isDigit() || ch == '.' }) }, "Interest", Modifier.weight(1f),
                 keyboardType = KeyboardType.Decimal, suffix = "% p.a.")
-            AcuranzaTextField(months, { onMonths(it.filter(Char::isDigit).take(3)) }, "Tenure", Modifier.weight(1f),
+            SumvaloTextField(months, { onMonths(it.filter(Char::isDigit).take(3)) }, "Tenure", Modifier.weight(1f),
                 keyboardType = KeyboardType.Number, suffix = "months")
         }
         val principal = (amount ?: 0).coerceAtMost(t)
@@ -651,12 +651,12 @@ private fun LoanSection(
         if (principal > 0 && n > 0) {
             val emi = com.acuranza.app.domain.GoalLoan.emi(principal, r, n)
             val interest = com.acuranza.app.domain.GoalLoan.totalInterest(principal, r, n)
-            AcuranzaCard(contentPadding = PaddingValues(14.dp)) {
-                Text("EMI after purchase", style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.subtleText)
+            SumvaloCard(contentPadding = PaddingValues(14.dp)) {
+                Text("EMI after purchase", style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.subtleText)
                 Text("${Money.format(emi, showPaise = false)} a month for $n months", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Text("Total interest ${Money.format(interest, showPaise = false)} · you save the remaining " +
                     "${Money.format(com.acuranza.app.domain.GoalLoan.savingsTarget(t, principal), showPaise = false)}",
-                    style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                    style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
         }
     }
@@ -669,8 +669,8 @@ private fun RequiredSaving(target: Long?, saved: Long, deadline: LocalDate, retu
     val plan = remember(t, saved, deadline, returnPct, loan, inflationPct) {
         com.acuranza.app.finance.Goals.planGoal(t, saved, deadline, Time.today(), returnPct, loan, inflationPct)
     }
-    AcuranzaCard(contentPadding = PaddingValues(14.dp)) {
-        Text("Required monthly saving", style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.subtleText)
+    SumvaloCard(contentPadding = PaddingValues(14.dp)) {
+        Text("Required monthly saving", style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.subtleText)
         Text(
             when {
                 plan.reached -> "Already reached"
@@ -687,7 +687,7 @@ private fun RequiredSaving(target: Long?, saved: Long, deadline: LocalDate, retu
                 "Saved at each month-end, earning ${Fmt.pct(returnPct, 0)} a year" +
                     (if (inflationPct > 0) ", for a price rising ${Fmt.pct(inflationPct, 0)} a year" else "") + ".",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }
@@ -696,7 +696,7 @@ private fun RequiredSaving(target: Long?, saved: Long, deadline: LocalDate, retu
 @Composable
 private fun EnvelopeLine(label: String, amount: Long, hidden: Boolean, color: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Unspecified) {
     Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
         AmountText(amount, style = AmountStyles.medium, hidden = hidden, color = color)
     }
 }

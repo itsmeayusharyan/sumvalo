@@ -474,7 +474,7 @@ object InsightEngine {
             surplus == null -> insight(
                 Severity.TIP, "${g.name}: save ${fmt(plan.requiredMonthly)} a month",
                 "Saving ${fmt(plan.requiredMonthly)} a month gets you ${fmt(toSave)} by $dateText$loanNote.",
-                "$basics Acuranza needs a full month of income and spending to judge whether this fits your budget.", 25,
+                "$basics Sumvalo needs a full month of income and spending to judge whether this fits your budget.", 25,
             )
             // The tracker's verdict, shared with the Goals screen.
             standing == GoalStanding.ON_TRACK && freeNow != null && freeNow > 0 -> insight(

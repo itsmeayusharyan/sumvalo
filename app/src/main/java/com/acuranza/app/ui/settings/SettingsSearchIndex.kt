@@ -74,7 +74,7 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "App lock", "Require biometrics or your PIN to open Sumvalo", "biometric fingerprint", Routes.SETTINGS_PRIVACY),
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "App PIN", "A numeric PIN that unlocks the app", "", Routes.SETTINGS_PRIVACY),
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "Decoy PIN", "A second PIN that opens an empty profile", "decoy hidden profile", Routes.SETTINGS_PRIVACY),
-    SettingsSearchHit(G_PRIVACY, "Privacy & security", "Block screenshots", "Keep Acuranza out of screenshots and the recents preview", "", Routes.SETTINGS_PRIVACY),
+    SettingsSearchHit(G_PRIVACY, "Privacy & security", "Block screenshots", "Keep Sumvalo out of screenshots and the recents preview", "", Routes.SETTINGS_PRIVACY),
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "Database encryption", "SQLCipher AES-256 with the key in the Android Keystore", "sqlcipher crypto", Routes.SETTINGS_PRIVACY),
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "Recovery options", "How to get back in if biometrics or the PIN fail", "", Routes.SETTINGS_PRIVACY),
 
@@ -85,7 +85,7 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     SettingsSearchHit(G_DATA, "Data management", "Import statements", "CSV from net banking to bring in past transactions", "csv import hdfc icici sbi axis kotak", Routes.STATEMENT_IMPORT),
     SettingsSearchHit(G_DATA, "Data management", "Imported transactions", "Transactions confirmed from bank messages — review, search or delete", "sms imported review delete", Routes.SETTINGS_SMS_IMPORTS),
     SettingsSearchHit(G_DATA, "Data management", "Export data", "CSV, Excel, Beancount or Ledger", "export csv excel beancount ledger share file", Routes.SETTINGS_DATA),
-    SettingsSearchHit(G_DATA, "Data management", "Load sample data", "Explore Acuranza with demo accounts and transactions", "demo", Routes.SETTINGS_DATA),
+    SettingsSearchHit(G_DATA, "Data management", "Load sample data", "Explore Sumvalo with demo accounts and transactions", "demo", Routes.SETTINGS_DATA),
     SettingsSearchHit(G_DATA, "Data management", "Erase all data", "Deletes accounts, transactions and bills", "wipe delete everything destructive", Routes.SETTINGS_DATA),
 
     // ── Notifications ──────────────────────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     SettingsSearchHit(G_NOTIFICATIONS, "Notifications", "Home screen widgets", "Show real amounts on the widget even with app lock on", "widget amounts lock", Routes.SETTINGS_NOTIFICATIONS),
 
     // ── About ──────────────────────────────────────────────────────────────────────────────────
-    SettingsSearchHit(G_ABOUT, "About", "Privacy policy", "What Acuranza stores, and what it never sends", "legal privacy data", Routes.ABOUT_PRIVACY),
+    SettingsSearchHit(G_ABOUT, "About", "Privacy policy", "What Sumvalo stores, and what it never sends", "legal privacy data", Routes.ABOUT_PRIVACY),
     SettingsSearchHit(G_ABOUT, "About", "Terms of service", "The plain terms of using the app", "legal terms", Routes.ABOUT_TERMS),
     SettingsSearchHit(G_ABOUT, "About", "Licence", "GPL-3.0 · free and open source", "license gpl legal", Routes.ABOUT_GPL),
 )

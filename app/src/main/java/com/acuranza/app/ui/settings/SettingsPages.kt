@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.shape.CircleShape
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.designsystem.theme.isSupported
 import androidx.compose.material.icons.outlined.Contrast
 import androidx.compose.material.icons.outlined.Check
@@ -91,7 +91,7 @@ import com.acuranza.app.model.AccentColor
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.security.BackupCrypto
 import com.acuranza.app.ui.accounts.ordinal
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
@@ -117,7 +117,7 @@ internal fun SettingsPage(
     snackbar: SnackbarHostState? = null,
     content: @Composable () -> Unit,
 ) {
-    AcuranzaScreen(title = title, subtitle = subtitle, onBack = { nav.popBackSafely() }, snackbar = snackbar) { padding ->
+    SumvaloScreen(title = title, subtitle = subtitle, onBack = { nav.popBackSafely() }, snackbar = snackbar) { padding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -322,7 +322,7 @@ fun AppearancePage(nav: NavController) {
 private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.ColorTheme, onPick: (com.acuranza.app.designsystem.theme.ColorTheme) -> Unit) {
     val sdk = android.os.Build.VERSION.SDK_INT
     Column {
-        Text("Color theme", style = MaterialTheme.typography.titleSmall, color = AcuranzaTheme.colors.ink)
+        Text("Color theme", style = MaterialTheme.typography.titleSmall, color = SumvaloTheme.colors.ink)
         Spacer(Modifier.height(8.dp))
         LazyRow(
             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
@@ -341,7 +341,7 @@ private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.Colo
                             .background(previewBackground(theme))
                             .border(
                                 width = if (chosen) 2.dp else 1.dp,
-                                color = if (chosen) AcuranzaTheme.colors.accent else AcuranzaTheme.colors.hairline,
+                                color = if (chosen) SumvaloTheme.colors.accent else SumvaloTheme.colors.hairline,
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                             )
                             .alpha(if (supported) 1f else 0.38f)
@@ -365,13 +365,13 @@ private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.Colo
                                     .padding(5.dp)
                                     .size(16.dp)
                                     .clip(CircleShape)
-                                    .background(AcuranzaTheme.colors.accent),
+                                    .background(SumvaloTheme.colors.accent),
                                 contentAlignment = androidx.compose.ui.Alignment.Center,
                             ) {
                                 Icon(
                                     Icons.Outlined.Check,
                                     contentDescription = null,
-                                    tint = AcuranzaTheme.colors.onInk,
+                                    tint = SumvaloTheme.colors.onInk,
                                     modifier = Modifier.size(11.dp),
                                 )
                             }
@@ -381,7 +381,7 @@ private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.Colo
                     Text(
                         theme.label,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (supported) AcuranzaTheme.colors.subtleText else AcuranzaTheme.colors.tertiaryText,
+                        color = if (supported) SumvaloTheme.colors.subtleText else SumvaloTheme.colors.tertiaryText,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -393,7 +393,7 @@ private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.Colo
             Text(
                 "Dynamic needs Android 12+ to read your wallpaper colours — other themes work everywhere.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.tertiaryText,
+                color = SumvaloTheme.colors.tertiaryText,
             )
         }
     }
@@ -402,7 +402,7 @@ private fun ColorThemeGallery(selected: com.acuranza.app.designsystem.theme.Colo
 /** Three representative swatches per palette, honouring the current dark/light mode. */
 @Composable
 private fun previewSwatches(theme: com.acuranza.app.designsystem.theme.ColorTheme): List<androidx.compose.ui.graphics.Color> {
-    val dark = AcuranzaTheme.colors.isDark
+    val dark = SumvaloTheme.colors.isDark
     return when (theme) {
         com.acuranza.app.designsystem.theme.ColorTheme.DYNAMIC ->
             listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.surfaceContainerHigh, MaterialTheme.colorScheme.primary)
@@ -415,7 +415,7 @@ private fun previewSwatches(theme: com.acuranza.app.designsystem.theme.ColorThem
 
 @Composable
 private fun previewBackground(theme: com.acuranza.app.designsystem.theme.ColorTheme): androidx.compose.ui.graphics.Color {
-    val dark = AcuranzaTheme.colors.isDark
+    val dark = SumvaloTheme.colors.isDark
     return if (theme == com.acuranza.app.designsystem.theme.ColorTheme.DYNAMIC) {
         MaterialTheme.colorScheme.background
     } else {
@@ -448,7 +448,7 @@ fun DataManagementPage(nav: NavController) {
             c.smsImports.totalImports() - c.smsImports.pendingCount()
         }.getOrDefault(0)
     }
-    val backupFlow = remember { com.acuranza.app.security.BackupFlow(context.applicationContext as com.acuranza.app.AcuranzaApp) }
+    val backupFlow = remember { com.acuranza.app.security.BackupFlow(context.applicationContext as com.acuranza.app.SumvaloApp) }
     val createBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         if (uri != null) backupUri = uri
     }
@@ -458,7 +458,7 @@ fun DataManagementPage(nav: NavController) {
 
     SettingsPage("Data management", "Backups, imports and destructive actions", nav, snackbar) {
         busy?.let { msg ->
-            com.acuranza.app.designsystem.components.AcuranzaCard(Modifier.fillMaxWidth()) {
+            com.acuranza.app.designsystem.components.SumvaloCard(Modifier.fillMaxWidth()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     androidx.compose.material3.CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
                     Spacer(Modifier.width(12.dp))
@@ -488,7 +488,7 @@ fun DataManagementPage(nav: NavController) {
                     confirmRemoveSample = true
                 }
             } else {
-                SettingsRow("Load sample data", "Explore Acuranza with demo accounts and transactions", Icons.Outlined.Science, enabled = busy == null) {
+                SettingsRow("Load sample data", "Explore Sumvalo with demo accounts and transactions", Icons.Outlined.Science, enabled = busy == null) {
                     busy = "Loading sample data…"
                     scope.launch {
                         val loaded = runCatching { c.demoData.load() }.getOrDefault(false)

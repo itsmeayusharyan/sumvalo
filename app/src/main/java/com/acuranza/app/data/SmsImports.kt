@@ -29,7 +29,7 @@ data class SmsImportBatchEntity(
 )
 
 /**
- * What Acuranza keeps about one imported bank SMS. Privacy rule: the message body itself is NEVER
+ * What Sumvalo keeps about one imported bank SMS. Privacy rule: the message body itself is NEVER
  * stored — only the extracted fields, the sender id and the parser's fingerprint (a hash). That is
  * enough to list, re-edit, delete or re-scan without retaining the raw text.
  */

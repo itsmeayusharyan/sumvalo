@@ -8,14 +8,14 @@ import org.junit.Test
 import java.io.File
 
 /**
- * Checks the exported Room schemas against [AcuranzaDatabase.MIGRATION_1_2]: v2 must be v1 plus exactly the
+ * Checks the exported Room schemas against [SumvaloDatabase.MIGRATION_1_2]: v2 must be v1 plus exactly the
  * `transactions.suspicious` column the migration adds, declared NOT NULL DEFAULT 0 so Room's validation
  * accepts migrated databases. (A full MigrationTestHelper run needs a device.)
  */
 class MigrationSchemaTest {
 
     private fun schema(version: Int): JSONObject {
-        val dir = listOf("schemas", "app/schemas").map { File(it, "com.acuranza.app.data.AcuranzaDatabase") }.first { it.exists() }
+        val dir = listOf("schemas", "app/schemas").map { File(it, "com.acuranza.app.data.SumvaloDatabase") }.first { it.exists() }
         return JSONObject(File(dir, "$version.json").readText()).getJSONObject("database")
     }
 
@@ -87,7 +87,7 @@ class MigrationSchemaTest {
         val db = java.lang.reflect.Proxy.newProxyInstance(
             javaClass.classLoader, arrayOf(androidx.sqlite.db.SupportSQLiteDatabase::class.java),
         ) { _, m, args -> if (m.name == "execSQL") sql += args[0] as String; null } as androidx.sqlite.db.SupportSQLiteDatabase
-        AcuranzaDatabase.MIGRATION_4_5.migrate(db)
+        SumvaloDatabase.MIGRATION_4_5.migrate(db)
         val entities = schema(5).getJSONArray("entities")
         val expected = (0 until entities.length()).map { entities.getJSONObject(it) }
             .filter { it.getString("tableName") in setOf("deleted_fingerprints", "demo_rows") }
@@ -120,7 +120,7 @@ class MigrationSchemaTest {
         val db = java.lang.reflect.Proxy.newProxyInstance(
             javaClass.classLoader, arrayOf(androidx.sqlite.db.SupportSQLiteDatabase::class.java),
         ) { _, m, args -> if (m.name == "execSQL") sql += args[0] as String; null } as androidx.sqlite.db.SupportSQLiteDatabase
-        AcuranzaDatabase.MIGRATION_6_7.migrate(db)
+        SumvaloDatabase.MIGRATION_6_7.migrate(db)
         val newTables = setOf("txn_splits", "debts", "recurring_rules", "loans", "attachments")
         val entities = schema(7).getJSONArray("entities")
         val expected = mutableListOf(
@@ -167,7 +167,7 @@ class MigrationSchemaTest {
         val db = java.lang.reflect.Proxy.newProxyInstance(
             javaClass.classLoader, arrayOf(androidx.sqlite.db.SupportSQLiteDatabase::class.java),
         ) { _, m, args -> if (m.name == "execSQL") sql += args[0] as String; null } as androidx.sqlite.db.SupportSQLiteDatabase
-        AcuranzaDatabase.MIGRATION_9_10.migrate(db)
+        SumvaloDatabase.MIGRATION_9_10.migrate(db)
         assertEquals(
             setOf(
                 "DROP TABLE IF EXISTS `investments`",

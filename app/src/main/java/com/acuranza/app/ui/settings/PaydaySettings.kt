@@ -30,7 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.data.prefs.Settings
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.finance.PayWeekend
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.LocalContainer
@@ -43,7 +43,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 /**
- * How Acuranza works out payday: the working day before a weekend or holiday due day, and which days count as off.
+ * How Sumvalo works out payday: the working day before a weekend or holiday due day, and which days count as off.
  * Shown under "Month starts on" when the month starts on a salary day.
  */
 @Composable
@@ -55,7 +55,7 @@ fun PaydaySettings(s: Settings) {
 
     SettingsToggle(
         "Paid early on weekends and holidays",
-        "Salary due on a weekend or holiday comes the working day before; once it's in, Acuranza uses the day it arrived",
+        "Salary due on a weekend or holiday comes the working day before; once it's in, Sumvalo uses the day it arrived",
         s.paydayToWorkingDay,
         { v -> scope.launch { c.settings.setPaydayToWorkingDay(v) } },
         Icons.Outlined.Event,
@@ -93,7 +93,7 @@ fun PaydaySettings(s: Settings) {
             Text(
                 fmt.format(cycle.payday(m)) + (why?.let { " · $it" } ?: ""),
                 style = MaterialTheme.typography.bodySmall,
-                color = if (why != null) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.subtleText,
+                color = if (why != null) SumvaloTheme.colors.ink else SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(top = 2.dp),
             )
         }
@@ -121,12 +121,12 @@ private fun HolidaysDialog(days: Set<LocalDate>, onChange: (Set<LocalDate>) -> U
                     "Days your employer or bank is closed besides weekends and national holidays. A payday on one of them " +
                         "moves to the working day before.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 Spacer(Modifier.height(8.dp))
                 val upcoming = days.filter { !it.isBefore(Time.today().minusMonths(2)) }.sorted()
                 if (upcoming.isEmpty()) {
-                    Text("None yet", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                    Text("None yet", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                 }
                 upcoming.forEach { d ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {

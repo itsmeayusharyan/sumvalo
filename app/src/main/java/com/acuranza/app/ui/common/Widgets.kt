@@ -61,10 +61,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.components.AmountInputDisplay
 import com.acuranza.app.designsystem.components.KeypadExpression
-import com.acuranza.app.designsystem.components.AcuranzaTopBar
+import com.acuranza.app.designsystem.components.SumvaloTopBar
 import com.acuranza.app.designsystem.components.NumberKeypad
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnType
 import java.time.Instant
@@ -73,7 +73,7 @@ import java.time.ZoneOffset
 
 /** Standard screen: top bar, optional snackbar host, edge-to-edge content. */
 @Composable
-fun AcuranzaScreen(
+fun SumvaloScreen(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -89,7 +89,7 @@ fun AcuranzaScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Box(Modifier) {
-                AcuranzaTopBar(title = title, subtitle = subtitle, onBack = onBack, actions = actions)
+                SumvaloTopBar(title = title, subtitle = subtitle, onBack = onBack, actions = actions)
             }
         },
         snackbarHost = { snackbar?.let { SnackbarHost(it, Modifier.navigationBarsPadding()) } },
@@ -163,7 +163,7 @@ fun AmountField(
             if (value != null) com.acuranza.app.model.Money.format(value) else placeholder,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = if (value != null) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (value != null) MaterialTheme.colorScheme.onSurface else AcuranzaTheme.colors.subtleText,
+            color = if (value != null) MaterialTheme.colorScheme.onSurface else SumvaloTheme.colors.subtleText,
         )
     }
     if (open) {
@@ -189,16 +189,16 @@ fun FieldBox(
             .clip(RoundedCornerShape(16.dp))
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
-        color = AcuranzaTheme.colors.cardSurface,
-        border = BorderStroke(1.dp, AcuranzaTheme.colors.divider),
+        color = SumvaloTheme.colors.cardSurface,
+        border = BorderStroke(1.dp, SumvaloTheme.colors.divider),
     ) {
         Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(label, style = MaterialTheme.typography.labelMedium, color = AcuranzaTheme.colors.subtleText)
+                Text(label, style = MaterialTheme.typography.labelMedium, color = SumvaloTheme.colors.subtleText)
                 Spacer(Modifier.height(2.dp))
                 content()
             }
-            Icon(trailing, contentDescription = null, tint = AcuranzaTheme.colors.subtleText)
+            Icon(trailing, contentDescription = null, tint = SumvaloTheme.colors.subtleText)
         }
     }
 }
@@ -286,7 +286,7 @@ fun <T> ChoiceField(
 
 /** A themed text field. */
 @Composable
-fun AcuranzaTextField(
+fun SumvaloTextField(
     value: String,
     onValue: (String) -> Unit,
     label: String,
@@ -309,9 +309,9 @@ fun AcuranzaTextField(
         suffix = suffix?.let { { Text(it) } },
         shape = RoundedCornerShape(16.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = AcuranzaTheme.colors.cardSurface,
-            focusedContainerColor = AcuranzaTheme.colors.cardSurface,
-            unfocusedBorderColor = AcuranzaTheme.colors.divider,
+            unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+            focusedContainerColor = SumvaloTheme.colors.cardSurface,
+            unfocusedBorderColor = SumvaloTheme.colors.divider,
         ),
     )
 }
@@ -334,12 +334,12 @@ fun SwitchRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
         }
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge)
-            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
         Spacer(Modifier.width(12.dp))
         Switch(
@@ -348,11 +348,11 @@ fun SwitchRow(
             enabled = enabled,
             colors = androidx.compose.material3.SwitchDefaults.colors(
                 checkedThumbColor = androidx.compose.ui.graphics.Color.White,
-                checkedTrackColor = AcuranzaTheme.colors.accent,
-                checkedBorderColor = AcuranzaTheme.colors.accent,
+                checkedTrackColor = SumvaloTheme.colors.accent,
+                checkedBorderColor = SumvaloTheme.colors.accent,
                 uncheckedThumbColor = androidx.compose.ui.graphics.Color.White,
-                uncheckedTrackColor = AcuranzaTheme.colors.fill,
-                uncheckedBorderColor = AcuranzaTheme.colors.hairline,
+                uncheckedTrackColor = SumvaloTheme.colors.fill,
+                uncheckedBorderColor = SumvaloTheme.colors.hairline,
             ),
         )
     }
@@ -376,13 +376,13 @@ fun ActionRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
-            Icon(icon, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(20.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(14.dp))
         }
         Column(Modifier.weight(1f)) {
             Text(title, style = MaterialTheme.typography.bodyLarge,
-                color = if (enabled) MaterialTheme.colorScheme.onSurface else AcuranzaTheme.colors.subtleText)
-            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                color = if (enabled) MaterialTheme.colorScheme.onSurface else SumvaloTheme.colors.subtleText)
+            if (subtitle != null) Text(subtitle, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
         trailing?.invoke()
     }
@@ -408,7 +408,7 @@ fun ConfirmDialog(
         confirmButton = {
             val haptic = rememberHaptic()
             TextButton(onClick = { haptic.confirm(); onConfirm() }) {
-                Text(confirmLabel, color = if (destructive) AcuranzaTheme.colors.alert else MaterialTheme.colorScheme.primary)
+                Text(confirmLabel, color = if (destructive) SumvaloTheme.colors.alert else MaterialTheme.colorScheme.primary)
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },

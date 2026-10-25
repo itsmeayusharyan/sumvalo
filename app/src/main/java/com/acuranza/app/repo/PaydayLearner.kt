@@ -1,6 +1,6 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.finance.PayCycle
 import com.acuranza.app.util.Time
@@ -19,7 +19,7 @@ object PaydayLearner {
     /** How far back salary days are kept: a year of periods and a little more. */
     private const val LOOKBACK_DAYS = 400L
 
-    fun start(scope: CoroutineScope, db: AcuranzaDatabase, settings: SettingsStore) {
+    fun start(scope: CoroutineScope, db: SumvaloDatabase, settings: SettingsStore) {
         scope.launch {
             try {
                 val since = Time.startOfDay(Time.today().minusDays(LOOKBACK_DAYS))

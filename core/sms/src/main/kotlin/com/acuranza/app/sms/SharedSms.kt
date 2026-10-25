@@ -1,7 +1,7 @@
 package com.acuranza.app.sms
 
 /**
- * Permissionless SMS capture: the user shares a bank message from their Messages app to Acuranza
+ * Permissionless SMS capture: the user shares a bank message from their Messages app to Sumvalo
  * (or pastes it). This pipeline turns the shared text into a candidate import — or a rejection —
  * and is pure so every rule is unit-testable on the JVM.
  *

@@ -2,7 +2,7 @@ package com.acuranza.app.repo
 
 import androidx.room.withTransaction
 import com.acuranza.app.data.AccountEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.SmsImportBatchEntity
 import com.acuranza.app.data.SmsImportEntity
 import com.acuranza.app.data.TransactionEntity
@@ -39,7 +39,7 @@ data class ApprovedSmsImport(
  * touched by an undo because every import row references only the transaction its own batch
  * created.
  */
-class SmsImportRepository(private val db: AcuranzaDatabase, private val attachments: com.acuranza.app.repo.AttachmentRepository? = null) {
+class SmsImportRepository(private val db: SumvaloDatabase, private val attachments: com.acuranza.app.repo.AttachmentRepository? = null) {
 
     /**
      * The account a parsed transaction belongs to. Matching is by the digits the message showed

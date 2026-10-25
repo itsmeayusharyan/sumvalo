@@ -1,6 +1,6 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.NetWorthSnapshotEntity
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.domain.SmsMapping
@@ -31,7 +31,7 @@ import java.time.LocalDate
 
 /** Offline insights from the rule engine, regenerated whenever the underlying data changes. */
 class InsightRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     private val accounts: AccountRepository,
     private val settings: SettingsStore,
     private val budgetRepo: BudgetRepository,
@@ -149,7 +149,7 @@ data class NetWorth(
 }
 
 class NetWorthRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     private val accounts: AccountRepository,
     private val loanRepo: LoanRepository,
 ) {

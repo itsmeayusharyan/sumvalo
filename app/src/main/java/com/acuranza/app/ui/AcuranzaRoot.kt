@@ -93,7 +93,7 @@ import androidx.navigation.navArgument
 import com.acuranza.app.data.prefs.Settings
 import com.acuranza.app.data.prefs.ThemeMode
 import com.acuranza.app.di.AppContainer
-import com.acuranza.app.designsystem.components.AcuranzaLogo
+import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.glassSurface
 import com.acuranza.app.designsystem.components.LogoShape
 import com.acuranza.app.designsystem.components.PrimaryButton
@@ -101,7 +101,7 @@ import com.acuranza.app.designsystem.components.pressScale
 import com.acuranza.app.designsystem.theme.BrandPalette
 import com.acuranza.app.designsystem.theme.Motion
 import com.acuranza.app.designsystem.theme.motionTween
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme as SumvaloThemeObject
 import com.acuranza.app.designsystem.theme.rememberReducedMotion
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.notify.Notifications
@@ -134,7 +134,7 @@ import androidx.compose.ui.text.style.TextOverflow
 
 /** Root of the UI: theme, splash, app lock, onboarding and navigation. */
 @Composable
-fun AcuranzaRoot(container: AppContainer, initialRoute: String?, onRouteConsumed: () -> Unit) {
+fun SumvaloRoot(container: AppContainer, initialRoute: String?, onRouteConsumed: () -> Unit) {
     val settingsState by container.settings.settings.collectAsStateWithLifecycle(initialValue = null)
     val settings = settingsState
     // While prefs are still loading (first frames), follow the system instead of defaulting dark:
@@ -179,7 +179,7 @@ fun AcuranzaRoot(container: AppContainer, initialRoute: String?, onRouteConsumed
         }
     }
 
-    AcuranzaTheme(
+    com.acuranza.app.designsystem.theme.SumvaloTheme(
         darkTheme = dark,
         accent = settings?.accentChoice ?: com.acuranza.app.model.AccentColor.BLUE,
         colorTheme = settings?.colorTheme ?: com.acuranza.app.designsystem.theme.ColorTheme.DEFAULT,
@@ -221,7 +221,7 @@ fun AcuranzaRoot(container: AppContainer, initialRoute: String?, onRouteConsumed
                 onDispose { owner.lifecycle.removeObserver(obs) }
             }
 
-            // Acuranza requires notification permission before the main app: reminders are a core feature,
+            // Sumvalo requires notification permission before the main app: reminders are a core feature,
             // so a missing permission keeps the user on the gate instead of inside the app.
             var notifGranted by com.acuranza.app.ui.onboarding.rememberNotificationPermission()
             val stage = when {
@@ -297,9 +297,9 @@ private fun Splash() {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.graphicsLayer { this.alpha = alpha },
         ) {
-            AcuranzaLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
+            SumvaloLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
             Spacer(Modifier.height(12.dp))
-            Text("Sumvalo", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = AcuranzaTheme.colors.ink)
+            Text("Sumvalo", fontSize = 20.sp, fontWeight = FontWeight.SemiBold, color = SumvaloThemeObject.colors.ink)
         }
     }
 }
@@ -318,7 +318,7 @@ private fun LockScreen(onUnlocked: () -> Unit) {
         available = BiometricGate.isAvailable(context)
         if (!available) {
             // Fail closed: with no screen lock on the phone there is nothing to verify the user with.
-            message = "Set a screen lock (PIN, pattern or fingerprint) on your phone to unlock Acuranza."
+            message = "Set a screen lock (PIN, pattern or fingerprint) on your phone to unlock Sumvalo."
             return@unlock
         }
         scope.launch {
@@ -341,9 +341,9 @@ private fun LockScreen(onUnlocked: () -> Unit) {
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            AcuranzaLogo(size = 72.dp, shape = LogoShape.RoundedSquare)
-            Text("Sumvalo is locked", style = MaterialTheme.typography.titleLarge, color = AcuranzaTheme.colors.ink)
-            message?.let { Text(it, color = AcuranzaTheme.colors.subtleText, style = MaterialTheme.typography.bodyMedium) }
+            SumvaloLogo(size = 72.dp, shape = LogoShape.RoundedSquare)
+            Text("Sumvalo is locked", style = MaterialTheme.typography.titleLarge, color = SumvaloThemeObject.colors.ink)
+            message?.let { Text(it, color = SumvaloThemeObject.colors.subtleText, style = MaterialTheme.typography.bodyMedium) }
             Spacer(Modifier.height(8.dp))
             val pinPrefs = toolsPrefs
             if (pinPrefs?.pinSet == true) {
@@ -443,7 +443,7 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
         Box(Modifier.padding(bottom = if (showBar) padding.calculateBottomPadding() else 0.dp)) {
-            AcuranzaNavHost(nav)
+            SumvaloNavHost(nav)
         }
     }
 }
@@ -456,7 +456,7 @@ private fun BottomBar(nav: NavHostController, current: String?) {
         com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
         com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
     )
-    AcuranzaBottomBar(current, onTab = { route -> nav.navigateToTab(route) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
+    SumvaloBottomBar(current, onTab = { route -> nav.navigateToTab(route) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
 }
 
 /**
@@ -469,7 +469,7 @@ private fun BottomBar(nav: NavHostController, current: String?) {
  * Light, System and AMOLED palettes all flow through.
  */
 @Composable
-fun AcuranzaBottomBar(
+fun SumvaloBottomBar(
     current: String?,
     onTab: (String) -> Unit,
     tabs: List<com.acuranza.app.ui.nav.NavTabs.ResolvedTab> =
@@ -477,7 +477,7 @@ fun AcuranzaBottomBar(
     showLabels: Boolean = true,
     floating: Boolean = true,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
     val pillShape = RoundedCornerShape(percent = 50)
     // Translucent glass surface from the centralized treatment — see-through enough to float
@@ -607,17 +607,17 @@ private fun AddFab(onClick: () -> Unit) {
         Modifier
             .size(56.dp)
             .clip(shape)
-            .background(AcuranzaTheme.colors.ink)
+            .background(SumvaloThemeObject.colors.ink)
             .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
             .semantics { contentDescription = "Add transaction" },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Outlined.Add, contentDescription = null, tint = AcuranzaTheme.colors.onInk, modifier = Modifier.size(24.dp))
+        Icon(Icons.Outlined.Add, contentDescription = null, tint = SumvaloThemeObject.colors.onInk, modifier = Modifier.size(24.dp))
     }
 }
 
 @Composable
-private fun AcuranzaNavHost(nav: NavHostController) {
+private fun SumvaloNavHost(nav: NavHostController) {
     val idArg = listOf(navArgument("id") { type = NavType.LongType })
     // Captured here because NavHost's transition lambdas are not composable scopes.
     val navFadeIn = motionTween<Float>(Motion.STANDARD)

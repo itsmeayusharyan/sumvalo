@@ -11,7 +11,7 @@ import com.acuranza.app.sms.CategoryGuesser
  * - Earned: salary, interest and dividends, business and rent received, and any income category the user creates.
  *   Only these count as income.
  * - Given back: refunds and cashback return money already spent, so they come off spending instead.
- * - Received: everything else that comes in (friends settling up, family, credits Acuranza can't place). It shows in
+ * - Received: everything else that comes in (friends settling up, family, credits Sumvalo can't place). It shows in
  *   the account and its balance, but is neither income nor spending.
  *
  * Transfers between the user's own accounts are neither; see [SmsMapping.countsInStats].

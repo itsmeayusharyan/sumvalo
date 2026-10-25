@@ -42,12 +42,12 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.RecurringRuleEntity
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.finance.BudgetMath
 import com.acuranza.app.finance.Recurring
 import com.acuranza.app.model.TxnType
@@ -57,9 +57,9 @@ import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.rememberHaptic
-import com.acuranza.app.ui.common.AcuranzaTextField
+import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.Pill
@@ -99,7 +99,7 @@ fun RecurringScreen(nav: NavController) {
         upcoming = runCatching { c.recurring.upcoming(today, today.plusDays(31)) }.getOrDefault(emptyList())
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Recurring",
         onBack = { nav.popBackSafely() },
         floating = {
@@ -119,11 +119,11 @@ fun RecurringScreen(nav: NavController) {
             item {
                 val monthly = (series.orEmpty().filter { !it.overdue }.sumOf { it.monthlyEquivalent }) +
                     rules.filter { it.active && it.type == TxnType.EXPENSE }.sumOf { monthlyOf(it) }
-                AcuranzaCard {
-                    Text("Repeating payments cost about", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                SumvaloCard {
+                    Text("Repeating payments cost about", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     Row(verticalAlignment = Alignment.Bottom) {
                         AmountText(monthly, style = AmountStyles.large, hidden = hidden)
-                        Text(" a month", style = MaterialTheme.typography.bodyMedium, color = AcuranzaTheme.colors.subtleText)
+                        Text(" a month", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
                     }
                     val mandates = series.orEmpty().count { it.autoDebit }
                     if (mandates > 0) {
@@ -131,14 +131,14 @@ fun RecurringScreen(nav: NavController) {
                         Text(
                             "$mandates paid by auto-debit (UPI AutoPay, NACH or standing instruction). Cancel unused mandates in your UPI app or bank.",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
             }
             item { SectionHeader("Next 30 days") }
             if (upcoming.isEmpty()) {
-                item { Text("Nothing expected.", color = AcuranzaTheme.colors.subtleText) }
+                item { Text("Nothing expected.", color = SumvaloTheme.colors.subtleText) }
             } else {
                 items(upcoming.take(30)) { d ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -148,7 +148,7 @@ fun RecurringScreen(nav: NavController) {
                             Text(
                                 if (days == 0L) "Today" else if (days == 1L) "Tomorrow" else Fmt.dayLabel(d.date, today),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                             )
                         }
                         AmountText(d.amount, style = AmountStyles.medium, hidden = hidden)
@@ -160,14 +160,14 @@ fun RecurringScreen(nav: NavController) {
             if (rules.isEmpty()) {
                 item {
                     Text(
-                        "Schedule rent, SIPs, EMIs or pocket money and Acuranza adds them on their dates.",
+                        "Schedule rent, SIPs, EMIs or pocket money and Sumvalo adds them on their dates.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
             }
             items(rules, key = { "r${it.id}" }) { r ->
-                AcuranzaCard(onClick = { nav.navigate(Routes.editRecurring(r.id)) }) {
+                SumvaloCard(onClick = { nav.navigate(Routes.editRecurring(r.id)) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
                             Text(r.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
@@ -175,7 +175,7 @@ fun RecurringScreen(nav: NavController) {
                                 "${cadenceOf(r.cadence).title()} · next ${Fmt.date(LocalDate.ofEpochDay(r.nextDay))}" +
                                     if (!r.active) " · paused" else if (!r.autoAdd) " · reminder only" else "",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = AcuranzaTheme.colors.subtleText,
+                                color = SumvaloTheme.colors.subtleText,
                             )
                         }
                         AmountText(r.amount, style = AmountStyles.medium, type = r.type, hidden = hidden)
@@ -185,11 +185,11 @@ fun RecurringScreen(nav: NavController) {
 
             item { Spacer(Modifier.height(4.dp)); SectionHeader("Spotted in your spending") }
             when {
-                series == null -> item { Text("Looking…", color = AcuranzaTheme.colors.subtleText) }
+                series == null -> item { Text("Looking…", color = SumvaloTheme.colors.subtleText) }
                 series.isEmpty() -> item {
                     EmptyState(
                         "No repeats yet",
-                        "Subscriptions and EMIs show up here once Acuranza has seen them a few times.",
+                        "Subscriptions and EMIs show up here once Sumvalo has seen them a few times.",
                     )
                 }
                 else -> items(series, key = { "s${it.key}" }) { s ->
@@ -228,12 +228,12 @@ private fun monthlyOf(r: RecurringRuleEntity): Long = when (cadenceOf(r.cadence)
 @Composable
 private fun SeriesCard(s: Recurring.Series, hidden: Boolean, today: LocalDate, onHide: () -> Unit, onSchedule: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
-    AcuranzaCard {
+    SumvaloCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(s.merchant, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
                 val next = if (s.overdue) "last paid ${Fmt.date(s.lastDate)}" else "next ${Fmt.dayLabel(s.nextDate, today)}"
-                Text("${s.cadence.title()} · ${s.occurrences} payments · $next", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                Text("${s.cadence.title()} · ${s.occurrences} payments · $next", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
             }
             AmountText(s.lastAmount, style = AmountStyles.medium, hidden = hidden)
             Box0 {
@@ -245,11 +245,11 @@ private fun SeriesCard(s: Recurring.Series, hidden: Boolean, today: LocalDate, o
             }
         }
         val pills = buildList {
-            if (s.autoDebit) add("AutoPay" to AcuranzaTheme.colors.tip)
+            if (s.autoDebit) add("AutoPay" to SumvaloTheme.colors.tip)
             s.priceChangePct?.let { pct ->
-                add((if (pct > 0) "Price up ${Fmt.pct(pct, 0)}" else "Price down ${Fmt.pct(-pct, 0)}") to (if (pct > 0) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.good))
+                add((if (pct > 0) "Price up ${Fmt.pct(pct, 0)}" else "Price down ${Fmt.pct(-pct, 0)}") to (if (pct > 0) SumvaloTheme.colors.alert else SumvaloTheme.colors.good))
             }
-            if (s.overdue) add("Stopped?" to AcuranzaTheme.colors.warning)
+            if (s.overdue) add("Stopped?" to SumvaloTheme.colors.warning)
         }
         if (pills.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
@@ -309,19 +309,19 @@ fun RecurringEditScreen(nav: NavController, id: Long?, fromSeries: String?) {
     val valid = name.isNotBlank() && (amount ?: 0) > 0 && accountId != null &&
         (type == TxnType.TRANSFER && toAccountId != null && toAccountId != accountId || type != TxnType.TRANSFER && category != null)
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = if (id == null) "Schedule a payment" else "Edit schedule",
         onBack = { nav.popBackSafely() },
         actions = {
             if (existing != null) IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Outlined.Delete, "Delete") }
         },
     ) { pad ->
-        if (!loaded) return@AcuranzaScreen
+        if (!loaded) return@SumvaloScreen
         Column(Modifier.fillMaxSize().padding(pad).verticalScroll(rememberScrollState()).padding(20.dp)) {
             FormColumn {
                 SegmentedTabs(listOf("Expense", "Income", "Transfer"), listOf(TxnType.EXPENSE, TxnType.INCOME, TxnType.TRANSFER).indexOf(type),
                     onSelect = { type = listOf(TxnType.EXPENSE, TxnType.INCOME, TxnType.TRANSFER)[it]; category = null })
-                AcuranzaTextField(name, { name = it.take(60) }, "Name", supporting = "e.g. Rent, SIP, Netflix, Maid")
+                SumvaloTextField(name, { name = it.take(60) }, "Name", supporting = "e.g. Rent, SIP, Netflix, Maid")
                 AmountField("Amount", amount, { amount = it }, allowZero = false)
                 if (type != TxnType.TRANSFER) {
                     ChoiceField("Category", catOptions, catOptions.firstOrNull { it.key == category }, { it.name }, { category = it.key })
@@ -335,11 +335,11 @@ fun RecurringEditScreen(nav: NavController, id: Long?, fromSeries: String?) {
                 DateField(if (existing == null) "First payment" else "Schedule starts", first, { first = it })
                 SwitchRow("Add automatically", "Records it on each date. Off: only shows it as upcoming.", autoAdd, { autoAdd = it })
                 if (existing != null) SwitchRow("Active", null, active, { active = it })
-                AcuranzaTextField(note, { note = it.take(200) }, "Note (optional)")
+                SumvaloTextField(note, { note = it.take(200) }, "Note (optional)")
                 Text(
                     "Dates before today are not added; the schedule starts from its next date.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 Spacer(Modifier.height(4.dp))
                 PrimaryButton("Save", enabled = valid, modifier = Modifier.fillMaxWidth(), onClick = {

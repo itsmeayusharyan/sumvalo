@@ -38,13 +38,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.acuranza.app.data.SmsImportBatchEntity
 import com.acuranza.app.data.SmsImportDao
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SecondaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.TxnType
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.nav.popBackSafely
@@ -86,7 +86,7 @@ fun SmsImportsScreen(nav: NavController) {
         }
     }
     LaunchedEffect(backStack) { reload() }
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Imported transactions",
         subtitle = "From bank messages — confirm, fix or delete them here",
         onBack = { nav.popBackSafely() },
@@ -113,7 +113,7 @@ fun SmsImportsScreen(nav: NavController) {
                             message = "Import deleted"
                             reload()
                         }
-                    }) { Text("Delete", color = AcuranzaTheme.colors.alert) }
+                    }) { Text("Delete", color = SumvaloTheme.colors.alert) }
                 },
                 dismissButton = { TextButton(onClick = { deleting = null }) { Text("Keep") } },
             )
@@ -140,12 +140,12 @@ fun SmsImportsScreen(nav: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
                 ) {
-                    Text("Nothing imported yet", style = AcuranzaText.screenTitle)
+                    Text("Nothing imported yet", style = SumvaloText.screenTitle)
                     Spacer(Modifier.height(8.dp))
                     Text(
                         "Transactions confirmed from bank messages appear here.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
             } else {
@@ -157,18 +157,18 @@ fun SmsImportsScreen(nav: NavController) {
                     item {
                         Text(
                             "${visible.size} of ${rows.size} imported",
-                            style = AcuranzaText.sectionLabel,
-                            color = AcuranzaTheme.colors.subtleText,
+                            style = SumvaloText.sectionLabel,
+                            color = SumvaloTheme.colors.subtleText,
                             modifier = Modifier.padding(start = 4.dp, top = 4.dp),
                         )
                     }
                     items(visible, key = { it.importId }) { row ->
-                        AcuranzaCard {
+                        SumvaloCard {
                             Row(Modifier.padding(vertical = 12.dp, horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     if (row.type == TxnType.INCOME) Icons.Outlined.NorthEast else Icons.Outlined.SouthWest,
                                     contentDescription = if (row.type == TxnType.INCOME) "Money received" else "Money spent",
-                                    tint = if (row.type == TxnType.INCOME) AcuranzaTheme.colors.income else AcuranzaTheme.colors.expense,
+                                    tint = if (row.type == TxnType.INCOME) SumvaloTheme.colors.income else SumvaloTheme.colors.expense,
                                     modifier = Modifier.size(20.dp),
                                 )
                                 Spacer(Modifier.width(12.dp))
@@ -178,7 +178,7 @@ fun SmsImportsScreen(nav: NavController) {
                                     Text(
                                         "${row.bank} · ${Fmt.time(row.timestamp)}$flagged",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = AcuranzaTheme.colors.tertiaryText,
+                                        color = SumvaloTheme.colors.tertiaryText,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                     )
@@ -188,11 +188,11 @@ fun SmsImportsScreen(nav: NavController) {
                                     Text(
                                         (if (row.type == TxnType.INCOME) "+" else "−") + Money.format(row.amount),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = if (row.type == TxnType.INCOME) AcuranzaTheme.colors.income else AcuranzaTheme.colors.expense,
+                                        color = if (row.type == TxnType.INCOME) SumvaloTheme.colors.income else SumvaloTheme.colors.expense,
                                     )
                                 }
                                 IconButton(onClick = { deleting = row }) {
-                                    Icon(Icons.Outlined.Delete, contentDescription = "Delete import", tint = AcuranzaTheme.colors.tertiaryText)
+                                    Icon(Icons.Outlined.Delete, contentDescription = "Delete import", tint = SumvaloTheme.colors.tertiaryText)
                                 }
                             }
                         }

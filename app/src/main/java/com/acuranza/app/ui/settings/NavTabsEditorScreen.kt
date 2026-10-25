@@ -36,10 +36,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.ConfirmDialog
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
@@ -89,7 +89,7 @@ fun NavTabsEditorScreen(nav: NavController) {
         if (dirty) confirmDiscard = true else nav.popBackSafely()
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Edit navigation tabs",
         subtitle = "Tap a tab to customize its appearance and behavior",
         onBack = attemptLeave,
@@ -178,17 +178,17 @@ fun NavTabsEditorContent(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item(key = "preview") {
-            AcuranzaCard {
+            SumvaloCard {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
                     Text("Live preview", style = MaterialTheme.typography.titleSmall)
                     Text(
                         if (floating) "Floating bar — content scrolls underneath" else "Docked bar — hugging the screen edge",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                     Spacer(Modifier.height(12.dp))
                     // The real bar, fed the working copy — exactly what Save will show.
-                    com.acuranza.app.ui.AcuranzaBottomBar(
+                    com.acuranza.app.ui.SumvaloBottomBar(
                         current = layout.first { it.second }.first,
                         onTab = onEditTab,
                         tabs = NavTabs.resolve(layout, labels, icons),
@@ -199,9 +199,9 @@ fun NavTabsEditorContent(
             }
         }
         item(key = "appearance") {
-            Text("APPEARANCE", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(start = 4.dp, top = 6.dp))
+            Text("APPEARANCE", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(start = 4.dp, top = 6.dp))
             Spacer(Modifier.height(2.dp))
-            AcuranzaCard(contentPadding = PaddingValues(0.dp)) {
+            SumvaloCard(contentPadding = PaddingValues(0.dp)) {
                 SettingsToggle(
                     "Labels under icons",
                     "Hide them for an icons-only bar",
@@ -221,11 +221,11 @@ fun NavTabsEditorContent(
             }
         }
         item(key = "tabs-label") {
-            Text("TABS", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText, modifier = Modifier.padding(start = 4.dp, top = 6.dp))
+            Text("TABS", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(start = 4.dp, top = 6.dp))
             Text(
                 "Tap a tab to change its icon or name. At least two tabs stay visible.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(start = 4.dp, bottom = 2.dp),
             )
         }
@@ -233,22 +233,22 @@ fun NavTabsEditorContent(
             val (route, visible) = layout[index]
             val tab = com.acuranza.app.ui.nav.Tabs.first { it.route == route }
             val resolved = NavTabs.iconOf(route, icons[route])
-            AcuranzaCard(Modifier.fillMaxWidth().padding(vertical = 0.dp)) {
+            SumvaloCard(Modifier.fillMaxWidth().padding(vertical = 0.dp)) {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Outlined.DragIndicator, contentDescription = null, tint = AcuranzaTheme.colors.subtleText, modifier = Modifier.size(22.dp))
+                    Icon(Icons.Outlined.DragIndicator, contentDescription = null, tint = SumvaloTheme.colors.subtleText, modifier = Modifier.size(22.dp))
                     Spacer(Modifier.width(6.dp))
-                    Icon(resolved.icon, contentDescription = null, tint = if (visible) AcuranzaTheme.colors.ink else AcuranzaTheme.colors.tertiaryText, modifier = Modifier.size(22.dp))
+                    Icon(resolved.icon, contentDescription = null, tint = if (visible) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(22.dp))
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
                         Text(
                             labels[route] ?: tab.label,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = if (visible) MaterialTheme.colorScheme.onSurface else AcuranzaTheme.colors.subtleText,
+                            color = if (visible) MaterialTheme.colorScheme.onSurface else SumvaloTheme.colors.subtleText,
                         )
                         Text(
                             if (visible) "Visible" else "Hidden — features stay reachable from Settings search",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -272,7 +272,7 @@ fun NavTabsEditorContent(
                         Icon(
                             if (visible) Icons.Outlined.Close else Icons.Outlined.Visibility,
                             contentDescription = if (visible) "Hide ${tab.label}" else "Show ${tab.label}",
-                            tint = AcuranzaTheme.colors.subtleText,
+                            tint = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
@@ -282,16 +282,16 @@ fun NavTabsEditorContent(
             Text(
                 "Changing a tab's name or icon only changes what you see — its destination, history and shortcuts are untouched.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(start = 4.dp, top = 4.dp),
             )
         }
         item(key = "reset") {
-            AcuranzaCard {
+            SumvaloCard {
                 Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text("Reset to default", style = MaterialTheme.typography.bodyLarge)
-                        Text("The original four tabs, names and icons", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+                        Text("The original four tabs, names and icons", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
                     }
                     TextButton(onClick = onResetClick) { Text("Reset") }
                 }
@@ -342,13 +342,13 @@ private fun TabCustomizeDialog(
                                 Icon(
                                     choice.icon,
                                     contentDescription = choice.label,
-                                    tint = if (selected) AcuranzaTheme.colors.accent else AcuranzaTheme.colors.subtleText,
+                                    tint = if (selected) SumvaloTheme.colors.accent else SumvaloTheme.colors.subtleText,
                                     modifier = Modifier.size(24.dp),
                                 )
                                 Text(
                                     choice.label,
                                     style = MaterialTheme.typography.labelSmall,
-                                    color = if (selected) AcuranzaTheme.colors.accent else AcuranzaTheme.colors.subtleText,
+                                    color = if (selected) SumvaloTheme.colors.accent else SumvaloTheme.colors.subtleText,
                                 )
                             }
                         }

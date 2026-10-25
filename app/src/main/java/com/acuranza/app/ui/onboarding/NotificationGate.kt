@@ -52,11 +52,11 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.acuranza.app.designsystem.components.AcuranzaCard
-import com.acuranza.app.designsystem.components.AcuranzaLogo
+import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 
 /**
  * Whether the app may post notifications. Below Android 13 the permission does not exist and is
@@ -136,7 +136,7 @@ private fun ReasonRow(icon: ImageVector, title: String, text: String) {
         Spacer(Modifier.width(14.dp))
         Column {
             Text(title, fontWeight = FontWeight.SemiBold)
-            Text(text, style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
+            Text(text, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
         }
     }
 }
@@ -148,14 +148,14 @@ private fun ReasonRow(icon: ImageVector, title: String, text: String) {
 @Composable
 fun NotificationDeniedHelp(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    AcuranzaCard(modifier) {
+    SumvaloCard(modifier) {
         Text("Notifications are off", fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(6.dp))
         Text(
             "Sumvalo needs this permission to remind you. If Android didn't ask, the permission was " +
-                "blocked earlier — turn it on for Acuranza in system settings, then come back.",
+                "blocked earlier — turn it on for Sumvalo in system settings, then come back.",
             style = MaterialTheme.typography.bodySmall,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
         )
         TextButton(onClick = { openNotificationSettings(context) }) { Text("Open notification settings") }
     }
@@ -178,15 +178,15 @@ fun NotificationGateBody(granted: Boolean, onRequest: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(56.dp))
-        AcuranzaLogo(size = 72.dp)
+        SumvaloLogo(size = 72.dp)
         Spacer(Modifier.height(24.dp))
-        Text("Turn on notifications", style = AcuranzaText.screenTitle, textAlign = TextAlign.Center)
+        Text("Turn on notifications", style = SumvaloText.screenTitle, textAlign = TextAlign.Center)
         Spacer(Modifier.height(10.dp))
         Text(
             "Sumvalo is fully offline, so notifications are the only way it can reach you. " +
                 "Everything it sends is composed on your phone.",
             style = MaterialTheme.typography.bodyMedium,
-            color = AcuranzaTheme.colors.subtleText,
+            color = SumvaloTheme.colors.subtleText,
             textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(20.dp))

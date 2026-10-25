@@ -16,7 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.designsystem.theme.TabularFigures
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.Paise
@@ -52,7 +52,7 @@ fun AmountText(
     color: Color = Color.Unspecified,
     textAlign: TextAlign? = null,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val resolvedColor = when {
         color != Color.Unspecified -> color
         type == TxnType.INCOME -> colors.income

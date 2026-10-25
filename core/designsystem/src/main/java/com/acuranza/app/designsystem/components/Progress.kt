@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.BrandPalette
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 import androidx.compose.material3.Icon
 
@@ -72,8 +72,8 @@ fun ProgressRing(
     modifier: Modifier = Modifier,
     size: Dp = 88.dp,
     thickness: Dp = 6.dp,
-    brush: Brush = SolidColor(AcuranzaTheme.colors.accent),
-    trackColor: Color = AcuranzaTheme.colors.fill,
+    brush: Brush = SolidColor(SumvaloTheme.colors.accent),
+    trackColor: Color = SumvaloTheme.colors.fill,
     content: @Composable () -> Unit = {},
 ) {
     val p = animatedFraction(progress.coerceIn(0f, 1f))
@@ -108,7 +108,7 @@ fun BudgetProgressBar(
     projected: Paise? = null,
     height: Dp = 10.dp,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val fraction = if (limit > 0) spent.toFloat() / limit else 0f
     val f = animatedFraction(fraction.coerceIn(0f, 1f))
     // A budget on course to overshoot is a warning even while little has been spent yet.
@@ -155,7 +155,7 @@ fun GoalCard(
     onClick: (() -> Unit)? = null,
 ) {
     val progress = if (target > 0) saved.toFloat() / target else 0f
-    AcuranzaCard(modifier = modifier, onClick = onClick) {
+    SumvaloCard(modifier = modifier, onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProgressRing(progress = progress, size = 64.dp, thickness = 7.dp) {
                 if (icon != null) {
@@ -169,15 +169,15 @@ fun GoalCard(
                 Text(name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     AmountText(saved, hidden = hidden, style = AmountStyles.medium, compact = true)
-                    Text(" of ", style = MaterialTheme.typography.bodySmall, color = AcuranzaTheme.colors.subtleText)
-                    AmountText(target, hidden = hidden, style = AmountStyles.small, compact = true, color = AcuranzaTheme.colors.subtleText)
+                    Text(" of ", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
+                    AmountText(target, hidden = hidden, style = AmountStyles.small, compact = true, color = SumvaloTheme.colors.subtleText)
                 }
                 if (hint != null) {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         hint,
                         style = MaterialTheme.typography.labelMedium,
-                        color = if (onTrack) AcuranzaTheme.colors.good else AcuranzaTheme.colors.warning,
+                        color = if (onTrack) SumvaloTheme.colors.good else SumvaloTheme.colors.warning,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
@@ -201,7 +201,7 @@ fun ThinProgressBar(
             .fillMaxWidth()
             .height(height)
             .clip(RoundedCornerShape(50))
-            .background(AcuranzaTheme.colors.cardSurfaceHigh),
+            .background(SumvaloTheme.colors.cardSurfaceHigh),
     ) {
         Box(
             Modifier

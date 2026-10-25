@@ -26,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.BuildConfig
-import com.acuranza.app.designsystem.components.AcuranzaLogo
+import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.LogoShape
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.Routes
 import com.acuranza.app.ui.settings.SettingsRow
 import com.acuranza.app.ui.settings.SettingsSection
@@ -63,7 +63,7 @@ data class AboutDeviceInfo(
     }
 }
 
-/** The About Acuranza screen: branding, version and release info, device info, legal pages. Reached from Settings. */
+/** The About Sumvalo screen: branding, version and release info, device info, legal pages. Reached from Settings. */
 @Composable
 fun AboutScreen(nav: androidx.navigation.NavController) {
     val context = LocalContext.current
@@ -92,13 +92,13 @@ fun AboutContent(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     device: AboutDeviceInfo = AboutDeviceInfo.fromSystem(),
 ) {
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "About",
         subtitle = null,
         onBack = onBack,
         snackbar = snackbar,
     ) { padding ->
-    val c = AcuranzaTheme.colors
+    val c = SumvaloTheme.colors
     Column(
         Modifier
             .fillMaxWidth()
@@ -112,7 +112,7 @@ fun AboutContent(
                 .padding(top = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AcuranzaLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
+            SumvaloLogo(size = 88.dp, shape = LogoShape.RoundedSquare)
             Spacer(Modifier.height(14.dp))
             Text("Sumvalo", style = MaterialTheme.typography.headlineSmall, color = c.ink)
             Spacer(Modifier.height(2.dp))
@@ -129,7 +129,7 @@ fun AboutContent(
             }
 
             SettingsSection("Legal") {
-                SettingsRow("Privacy policy", "What Acuranza stores, and what it never sends", Icons.Outlined.Shield) { onPrivacy() }
+                SettingsRow("Privacy policy", "What Sumvalo stores, and what it never sends", Icons.Outlined.Shield) { onPrivacy() }
                 SettingsRow("Terms of service", "The plain terms of using the app", Icons.Outlined.Gavel) { onTerms() }
                 SettingsRow("Licence", "GPL-3.0 · free and open source", Icons.Outlined.Info, divider = false) { onLicence() }
             }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * The standard build's path to the full build: the user picks an Acuranza APK from storage,
+ * The standard build's path to the full build: the user picks an Sumvalo APK from storage,
  * the app verifies it is genuinely this app (package name + signing certificate + version),
  * and stages it through Android's PackageInstaller session — the same installer-session flow
  * third-party installers use, where Android's own install confirmation runs and the user
@@ -183,7 +183,7 @@ class InstallResultReceiver : BroadcastReceiver() {
                 if (launched.isFailure) {
                     fail(
                         "Couldn't open Android's install dialog (${launched.exceptionOrNull()?.javaClass?.simpleName}) " +
-                            "- allow install requests for Acuranza in system settings, then try again",
+                            "- allow install requests for Sumvalo in system settings, then try again",
                     )
                 } else {
                     PackageUpgradeInstaller._events.value = InstallEvent.WaitingForConfirmation

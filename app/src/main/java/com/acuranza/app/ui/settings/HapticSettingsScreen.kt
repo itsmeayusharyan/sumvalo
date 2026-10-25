@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.nav.popBackSafely
@@ -58,7 +58,7 @@ fun HapticSettingsScreen(nav: NavController) {
             Text(
                 "Amplitude where your device supports it, otherwise pulse length. Devices without a vibration motor stay still.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(start = 4.dp, bottom = 4.dp),
             )
             SettingsPickerRow(
@@ -112,7 +112,7 @@ fun HapticSettingsScreen(nav: NavController) {
                 "Strength maps to the two feedback types Android exposes to apps; the system's own " +
                     "touch-feedback setting always has the final word.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }

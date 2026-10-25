@@ -34,7 +34,7 @@ data class AccountEntity(
     val archived: Boolean = false,
     /** Created automatically from an SMS or e-mail; the user should confirm its name and opening balance. */
     val autoCreated: Boolean = false,
-    /** Savings interest rate the user set (% a year); null uses Acuranza's built-in rate for the bank. */
+    /** Savings interest rate the user set (% a year); null uses Sumvalo's built-in rate for the bank. */
     val interestRatePct: Double? = null,
     /** How often the bank credits savings interest: QUARTERLY (default) or MONTHLY. */
     @androidx.room.ColumnInfo(defaultValue = "QUARTERLY")

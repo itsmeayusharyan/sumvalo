@@ -25,13 +25,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.TextStyle
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SecondaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Money
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.nav.popBackSafely
@@ -66,7 +66,7 @@ fun SavingsGoalScreen(nav: NavController) {
         savedThisPeriod = f.saved
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Savings goal",
         subtitle = "What you want to set aside each period",
         onBack = { nav.popBackSafely() },
@@ -79,14 +79,14 @@ fun SavingsGoalScreen(nav: NavController) {
                 .padding(horizontal = 20.dp),
         ) {
             val target = targetText?.filter { it.isDigit() }?.takeIf { it.isNotBlank() }?.toLongOrNull()?.times(100)
-            AcuranzaCard(Modifier.fillMaxWidth()) {
+            SumvaloCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text("Saved this period", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                    Text("Saved this period", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         Money.format(savedThisPeriod, showPaise = false),
-                        style = AcuranzaText.screenTitle,
-                        color = if (savedThisPeriod < 0) AcuranzaTheme.colors.alert else AcuranzaTheme.colors.ink,
+                        style = SumvaloText.screenTitle,
+                        color = if (savedThisPeriod < 0) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
                     )
                     if (target != null) {
                         Spacer(Modifier.height(8.dp))
@@ -94,15 +94,15 @@ fun SavingsGoalScreen(nav: NavController) {
                             "of ${Money.format(target, showPaise = false)} target · " +
                                 "${if (target > 0) ((savedThisPeriod * 100) / target).toInt().coerceIn(0, 100) else 0}%",
                             style = MaterialTheme.typography.bodySmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }
             }
             Spacer(Modifier.height(12.dp))
-            AcuranzaCard(Modifier.fillMaxWidth()) {
+            SumvaloCard(Modifier.fillMaxWidth()) {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text("Monthly target", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                    Text("Monthly target", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                     Spacer(Modifier.height(8.dp))
                     OutlinedTextField(
                         value = targetText ?: "",
@@ -112,12 +112,12 @@ fun SavingsGoalScreen(nav: NavController) {
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
                         shape = RoundedCornerShape(16.dp),
-                        textStyle = TextStyle(color = AcuranzaTheme.colors.ink),
+                        textStyle = TextStyle(color = SumvaloTheme.colors.ink),
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                            focusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                            unfocusedBorderColor = AcuranzaTheme.colors.hairline,
-                            focusedBorderColor = AcuranzaTheme.colors.accent,
+                            unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+                            focusedContainerColor = SumvaloTheme.colors.cardSurface,
+                            unfocusedBorderColor = SumvaloTheme.colors.hairline,
+                            focusedBorderColor = SumvaloTheme.colors.accent,
                         ),
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -158,7 +158,7 @@ fun SavingsGoalScreen(nav: NavController) {
                 "The goal guides the savings widget and the safe-to-spend plan. Your salary entry " +
                     "from the Home plan is kept as it is.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(horizontal = 4.dp),
             )
         }

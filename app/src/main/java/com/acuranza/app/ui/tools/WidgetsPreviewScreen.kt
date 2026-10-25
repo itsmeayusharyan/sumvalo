@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.tools.CategorySlice
 import com.acuranza.app.tools.GoalProgress
@@ -35,7 +35,7 @@ import com.acuranza.app.tools.CategoryDonutWidgetProvider
 import com.acuranza.app.tools.ShortcutsWidgetProvider
 import com.acuranza.app.tools.WidgetFigures
 import com.acuranza.app.tools.WidgetViews
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
 import com.acuranza.app.ui.settings.SettingsRow
 import com.acuranza.app.util.Period
@@ -51,7 +51,7 @@ fun WidgetsPreviewScreen(nav: NavController) {
     val context = LocalContext.current
     val manager = remember { AppWidgetManager.getInstance(context) }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Add widgets",
         subtitle = "Preview, then pin to your home screen",
         onBack = { nav.popBackSafely() },
@@ -67,7 +67,7 @@ fun WidgetsPreviewScreen(nav: NavController) {
                 "Previews use sample data. Colors follow your system's light or dark mode, exactly " +
                     "like the real widgets.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
             )
             WidgetEntry(
@@ -158,7 +158,7 @@ private fun WidgetEntry(
     Text(
         name,
         style = MaterialTheme.typography.titleMedium,
-        color = AcuranzaTheme.colors.ink,
+        color = SumvaloTheme.colors.ink,
         modifier = Modifier.padding(top = 14.dp, bottom = 6.dp),
     )
     androidx.compose.foundation.layout.Box(
@@ -180,7 +180,7 @@ private fun WidgetEntry(
     Text(
         "$description · $sizes",
         style = MaterialTheme.typography.bodySmall,
-        color = AcuranzaTheme.colors.subtleText,
+        color = SumvaloTheme.colors.subtleText,
         modifier = Modifier.padding(top = 6.dp, start = 4.dp),
     )
     Row(
@@ -191,9 +191,9 @@ private fun WidgetEntry(
             PrimaryButton("Add to home screen", onClick = onAdd)
         } else {
             Text(
-                "Add it from your launcher: long-press the home screen → Widgets → Acuranza.",
+                "Add it from your launcher: long-press the home screen → Widgets → Sumvalo.",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }

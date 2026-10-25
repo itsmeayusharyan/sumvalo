@@ -42,7 +42,7 @@ echo
 echo "== 2. signing certificate =="
 "$BUILD_TOOLS/apksigner" verify --print-certs "$APK" | sed -n '1,6p'
 "$BUILD_TOOLS/apksigner" verify "$APK" && pass "APK signature verifies"
-grep -q "CN=Acuranza" <("$BUILD_TOOLS/apksigner" verify --print-certs "$APK") \
+grep -q "CN=Sumvalo" <("$BUILD_TOOLS/apksigner" verify --print-certs "$APK") \
   && pass "signer is the Sumvalo release key" \
   || fail "signer is NOT the Sumvalo release key"
 

@@ -1,6 +1,6 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.domain.SmsMapping
@@ -49,7 +49,7 @@ data class YearReview(
 }
 
 class ReportRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     private val settings: SettingsStore,
     private val transactions: TransactionRepository,
     private val recurring: RecurringRepository,

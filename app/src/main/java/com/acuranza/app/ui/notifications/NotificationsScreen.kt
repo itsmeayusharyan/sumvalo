@@ -36,9 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.repo.NotificationItem
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.LocalSettings
@@ -84,7 +84,7 @@ fun NotificationsContent(
 ) {
     val list = items.orEmpty()
     val unread = list.count { it.unread }
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Notifications",
         subtitle = if (unread > 0) "$unread unread" else null,
         onBack = onBack,
@@ -94,7 +94,7 @@ fun NotificationsContent(
             }
         },
     ) { padding ->
-        if (items == null) return@AcuranzaScreen
+        if (items == null) return@SumvaloScreen
         if (list.isEmpty()) {
             Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp)) {
                 EmptyState(
@@ -119,7 +119,7 @@ fun NotificationsContent(
 
 @Composable
 private fun NotificationRow(item: NotificationItem, hidden: Boolean, onClick: () -> Unit) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val (tile, icon, tint) = when (item.kind) {
         NotificationItem.Kind.BILL -> Triple(colors.accentTint, Icons.Outlined.CreditCard, colors.accent)
         NotificationItem.Kind.INSIGHT -> Triple(colors.warningTint, Icons.Outlined.Bolt, colors.warning)

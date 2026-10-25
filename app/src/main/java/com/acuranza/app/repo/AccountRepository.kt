@@ -2,7 +2,7 @@ package com.acuranza.app.repo
 
 import androidx.room.withTransaction
 import com.acuranza.app.data.AccountEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.domain.AccountBalance
 import com.acuranza.app.domain.BalanceSource
 import com.acuranza.app.domain.Balances
@@ -49,7 +49,7 @@ data class AccountWithBalance(
 }
 
 class AccountRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     /** Where the shared balance computation runs while anything observes it. */
     scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) {
@@ -186,7 +186,7 @@ class AccountRepository(
     fun observeIgnored(): Flow<List<AccountEntity>> = dao.observeIgnored()
 
     /**
-     * Stops ignoring an account: it shows again and its transactions count (transfers aside). One Acuranza found in SMS
+     * Stops ignoring an account: it shows again and its transactions count (transfers aside). One Sumvalo found in SMS
      * goes back to the accounts to confirm or merge.
      */
     suspend fun restore(id: Long) {

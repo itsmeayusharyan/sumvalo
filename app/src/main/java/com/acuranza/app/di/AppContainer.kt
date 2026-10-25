@@ -2,7 +2,7 @@ package com.acuranza.app.di
 
 import android.content.Context
 import com.acuranza.app.data.DemoData
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.notify.Notifications
 import com.acuranza.app.repo.AccountRepository
@@ -16,7 +16,7 @@ import com.acuranza.app.repo.TransactionRepository
 import com.acuranza.app.security.BackupManager
 import com.acuranza.app.work.WorkScheduler
 
-/** Manual dependency container; get it with `(context.applicationContext as AcuranzaApp).container`. */
+/** Manual dependency container; get it with `(context.applicationContext as SumvaloApp).container`. */
 /**
  * [sandbox] is set for the decoy profile: an in-memory database, separate settings and no SMS access, so
  * nothing real can ever be shown or written there.
@@ -24,7 +24,7 @@ import com.acuranza.app.work.WorkScheduler
 class AppContainer(context: Context, sandbox: com.acuranza.app.security.DecoySandbox? = null) {
     private val app = context.applicationContext
 
-    val db: AcuranzaDatabase = sandbox?.db ?: AcuranzaDatabase.create(app)
+    val db: SumvaloDatabase = sandbox?.db ?: SumvaloDatabase.create(app)
     val settings = sandbox?.settings ?: SettingsStore(app)
     // The offline edition has no INTERNET permission; it never tries to fetch NPS prices.
     val notifications = Notifications(app)

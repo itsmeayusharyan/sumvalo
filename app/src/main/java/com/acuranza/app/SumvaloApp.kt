@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-class AcuranzaApp : Application() {
+class SumvaloApp : Application() {
     val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /** Repositories and services; see [AppContainer]. */
@@ -29,7 +29,7 @@ class AcuranzaApp : Application() {
             if (com.acuranza.app.BuildConfig.SMS_FULL) {
                 runCatching {
                     val s = container.settings.current()
-                    com.acuranza.app.work.WorkScheduler.setSmsScanEnabled(this@AcuranzaApp, s.smsConsent && s.smsAutoScan)
+                    com.acuranza.app.work.WorkScheduler.setSmsScanEnabled(this@SumvaloApp, s.smsConsent && s.smsAutoScan)
                 }
             }
             runCatching { com.acuranza.app.repo.AutoCategoriser.run(container.db) }
@@ -38,7 +38,7 @@ class AcuranzaApp : Application() {
         WorkScheduler.schedule(this)
         com.acuranza.app.work.SmsForegroundTicker.start(this)
         com.acuranza.app.tools.WidgetUpdater.start(this)
-        appScope.launch { runCatching { com.acuranza.app.tools.DigestSchedule.sync(this@AcuranzaApp) } }
+        appScope.launch { runCatching { com.acuranza.app.tools.DigestSchedule.sync(this@SumvaloApp) } }
     }
 
 }

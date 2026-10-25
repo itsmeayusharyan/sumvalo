@@ -5,7 +5,7 @@ import com.acuranza.app.data.BudgetEntity
 import com.acuranza.app.data.CardBillEntity
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.GoalEntity
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.domain.MoneyIn
 import com.acuranza.app.domain.SmsMapping
@@ -33,7 +33,7 @@ data class BillItem(val bill: CardBillEntity, val card: AccountEntity?, val days
     val isOverdue: Boolean get() = !bill.paid && (daysLeft ?: 0) < 0
 }
 
-class BillRepository(private val db: AcuranzaDatabase, private val transactions: TransactionRepository) {
+class BillRepository(private val db: SumvaloDatabase, private val transactions: TransactionRepository) {
 
     fun observeUnpaid(): Flow<List<BillItem>> =
         combine(db.bills().observeUnpaid(), db.accounts().observeActive()) { bills, accounts -> items(bills, accounts) }
@@ -104,7 +104,7 @@ data class BudgetStatus(
 data class EnvelopeStatus(val envelope: com.acuranza.app.finance.BudgetMath.Envelope, val period: Period)
 
 class BudgetRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     private val settings: SettingsStore,
     private val features: com.acuranza.app.data.prefs.FeaturePrefs,
 ) {
@@ -262,7 +262,7 @@ internal fun goalSurplus(txns: List<com.acuranza.app.data.TransactionEntity>, pe
 const val GOAL_SURPLUS_PERIODS = com.acuranza.app.finance.InsightEngine.GOAL_SURPLUS_MONTHS
 
 class GoalRepository(
-    private val db: AcuranzaDatabase,
+    private val db: SumvaloDatabase,
     private val settings: SettingsStore,
     private val prefs: com.acuranza.app.data.prefs.PlanningPrefs,
 ) {

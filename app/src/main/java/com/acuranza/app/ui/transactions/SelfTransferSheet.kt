@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.components.BankBadge
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Bank
 import com.acuranza.app.ui.common.LocalContainer
 
@@ -46,7 +46,7 @@ fun SelfTransferSheet(currentAccountId: Long, isIncome: Boolean, onDismiss: () -
             Text(
                 if (isIncome) "Which of your accounts did this money come from?" else "Which of your accounts did this money go to?",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 8.dp),
             )
             accounts.filter { it.id != currentAccountId }.forEach { acc ->

@@ -50,12 +50,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SecondaryButton
-import com.acuranza.app.designsystem.theme.AcuranzaText
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.designsystem.theme.SumvaloText
+import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.common.rememberHaptic
@@ -100,7 +100,7 @@ fun ProfileAvatar(path: String?, name: String?, size: Dp, modifier: Modifier = M
         modifier
             .size(size)
             .clip(CircleShape)
-            .background(AcuranzaTheme.colors.accentTint),
+            .background(SumvaloTheme.colors.accentTint),
         contentAlignment = Alignment.Center,
     ) {
         if (bitmap != null) {
@@ -111,12 +111,12 @@ fun ProfileAvatar(path: String?, name: String?, size: Dp, modifier: Modifier = M
                 modifier = Modifier.size(size),
             )
         } else if (initial != null) {
-            Text(initial, style = MaterialTheme.typography.titleMedium, color = AcuranzaTheme.colors.accent)
+            Text(initial, style = MaterialTheme.typography.titleMedium, color = SumvaloTheme.colors.accent)
         } else {
             Icon(
                 Icons.Outlined.Person,
                 contentDescription = "No profile photo",
-                tint = AcuranzaTheme.colors.accent,
+                tint = SumvaloTheme.colors.accent,
                 modifier = Modifier.size(size * 0.5f),
             )
         }
@@ -126,7 +126,7 @@ fun ProfileAvatar(path: String?, name: String?, size: Dp, modifier: Modifier = M
 /** The Settings hub's tappable profile card: photo/initials, name (or the default prompt), edit affordance. */
 @Composable
 fun ProfileCard(name: String?, avatarPath: String?, onClick: () -> Unit) {
-    AcuranzaCard(modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp), onClick = onClick) {
+    SumvaloCard(modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp), onClick = onClick) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProfileAvatar(path = avatarPath, name = name, size = 52.dp)
             Spacer(Modifier.width(14.dp))
@@ -134,18 +134,18 @@ fun ProfileCard(name: String?, avatarPath: String?, onClick: () -> Unit) {
                 Text(
                     name?.takeIf { it.isNotBlank() } ?: "Your profile",
                     style = MaterialTheme.typography.titleMedium,
-                    color = AcuranzaTheme.colors.ink,
+                    color = SumvaloTheme.colors.ink,
                 )
                 Text(
                     if (name.isNullOrBlank()) "Add your name and photo" else "Your profile",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
             }
             Icon(
                 Icons.Outlined.Edit,
                 contentDescription = "Edit profile",
-                tint = AcuranzaTheme.colors.tertiaryText,
+                tint = SumvaloTheme.colors.tertiaryText,
                 modifier = Modifier.size(20.dp),
             )
         }
@@ -196,9 +196,9 @@ fun ProfileScreen(nav: NavController) {
         } // null = the user cancelled the picker; nothing changes
     }
 
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Profile",
-        subtitle = "How Acuranza greets you",
+        subtitle = "How Sumvalo greets you",
         onBack = {
             discardStaged(keeping = null)
             nav.popBackSafely()
@@ -237,7 +237,7 @@ fun ProfileScreen(nav: NavController) {
                             c.settings.setProfileName(cleaned.takeIf { it.isNotEmpty() })
                             if (avatarChanged) {
                                 c.settings.setProfileAvatar(draftAvatar)
-                                // The replaced file is private to Acuranza and no longer referenced.
+                                // The replaced file is private to Sumvalo and no longer referenced.
                                 if (s.profileAvatar != null && s.profileAvatar != draftAvatar) {
                                     runCatching { File(s.profileAvatar!!).delete() }
                                 }
@@ -273,27 +273,27 @@ fun ProfileContent(
     onCancel: () -> Unit,
     saveEnabled: Boolean,
 ) {
-    AcuranzaCard(Modifier.fillMaxWidth().padding(top = 6.dp)) {
+    SumvaloCard(Modifier.fillMaxWidth().padding(top = 6.dp)) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             // Preview: the staged values, falling back to the saved ones.
             ProfileAvatar(path = stagedAvatar, name = name.takeIf { it.isNotBlank() } ?: savedName, size = 96.dp)
             Spacer(Modifier.height(12.dp))
             Text(
                 name.takeIf { it.isNotBlank() } ?: savedName ?: "Your profile",
-                style = AcuranzaText.screenTitle,
-                color = AcuranzaTheme.colors.ink,
+                style = SumvaloText.screenTitle,
+                color = SumvaloTheme.colors.ink,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 "Shown on your home greeting and in Settings",
                 style = MaterialTheme.typography.bodySmall,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
         }
     }
     Spacer(Modifier.height(12.dp))
-    AcuranzaCard(Modifier.fillMaxWidth()) {
+    SumvaloCard(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth()) {
             SettingsRow("Profile photo", "Choose a picture from your device", Icons.Outlined.Image) { onPickImage() }
             if (stagedAvatar != null || savedAvatar != null) {
@@ -301,7 +301,7 @@ fun ProfileContent(
                 SettingsRow("Remove photo", "Restore the default initial avatar", Icons.Outlined.Person) { onRemoveImage() }
             }
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                Text("Display name", style = AcuranzaText.sectionLabel, color = AcuranzaTheme.colors.subtleText)
+                Text("Display name", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value = name,
@@ -309,17 +309,17 @@ fun ProfileContent(
                     placeholder = { Text("Your name", style = MaterialTheme.typography.bodyMedium) },
                     isError = nameError != null,
                     supportingText = if (nameError != null) {
-                        { Text(nameError, color = AcuranzaTheme.colors.alert) }
+                        { Text(nameError, color = SumvaloTheme.colors.alert) }
                     } else {
                         null
                     },
                     singleLine = true,
                     shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        unfocusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                        focusedContainerColor = AcuranzaTheme.colors.cardSurface,
-                        unfocusedBorderColor = AcuranzaTheme.colors.hairline,
-                        focusedBorderColor = AcuranzaTheme.colors.accent,
+                        unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+                        focusedContainerColor = SumvaloTheme.colors.cardSurface,
+                        unfocusedBorderColor = SumvaloTheme.colors.hairline,
+                        focusedBorderColor = SumvaloTheme.colors.accent,
                     ),
                     modifier = Modifier.fillMaxWidth(),
                 )

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "description": "Merchant -> category rules for Acuranza. Rules are checked in order; the first match wins. Patterns are case-insensitive regular expressions matched against the merchant name and message.",
+  "description": "Merchant -> category rules for Sumvalo. Rules are checked in order; the first match wins. Patterns are case-insensitive regular expressions matched against the merchant name and message.",
   "rules": [
     {
       "category": "emi",

@@ -2,12 +2,12 @@ package com.acuranza.app.notify
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.acuranza.app.AcuranzaApp
+import com.acuranza.app.SumvaloApp
 import com.acuranza.app.data.sms.SmsNotificationFilter
 
 /**
  * Automatic SMS capture, permissionless by design: when the user enables it (explicit consent +
- * the system's Notification Access grant), Acuranza reads the notifications the SMS app posts for
+ * the system's Notification Access grant), Sumvalo reads the notifications the SMS app posts for
  * incoming messages and runs them through the exact same pipeline as a shared message. This is
  * the only Android mechanism that detects new bank SMS on arrival without the SMS permission —
  * which Play Protect hard-blocks on sideloaded installs.
@@ -19,7 +19,7 @@ import com.acuranza.app.data.sms.SmsNotificationFilter
 class SmsNotificationListenerService : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
-        val container = (applicationContext as? AcuranzaApp)?.container ?: return
+        val container = (applicationContext as? SumvaloApp)?.container ?: return
         if (container.decoy || sbn == null) return
         if (!SmsNotificationFilter.isSmsPackage(sbn.packageName)) return
 
@@ -39,7 +39,7 @@ class SmsNotificationListenerService : NotificationListenerService() {
 
         // Same pipeline as share/paste: reject auth/promo/personal/ambiguous text, keep only
         // extracted transaction fields, park for review. A genuinely NEW detected transaction
-        // raises Acuranza's own alert — duplicates and rejects stay silent. This alert fires
+        // raises Sumvalo's own alert — duplicates and rejects stay silent. This alert fires
         // from this path alone: manual entries, CSV imports and inbox scans never post it.
         kotlinx.coroutines.runBlocking {
             runCatching {

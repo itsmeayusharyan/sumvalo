@@ -1,6 +1,6 @@
 package com.acuranza.app.repo
 
-import com.acuranza.app.data.AcuranzaDatabase
+import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.model.TxnChannel
 import com.acuranza.app.model.TxnSource
@@ -12,16 +12,16 @@ import com.acuranza.app.util.Time
 import kotlin.math.abs
 
 /**
- * Imports a bank statement exported as CSV into one account. Rows already in Acuranza (same account, type and amount
+ * Imports a bank statement exported as CSV into one account. Rows already in Sumvalo (same account, type and amount
  * within a day, for example from SMS) are left out, and a fingerprint keeps a row from being imported twice.
  */
-class StatementImporter(private val db: AcuranzaDatabase) {
+class StatementImporter(private val db: SumvaloDatabase) {
 
     data class Preview(
         val parsed: StatementCsv.Parsed,
         /** Rows that will be added. */
         val fresh: List<StatementCsv.Row>,
-        /** Rows already in Acuranza. */
+        /** Rows already in Sumvalo. */
         val duplicates: Int,
     )
 

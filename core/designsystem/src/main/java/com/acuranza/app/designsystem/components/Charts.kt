@@ -52,7 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 import kotlin.math.PI
 import kotlin.math.atan2
@@ -107,7 +107,7 @@ fun DonutChart(
     val total = slices.sumOf { max(it.value, 0L) }.coerceAtLeast(1L)
     val progress by rememberEntrance()
     var selected by remember(slices) { mutableStateOf<Int?>(null) }
-    val track = AcuranzaTheme.colors.cardSurfaceHigh
+    val track = SumvaloTheme.colors.cardSurfaceHigh
     val description = slices.joinToString { "${it.label} ${formatAmount(it.value, compact = true)}" }
 
     Box(
@@ -171,7 +171,7 @@ fun DonutChart(
             Text(
                 text = sel?.label ?: centerLabel,
                 style = MaterialTheme.typography.labelMedium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -216,7 +216,7 @@ fun ChartLegend(
                 Text(
                     "${s.value * 100 / total}%",
                     style = MaterialTheme.typography.labelMedium,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 Spacer(Modifier.width(12.dp))
                 AmountText(paise = s.value, compact = true, hidden = hidden, style = AmountStyles.small)
@@ -236,11 +236,11 @@ fun BarChart(
     height: Dp = 180.dp,
     hidden: Boolean = false,
 ) {
-    val colors = AcuranzaTheme.colors
+    val colors = SumvaloTheme.colors
     val progress by rememberEntrance()
     var selected by remember(groups) { mutableStateOf<Int?>(null) }
     val maxValue = groups.maxOfOrNull { max(it.income, it.expense) }?.coerceAtLeast(1L) ?: 1L
-    val expenseBar = AcuranzaTheme.colors.tertiaryText.copy(alpha = 0.55f)
+    val expenseBar = SumvaloTheme.colors.tertiaryText.copy(alpha = 0.55f)
     val grid = colors.divider
     val labelColor = colors.subtleText
 
@@ -353,14 +353,14 @@ fun LineAreaChart(
     points: List<ChartPoint>,
     modifier: Modifier = Modifier,
     height: Dp = 180.dp,
-    color: Color = AcuranzaTheme.colors.accent,
+    color: Color = SumvaloTheme.colors.accent,
     hidden: Boolean = false,
     showHeader: Boolean = true,
 ) {
     val progress by rememberEntrance(1100)
     var selected by remember(points) { mutableStateOf<Int?>(null) }
-    val subtle = AcuranzaTheme.colors.subtleText
-    val grid = AcuranzaTheme.colors.divider
+    val subtle = SumvaloTheme.colors.subtleText
+    val grid = SumvaloTheme.colors.divider
     val surface = MaterialTheme.colorScheme.surface
 
     Column(modifier = modifier.semantics {
@@ -447,7 +447,7 @@ internal fun smoothPath(points: List<Offset>): Path = Path().apply {
 fun Sparkline(
     values: List<Float>,
     modifier: Modifier = Modifier,
-    color: Color = AcuranzaTheme.colors.accent,
+    color: Color = SumvaloTheme.colors.accent,
     fill: Boolean = false,
     strokeWidth: Dp = 2.dp,
 ) {
@@ -491,7 +491,7 @@ fun StackedBar(
 ) {
     val progress by rememberEntrance()
     val total = slices.sumOf { max(it.value, 0L) }.coerceAtLeast(1L)
-    val track = AcuranzaTheme.colors.cardSurfaceHigh
+    val track = SumvaloTheme.colors.cardSurfaceHigh
     Column(modifier) {
         Canvas(
             Modifier
@@ -537,7 +537,7 @@ private fun FlowLegend(slices: List<ChartSlice>, total: Long, hidden: Boolean) {
                         Text(
                             if (hidden) "" else "${s.value * 100 / total}%",
                             style = MaterialTheme.typography.labelSmall,
-                            color = AcuranzaTheme.colors.subtleText,
+                            color = SumvaloTheme.colors.subtleText,
                         )
                     }
                 }

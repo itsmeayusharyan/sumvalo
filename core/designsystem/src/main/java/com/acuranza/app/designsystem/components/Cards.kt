@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 
 /**
@@ -43,16 +43,16 @@ import com.acuranza.app.model.Paise
  * outline. No shadow.
  */
 @Composable
-fun AcuranzaCard(
+fun SumvaloCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(AcuranzaTheme.spacing.lg),
-    shape: Shape = RoundedCornerShape(AcuranzaTheme.spacing.cardRadius),
-    color: Color = AcuranzaTheme.colors.cardSurface,
+    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.lg),
+    shape: Shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius),
+    color: Color = SumvaloTheme.colors.cardSurface,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     // An explicit non-default color is a semantic tint (warning/primary washes): keep it solid.
-    val tinted = color != AcuranzaTheme.colors.cardSurface
+    val tinted = color != SumvaloTheme.colors.cardSurface
     Column(
         modifier = modifier
             .glassSurface(shape, colorOverride = if (tinted) color else null)
@@ -74,7 +74,7 @@ fun GradientCard(
     modifier: Modifier = Modifier,
     brush: Brush = SolidColor(heroFace()),
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(AcuranzaTheme.spacing.xl),
+    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.xl),
     shape: Shape = RoundedCornerShape(20.dp),
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -94,7 +94,7 @@ val InkFace = Color(0xFF111111)
 /** The theme-aware emphasis face: brand ink on light, the elevated card surface on dark/AMOLED. */
 @Composable
 private fun heroFace(): Color =
-    if (AcuranzaTheme.colors.isDark) AcuranzaTheme.colors.cardSurface else AcuranzaTheme.colors.ink
+    if (SumvaloTheme.colors.isDark) SumvaloTheme.colors.cardSurface else SumvaloTheme.colors.ink
 
 /**
  * The glass surface treatment, centralized so every screen shares one implementation: a
@@ -108,7 +108,7 @@ private fun heroFace(): Color =
  */
 @Composable
 fun Modifier.glassSurface(shape: Shape, colorOverride: Color? = null): Modifier {
-    val c = AcuranzaTheme.colors
+    val c = SumvaloTheme.colors
     return this
         .clip(shape)
         .background(colorOverride ?: c.glass.copy(alpha = if (c.isDark) 0.80f else 0.92f))
@@ -157,14 +157,14 @@ fun DialogBlurBehind(radiusPx: Int = 80) {
 fun GlassSurface(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(16.dp),
-    contentPadding: PaddingValues = PaddingValues(AcuranzaTheme.spacing.md),
+    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
         modifier = modifier
             .clip(shape)
-            .background(AcuranzaTheme.colors.cardSurface)
-            .border(1.dp, AcuranzaTheme.colors.hairline, shape)
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, shape)
             .padding(contentPadding),
         content = content,
     )
@@ -195,14 +195,14 @@ fun BalanceHeroCard(
             Text(
                 text = label,
                 style = MaterialTheme.typography.bodyMedium,
-                color = AcuranzaTheme.colors.subtleText,
+                color = SumvaloTheme.colors.subtleText,
             )
             if (onToggleHidden != null) {
                 IconButton(onClick = onToggleHidden, modifier = Modifier.size(28.dp)) {
                     Icon(
                         imageVector = if (hidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                         contentDescription = if (hidden) "Show amounts" else "Hide amounts",
-                        tint = AcuranzaTheme.colors.tertiaryText,
+                        tint = SumvaloTheme.colors.tertiaryText,
                         modifier = Modifier.size(16.dp),
                     )
                 }
@@ -213,7 +213,7 @@ fun BalanceHeroCard(
             AmountText(
                 paise = amount,
                 style = AmountStyles.hero,
-                color = AcuranzaTheme.colors.ink,
+                color = SumvaloTheme.colors.ink,
                 hidden = hidden,
                 animate = true,
                 modifier = Modifier.weight(1f),
@@ -224,7 +224,7 @@ fun BalanceHeroCard(
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .size(width = 72.dp, height = 28.dp),
-                    color = AcuranzaTheme.colors.accent,
+                    color = SumvaloTheme.colors.accent,
                     fill = false,
                 )
             }
@@ -258,8 +258,8 @@ fun DeltaChip(
     val good = up == positiveIsGood
     val tint = when {
         onDark -> Color.White
-        good -> AcuranzaTheme.colors.income
-        else -> AcuranzaTheme.colors.alert
+        good -> SumvaloTheme.colors.income
+        else -> SumvaloTheme.colors.alert
     }
     Row(
         modifier = modifier,
@@ -275,7 +275,7 @@ fun DeltaChip(
             Text(
                 label,
                 style = MaterialTheme.typography.bodySmall,
-                color = if (onDark) Color.White.copy(alpha = 0.7f) else AcuranzaTheme.colors.subtleText,
+                color = if (onDark) Color.White.copy(alpha = 0.7f) else SumvaloTheme.colors.subtleText,
             )
         }
     }

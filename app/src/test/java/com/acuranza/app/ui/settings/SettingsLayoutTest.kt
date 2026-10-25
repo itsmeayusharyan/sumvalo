@@ -83,8 +83,8 @@ class SettingsLayoutTest {
 
     @Test
     fun `rename changes only the displayed title`() {
-        val l = SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.ABOUT, "About Acuranza")
-        assertEquals("About Acuranza", l.sections.first { it.key == SettingsSectionKey.ABOUT }.title)
+        val l = SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.ABOUT, "About Sumvalo")
+        assertEquals("About Sumvalo", l.sections.first { it.key == SettingsSectionKey.ABOUT }.title)
         assertEquals(SettingsSectionKey.ABOUT.defaultTitle, SettingsSectionKey.ABOUT.defaultTitle)
         // The key, the entries and the routes are untouched.
         assertEquals(

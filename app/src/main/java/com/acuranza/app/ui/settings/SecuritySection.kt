@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.fragment.app.FragmentActivity
 import com.acuranza.app.data.DatabaseEncryption
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.security.BiometricGate
 import com.acuranza.app.security.DecoySession
 import com.acuranza.app.security.PinHasher
@@ -51,7 +51,7 @@ const val DECOY_PLACEHOLDER = "decoy"
 
 /**
  * Privacy & security settings: the app lock, screenshot blocking, database encryption status,
- * the app PIN that unlocks Acuranza, the decoy PIN that opens a sample profile, and recovery
+ * the app PIN that unlocks Sumvalo, the decoy PIN that opens a sample profile, and recovery
  * options — what still works if a PIN is forgotten or the phone is lost.
  */
 @Composable
@@ -96,7 +96,7 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
         )
         SettingsToggle(
             "Block screenshots",
-            "Hide Acuranza in the recents preview and block screenshots",
+            "Hide Sumvalo in the recents preview and block screenshots",
             s.blockScreenshots,
             { v -> scope.launch { c.settings.setBlockScreenshots(v) } },
             Icons.Outlined.ScreenLockPortrait,
@@ -107,7 +107,7 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
             if (encrypted) "AES-256 (SQLCipher), key kept in the phone's secure hardware keystore" else "Sumvalo will encrypt it on the next launch",
             Icons.Outlined.Lock,
             trailing = {
-                Pill(if (encrypted) "On" else "Pending", if (encrypted) AcuranzaTheme.colors.good else AcuranzaTheme.colors.warning)
+                Pill(if (encrypted) "On" else "Pending", if (encrypted) SumvaloTheme.colors.good else SumvaloTheme.colors.warning)
             },
         )
         SettingsRow(
@@ -150,7 +150,7 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
-                        "No biometrics set up? A phone screen lock (PIN, pattern or password) is all Acuranza needs; set one in Android's security settings.",
+                        "No biometrics set up? A phone screen lock (PIN, pattern or password) is all Sumvalo needs; set one in Android's security settings.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     Text(
@@ -220,7 +220,7 @@ private fun PinDialog(
             title = { Text("App PIN") },
             text = { Text("Change your PIN, or remove it to unlock with fingerprint or screen lock only. Removing it also removes the decoy PIN.") },
             confirmButton = { TextButton(onClick = { onAction(PinAction.CHANGE) }) { Text("Change") } },
-            dismissButton = { TextButton(onClick = { onAction(PinAction.REMOVE) }) { Text("Remove", color = AcuranzaTheme.colors.expense) } },
+            dismissButton = { TextButton(onClick = { onAction(PinAction.REMOVE) }) { Text("Remove", color = SumvaloTheme.colors.expense) } },
         )
         return
     }
@@ -284,7 +284,7 @@ private fun PinDialog(
                     Text(
                         "Entering this PIN on the lock screen opens a separate profile with sample data. Your real data stays hidden.",
                         style = MaterialTheme.typography.bodySmall,
-                        color = AcuranzaTheme.colors.subtleText,
+                        color = SumvaloTheme.colors.subtleText,
                     )
                 }
                 if (needsCurrent) PinField(current, "Current app PIN") { current = it; error = null }
@@ -292,7 +292,7 @@ private fun PinDialog(
                     PinField(new, if (action == PinAction.SET_DECOY) "Decoy PIN" else "New PIN") { new = it; error = null }
                     PinField(confirm, "Repeat PIN") { confirm = it; error = null }
                 }
-                error?.let { Text(it, color = AcuranzaTheme.colors.expense, style = MaterialTheme.typography.bodySmall) }
+                error?.let { Text(it, color = SumvaloTheme.colors.expense, style = MaterialTheme.typography.bodySmall) }
             }
         },
         confirmButton = {

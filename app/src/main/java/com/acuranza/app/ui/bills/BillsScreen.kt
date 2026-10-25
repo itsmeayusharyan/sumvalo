@@ -41,11 +41,11 @@ import com.acuranza.app.data.AccountEntity
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.BankBadge
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.AcuranzaCard
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SourceBadge
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.AcuranzaTheme
+import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.model.AccountType
 import com.acuranza.app.model.Bank
@@ -55,7 +55,7 @@ import com.acuranza.app.ui.common.ChoiceField
 import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.FormColumn
-import com.acuranza.app.ui.common.AcuranzaScreen
+import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.common.bankEnum
@@ -155,7 +155,7 @@ fun BillsContent(
     onPay: (BillItem) -> Unit = {},
     onDelete: (BillItem) -> Unit = {},
 ) {
-    AcuranzaScreen(
+    SumvaloScreen(
         title = "Card bills",
         subtitle = if (state.bills.isEmpty()) null else "Total due ${com.acuranza.app.model.Money.format(state.bills.sumOf { it.bill.totalDue }, showPaise = false)}"
             .takeUnless { hidden },
@@ -177,7 +177,7 @@ fun BillsContent(
                 actionLabel = if (state.cards.isEmpty()) null else "Add a bill manually",
                 onAction = if (state.cards.isEmpty()) null else onAdd,
             )
-            return@AcuranzaScreen
+            return@SumvaloScreen
         }
         LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(20.dp, 4.dp, 20.dp, 40.dp)) {
             items(state.bills, key = { it.bill.id }) { b -> BillRow(b, hidden, onPay = { onPay(b) }, onDelete = { onDelete(b) }) }
@@ -190,13 +190,13 @@ fun BillsContent(
 fun BillRow(b: BillItem, hidden: Boolean, onPay: () -> Unit, onUnpay: (() -> Unit)? = null, onDelete: (() -> Unit)? = null) {
     val days = b.daysLeft
     val urgency = when {
-        b.bill.paid -> AcuranzaTheme.colors.good
-        days == null -> AcuranzaTheme.colors.subtleText
-        days < 0 -> AcuranzaTheme.colors.alert
-        days <= 3 -> AcuranzaTheme.colors.warning
-        else -> AcuranzaTheme.colors.subtleText
+        b.bill.paid -> SumvaloTheme.colors.good
+        days == null -> SumvaloTheme.colors.subtleText
+        days < 0 -> SumvaloTheme.colors.alert
+        days <= 3 -> SumvaloTheme.colors.warning
+        else -> SumvaloTheme.colors.subtleText
     }
-    AcuranzaCard(Modifier.padding(vertical = 5.dp), contentPadding = PaddingValues(start = 14.dp, end = 6.dp, top = 14.dp, bottom = 4.dp)) {
+    SumvaloCard(Modifier.padding(vertical = 5.dp), contentPadding = PaddingValues(start = 14.dp, end = 6.dp, top = 14.dp, bottom = 4.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             BankBadge(b.card?.bankEnum() ?: Bank.OTHER, size = 36.dp)
             Spacer(Modifier.width(12.dp))
@@ -217,8 +217,8 @@ fun BillRow(b: BillItem, hidden: Boolean, onPay: () -> Unit, onUnpay: (() -> Uni
                 AmountText(b.bill.totalDue, style = AmountStyles.medium, hidden = hidden)
                 b.bill.minimumDue?.let {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("min ", style = MaterialTheme.typography.labelSmall, color = AcuranzaTheme.colors.subtleText)
-                        AmountText(it, style = AmountStyles.small, hidden = hidden, color = AcuranzaTheme.colors.subtleText)
+                        Text("min ", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
+                        AmountText(it, style = AmountStyles.small, hidden = hidden, color = SumvaloTheme.colors.subtleText)
                     }
                 }
             }
@@ -228,14 +228,14 @@ fun BillRow(b: BillItem, hidden: Boolean, onPay: () -> Unit, onUnpay: (() -> Uni
             SourceBadge(b.bill.source)
             if (b.isOverdue) {
                 Spacer(Modifier.width(8.dp))
-                Pill("Overdue", AcuranzaTheme.colors.alert)
+                Pill("Overdue", SumvaloTheme.colors.alert)
             }
             Spacer(Modifier.weight(1f))
-            if (onDelete != null) TextButton(onClick = onDelete) { Text("Remove", color = AcuranzaTheme.colors.subtleText) }
+            if (onDelete != null) TextButton(onClick = onDelete) { Text("Remove", color = SumvaloTheme.colors.subtleText) }
             if (b.bill.paid) {
                 if (onUnpay != null) TextButton(onClick = onUnpay) { Text("Mark unpaid") }
             } else {
-                TextButton(onClick = onPay) { Text("Mark paid", fontWeight = FontWeight.SemiBold, color = AcuranzaTheme.colors.accent) }
+                TextButton(onClick = onPay) { Text("Mark paid", fontWeight = FontWeight.SemiBold, color = SumvaloTheme.colors.accent) }
             }
         }
     }
@@ -255,7 +255,7 @@ fun PayBillDialog(b: BillItem, banks: List<AccountEntity>, onDismiss: () -> Unit
                 Text(
                     "Choose the account you paid from to update both balances, or skip if it's already recorded.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = AcuranzaTheme.colors.subtleText,
+                    color = SumvaloTheme.colors.subtleText,
                 )
                 if (banks.isNotEmpty()) {
                     ChoiceField("Paid from", banks, from, { it.label() }, { from = it }, leading = { BankBadge(it.bankEnum(), size = 28.dp) })

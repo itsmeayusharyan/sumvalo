@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import com.acuranza.app.AcuranzaApp
+import com.acuranza.app.SumvaloApp
 
 /**
  * Share target for SMS transaction tracking — the permissionless capture path. The user shares a
@@ -20,7 +20,7 @@ class SmsShareActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val text = intent?.takeIf { it.action == Intent.ACTION_SEND }?.getStringExtra(Intent.EXTRA_TEXT)?.trim()
-        val container = (applicationContext as AcuranzaApp).container
+        val container = (applicationContext as SumvaloApp).container
         when {
             text.isNullOrBlank() -> toast("Nothing to add")
             container.decoy -> toast("Not available in this profile")
