@@ -142,5 +142,13 @@ else
 fi
 rm -f "$NOTES"
 
+# Run APK retention policy after publishing
+if command -v gh &>/dev/null && gh auth status &>/dev/null 2>&1; then
+  echo "Running APK retention policy..."
+  bash scripts/release-retention.sh || echo "WARNING: APK retention cleanup had errors"
+else
+  echo "Skipping APK retention: gh CLI not authenticated"
+fi
+
 echo "v$VERSION (code $VERSION_CODE) commit=$COMMIT apks=${APKS[*]} result=PUSHED remote=$REMOTE $(date -u +%FT%TZ)" >> "$LOG"
 echo "SYNC-OK: v$VERSION (code $VERSION_CODE) pushed to $REMOTE/main at $COMMIT"

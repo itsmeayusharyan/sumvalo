@@ -101,3 +101,12 @@ jobs:
       - name: Remove the keystore
         if: always()
         run: rm -f keystore/sumvalo-release.jks
+
+      - name: Retain only recent APKs (release retention policy)
+        if: env.SKIP != '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPO: ${{ github.repository }}
+          DRY_RUN: "0"
+        run: |
+          ./scripts/release-retention.sh

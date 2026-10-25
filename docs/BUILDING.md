@@ -70,6 +70,37 @@ Run against the signed artifact, not the source tree:
 CI (`.github/workflows/ci.yml`) runs the unit tests and the INTERNET-permission check on every
 push; `release.yml` builds and signs on a tag and runs the same checks before publishing.
 
+## APK Retention Policy
+
+To minimize disk usage while retaining recent builds for recovery, Sumvalo applies an APK retention
+policy to GitHub releases:
+
+- **Retain:** current release + 2 most recent previous stable releases (3 total)
+- **Delete:** APK assets (`.apk` files) from releases beyond the retention window
+- **Version ordering:** semantic version (e.g., `1.10` > `1.9`), not upload date
+- **Variants:** both `Sumvalo-{version}.apk` and `Sumvalo-Full-{version}.apk` are retained/deleted together
+- **Prereleases:** excluded from stable retention
+- **Safety:** only APK assets are deleted — never source code, tags, commits, release notes, or checksums
+- **Idempotent:** rerunning causes no additional deletions
+- **Automation:** runs after every successful release via `scripts/release-retention.sh` and the GitHub Actions release workflow
+
+Example retention:
+
+| New release | APK versions retained |
+|-------------|----------------------|
+| 1.5 | 1.4 and 1.3 |
+| 1.6 | 1.5 and 1.4 |
+| 1.7 | 1.6 and 1.5 |
+| 1.10 | 1.9 and 1.8 |
+| 2.0 | 1.9 and 1.8 |
+
+Run manually (dry-run first to verify):
+
+```bash
+DRY_RUN=1 ./scripts/release-retention.sh
+./scripts/release-retention.sh
+```
+
 ## Publishing the source
 
 The build has two capability variants. **standard** is the sideloaded release: no SMS
