@@ -14,7 +14,6 @@
 
 - [About](#about)
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
 - [Development](#development)
 - [Privacy](#privacy)
@@ -41,26 +40,6 @@ Designed to be minimal, tactile, and glanceable: bold typography, clean hierarch
 - **Recurring & bills** — subscriptions, EMIs, UPI AutoPay / NACH mandates found in your spending; due-date reminders with price-change alerts
 - **Reports & insights** — monthly & yearly PDF reports, Beancount & Ledger export, year-in-review, daily spending calendar, spending spikes, savings rate
 - **Everyday tools** — home-screen widgets (this month, savings goal, spending by category, quick add), a Quick Settings tile, haptic feedback (Light/Standard/Strong), and a default-landing-tab choice
-
----
-
-## Screenshots
-
-<p align="center">
-  <img src="docs/screenshots/home-light.png" alt="Home — light theme" width="200"/>
-  <img src="docs/screenshots/home-dark.png" alt="Home — dark theme" width="200"/>
-  <img src="docs/screenshots/settings.png" alt="Settings hub" width="200"/>
-  <img src="docs/screenshots/settings-dark.png" alt="Settings — dark theme" width="200"/>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/budgets.png" alt="Budgets" width="200"/>
-  <img src="docs/screenshots/goals.png" alt="Goals" width="200"/>
-  <img src="docs/screenshots/categories.png" alt="Categories" width="200"/>
-  <img src="docs/screenshots/card-bills.png" alt="Card bills" width="200"/>
-</p>
-
----
 
 ## Getting Started
 
