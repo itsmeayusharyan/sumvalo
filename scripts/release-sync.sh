@@ -10,10 +10,13 @@
 #   4. reconciles with the remote with fetch + rebase (never merges over, never force-pushes),
 #   5. pushes the branch and records version, commit hash and result to the sync log.
 #
-# Usage: scripts/release-sync.sh [signed.apk] [--tag]
+# Usage: scripts/release-sync.sh [signed.apk...] [--tag]
 #   --tag       also push the vX.Y.Z tag, which makes the GitHub Release workflow build and
-#               attach the APK (needs the repo's ACURANZA_* secrets configured on GitHub).
-#   APK path    only recorded in the log; APKs are never pushed to git.
+#               attach the APK (needs the repo's SUMVALO_* secrets configured on GitHub).
+#   APK path(s) default to both release variants when none given:
+#     /data/workspace/Sumvalo-<version>.apk   (standard)
+#     /data/workspace/Sumvalo-Full-<version>.apk  (full)
+#   APKs are never pushed to git.
 #
 # Environment:
 #   SYNC_REMOTE   remote to push to (default: origin) — used by tests, leave it alone otherwise.
@@ -81,13 +84,19 @@ if ! GIT_TERMINAL_PROMPT=0 git push -u "$REMOTE" main; then
 fi
 
 PUSH_TAG=no
-APK=""
+APKS=()
 for arg in "$@"; do
   case "$arg" in
     --tag) PUSH_TAG=yes ;;
-    *) APK="$arg" ;;
+    *) APKS+=("$arg") ;;
   esac
 done
+
+# When no APK is passed, default to both release variants
+if [ ${#APKS[@]} -eq 0 ]; then
+  APKS+=("/data/workspace/Sumvalo-${VERSION}.apk")
+  APKS+=("/data/workspace/Sumvalo-Full-${VERSION}.apk")
+fi
 
 if [ "$PUSH_TAG" = "yes" ]; then
   if ! GIT_TERMINAL_PROMPT=0 git push "$REMOTE" "v$VERSION"; then
@@ -111,20 +120,27 @@ if [ -s "$CHANGELOG" ]; then
 else
   echo "See the commit history for what changed in this release." > "$NOTES"
 fi
-if [ -n "$APK" ] && [ -f "$APK" ]; then
-  if gh release view "$TAG" -R "$GITHUB_REPO" >/dev/null 2>&1; then
-    gh release edit "$TAG" -R "$GITHUB_REPO" --notes-file "$NOTES"
-    gh release upload "$TAG" -R "$GITHUB_REPO" "$APK" --clobber
-  else
-    gh release create "$TAG" -R "$GITHUB_REPO" "$APK" \
-      --title "Sumvalo v$VERSION" --notes-file "$NOTES" --target "$COMMIT"
-  fi
-  echo "release=$TAG apk=$(basename "$APK") result=RELEASE-UPLOADED $(date -u +%FT%TZ)" >> "$LOG"
+if [ ${#APKS[@]} -gt 0 ]; then
+  for apk in "${APKS[@]}"; do
+    if [ ! -f "$apk" ]; then
+      echo "release=$TAG result=RELEASE-SKIPPED apk-not-found $(basename "$apk") $(date -u +%FT%TZ)" >> "$LOG"
+      echo "NOTE: APK not found, skipping: $apk"
+      continue
+    fi
+    if gh release view "$TAG" -R "$GITHUB_REPO" >/dev/null 2>&1; then
+      gh release edit "$TAG" -R "$GITHUB_REPO" --notes-file "$NOTES"
+      gh release upload "$TAG" -R "$GITHUB_REPO" "$apk" --clobber
+    else
+      gh release create "$TAG" -R "$GITHUB_REPO" "$apk" \
+        --title "Sumvalo v$VERSION" --notes-file "$NOTES" --target "$COMMIT"
+    fi
+    echo "release=$TAG apk=$(basename "$apk") result=RELEASE-UPLOADED $(date -u +%FT%TZ)" >> "$LOG"
+  done
 else
   echo "release=$TAG result=RELEASE-SKIPPED no-apk $(date -u +%FT%TZ)" >> "$LOG"
   echo "NOTE: no signed APK passed in, so no GitHub release was created."
 fi
 rm -f "$NOTES"
 
-echo "v$VERSION (code $VERSION_CODE) commit=$COMMIT apk=${APK:-n/a} result=PUSHED remote=$REMOTE $(date -u +%FT%TZ)" >> "$LOG"
+echo "v$VERSION (code $VERSION_CODE) commit=$COMMIT apks=${APKS[*]} result=PUSHED remote=$REMOTE $(date -u +%FT%TZ)" >> "$LOG"
 echo "SYNC-OK: v$VERSION (code $VERSION_CODE) pushed to $REMOTE/main at $COMMIT"
