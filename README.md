@@ -1,13 +1,26 @@
 <h1 align="center">Sumvalo</h1>
 
 <p align="center">
-  <img src="docs/screenshots/logo.png" alt="Sumvalo logo" width="80" height="80"/>
+  <img src="docs/screenshots/logo.png" alt="Sumvalo logo" width="96" height="96"/>
 </p>
 
 <p align="center">
-  Offline-first personal finance for Android.<br/>
+  <b>Offline-first personal finance for Android.</b><br/>
   Local-only, encrypted, no network permission — your money data never leaves the phone.
 </p>
+
+<details>
+<summary><b>Table of Contents</b></summary>
+
+- [About](#about)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Getting Started](#getting-started)
+- [Development](#development)
+- [Privacy](#privacy)
+- [License](#license)
+
+</details>
 
 ---
 
@@ -58,7 +71,7 @@ Designed to be minimal, tactile, and glanceable: bold typography, clean hierarch
 | **Standard** | Not requested | Share or paste bank messages; sideloads cleanly, Play Protect friendly |
 | **Full** | Requested (opt-in) | Automatic inbox scan and notification capture; may trigger Play Protect warnings on sideload |
 
-Download the signed APKs from the [Releases page](https://github.com/itsmeayusharyan/sumvalo/releases). Both variants share identical code, features, and signing key — upgrades install cleanly over previous versions.
+Download the signed APKs from the [Releases page](https://github.com/itsmeayusharyan/sumvalo/releases/latest). Both variants share identical code, features, and signing key — upgrades install cleanly over previous versions.
 
 Sumvalo targets Android 8.0+ (minSdk 26, targetSdk 35). The app requests no network permission — nothing can leave your phone.
 
