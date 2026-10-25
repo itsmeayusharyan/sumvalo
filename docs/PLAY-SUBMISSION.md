@@ -46,8 +46,8 @@ and manage budget"** as a permitted use for `READ_SMS` (and companions). Sumvalo
 
 ## Blocking prerequisites (must be done by the developer)
 
-1. **Privacy policy URL** — DONE: https://itsmeayusharyan.github.io/acuranza-privacy/
-   (public repo `itsmeayusharyan/acuranza-privacy`, GitHub Pages, verified HTTP 200; source of
+1. **Privacy policy URL** — DONE: https://itsmeayusharyan.github.io/sumvalo-privacy/
+   (public repo `itsmeayusharyan/sumvalo-privacy`, GitHub Pages, verified HTTP 200; source of
    truth is docs/PRIVACY.md in the main repo — keep them in sync).
 2. **Play Console account + listing** — store listing (fastlane metadata in
    `fastlane/metadata/android/en-US/` is the draft), content rating, target-audience answers.

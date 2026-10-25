@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Acuranza release sync — publishes a finished release to GitHub.
+# Sumvalo release sync — publishes a finished release to GitHub.
 #
 # Run AFTER a release has been built, signed and has passed the test suite and the security
 # audit (scripts/security-audit.sh). The script:
@@ -35,8 +35,8 @@ VERSION_CODE="$(sed -n 's/.*versionCode = \([0-9]*\).*/\1/p' app/build.gradle.kt
 [ -n "$VERSION" ] && [ -n "$VERSION_CODE" ] || { echo "SYNC-FAIL: cannot read version from app/build.gradle.kts"; exit 1; }
 
 BRANCH="$(git branch --show-current)"
-if [ "$BRANCH" != "acuranza" ]; then
-  echo "SYNC-FAIL: expected branch 'acuranza', currently on '$BRANCH'"
+if [ "$BRANCH" != "main" ]; then
+  echo "SYNC-FAIL: expected branch 'main', currently on '$BRANCH'"
   exit 1
 fi
 
@@ -56,24 +56,24 @@ fi
 if git diff --cached --quiet; then
   echo "Nothing new to commit."
 else
-  git -c user.name="Acuranza Build" -c user.email="build@acuranza.local" \
+  git -c user.name="Sumvalo Build" -c user.email="build@sumvalo.local" \
     commit -m "v$VERSION: release source sync (versionCode $VERSION_CODE)"
 fi
 
 # Reconcile first: rebase on top of the remote branch so we never overwrite remote commits.
 # A branch that doesn't exist remotely yet (first sync) has nothing to reconcile; a conflict
 # stops the sync for a human to resolve.
-if GIT_TERMINAL_PROMPT=0 git ls-remote --exit-code --heads "$REMOTE" acuranza >/dev/null 2>&1; then
-  git fetch "$REMOTE" acuranza
-  if ! git rebase "$REMOTE/acuranza"; then
-    echo "SYNC-FAIL: rebase onto $REMOTE/acuranza hit a conflict — resolve it and rerun"
+if GIT_TERMINAL_PROMPT=0 git ls-remote --exit-code --heads "$REMOTE" main >/dev/null 2>&1; then
+  git fetch "$REMOTE" main
+  if ! git rebase "$REMOTE/main"; then
+    echo "SYNC-FAIL: rebase onto $REMOTE/main hit a conflict — resolve it and rerun"
     git rebase --abort 2>/dev/null || true
     exit 1
   fi
 fi
 
 # GIT_TERMINAL_PROMPT=0: with no credential helper this fails immediately instead of hanging.
-if ! GIT_TERMINAL_PROMPT=0 git push -u "$REMOTE" acuranza; then
+if ! GIT_TERMINAL_PROMPT=0 git push -u "$REMOTE" main; then
   COMMIT="$(git rev-parse --short HEAD)"
   echo "v$VERSION (code $VERSION_CODE) commit=$COMMIT result=SYNC-FAIL push-failed $(date -u +%FT%TZ)" >> "$LOG"
   echo "SYNC-FAIL: push to $REMOTE failed — usually missing git credentials (gh auth login) or no network write access. Nothing was force-pushed."
@@ -117,7 +117,7 @@ if [ -n "$APK" ] && [ -f "$APK" ]; then
     gh release upload "$TAG" -R "$GITHUB_REPO" "$APK" --clobber
   else
     gh release create "$TAG" -R "$GITHUB_REPO" "$APK" \
-      --title "Acuranza v$VERSION" --notes-file "$NOTES" --target "$COMMIT"
+      --title "Sumvalo v$VERSION" --notes-file "$NOTES" --target "$COMMIT"
   fi
   echo "release=$TAG apk=$(basename "$APK") result=RELEASE-UPLOADED $(date -u +%FT%TZ)" >> "$LOG"
 else
@@ -127,4 +127,4 @@ fi
 rm -f "$NOTES"
 
 echo "v$VERSION (code $VERSION_CODE) commit=$COMMIT apk=${APK:-n/a} result=PUSHED remote=$REMOTE $(date -u +%FT%TZ)" >> "$LOG"
-echo "SYNC-OK: v$VERSION (code $VERSION_CODE) pushed to $REMOTE/acuranza at $COMMIT"
+echo "SYNC-OK: v$VERSION (code $VERSION_CODE) pushed to $REMOTE/main at $COMMIT"

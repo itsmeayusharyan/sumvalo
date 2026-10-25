@@ -43,8 +43,8 @@ echo "== 2. signing certificate =="
 "$BUILD_TOOLS/apksigner" verify --print-certs "$APK" | sed -n '1,6p'
 "$BUILD_TOOLS/apksigner" verify "$APK" && pass "APK signature verifies"
 grep -q "CN=Acuranza" <("$BUILD_TOOLS/apksigner" verify --print-certs "$APK") \
-  && pass "signer is the Acuranza release key" \
-  || fail "signer is NOT the Acuranza release key"
+  && pass "signer is the Sumvalo release key" \
+  || fail "signer is NOT the Sumvalo release key"
 
 echo
 echo "== 3. manifest hygiene (merged manifest via apkanalyzer) =="

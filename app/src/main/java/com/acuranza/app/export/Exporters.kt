@@ -44,7 +44,7 @@ object Exporters {
         ExportFormat.LEDGER -> ledger(data)
     }
 
-    fun fileName(format: ExportFormat, from: LocalDate, to: LocalDate): String = "acuranza-$from-to-$to.${format.extension}"
+    fun fileName(format: ExportFormat, from: LocalDate, to: LocalDate): String = "sumvalo-$from-to-$to.${format.extension}"
 
     // ------------------------------------------------------------------ CSV
 
@@ -95,7 +95,7 @@ object Exporters {
     fun beancount(data: ExportData): String {
         val book = Book(data)
         val sb = StringBuilder()
-        sb.append("; Exported from Acuranza, ${data.from} to ${data.to}\n")
+        sb.append("; Exported from Sumvalo, ${data.from} to ${data.to}\n")
         sb.append("option \"title\" \"Sumvalo\"\n")
         sb.append("option \"operating_currency\" \"INR\"\n\n")
         sb.append("${book.firstDate} commodity INR\n\n")
@@ -123,7 +123,7 @@ object Exporters {
     fun ledger(data: ExportData): String {
         val book = Book(data)
         val sb = StringBuilder()
-        sb.append("; Exported from Acuranza, ${data.from} to ${data.to}\n\n")
+        sb.append("; Exported from Sumvalo, ${data.from} to ${data.to}\n\n")
         for ((name, _) in book.openings) sb.append("account $name\n")
         sb.append('\n')
         for (e in book.entries) {

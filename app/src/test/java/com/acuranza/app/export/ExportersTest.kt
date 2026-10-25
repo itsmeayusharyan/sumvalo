@@ -66,8 +66,8 @@ class ExportersTest {
 
     @Test fun beancountGolden() {
         val expected = listOf(
-            "; Exported from Acuranza, 2026-01-01 to 2026-01-31",
-            "option \"title\" \"Acuranza\"",
+            "; Exported from Sumvalo, 2026-01-01 to 2026-01-31",
+            "option \"title\" \"Sumvalo\"",
             "option \"operating_currency\" \"INR\"",
             "",
             "2026-01-01 commodity INR",
@@ -103,7 +103,7 @@ class ExportersTest {
 
     @Test fun ledgerGolden() {
         val expected = listOf(
-            "; Exported from Acuranza, 2026-01-01 to 2026-01-31",
+            "; Exported from Sumvalo, 2026-01-01 to 2026-01-31",
             "",
             "account Assets:Bank:HDFC-Savings-4821",
             "account Equity:Opening-Balances",
@@ -155,6 +155,6 @@ class ExportersTest {
         assertEquals("Food-And-Dining", Exporters.component("food & dining"))
         assertEquals("Other", Exporters.component("₹ — "))
         assertEquals("Assets:Unknown", Exporters.ledgerAccount(null))
-        assertEquals("acuranza-2026-01-01-to-2026-01-31.beancount", Exporters.fileName(ExportFormat.BEANCOUNT, data.from, data.to))
+        assertEquals("sumvalo-2026-01-01-to-2026-01-31.beancount", Exporters.fileName(ExportFormat.BEANCOUNT, data.from, data.to))
     }
 }
