@@ -11,7 +11,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.acuranza.app"
+        applicationId = "com.sumvalo.app"
         // English-only UI (standing decision): library locale tables for the other ~80
         // languages never ship, which trims resources.arsc.
         resourceConfigurations += setOf("en")
