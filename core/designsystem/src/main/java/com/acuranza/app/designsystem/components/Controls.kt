@@ -76,8 +76,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
-import com.acuranza.app.designsystem.theme.BrandPalette
+import com.acuranza.app.designsystem.theme.Motion
+import com.acuranza.app.designsystem.theme.pressSpring
+import com.acuranza.app.designsystem.theme.springForCard
 import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.designsystem.theme.TabularFigures
+import androidx.compose.animation.core.EaseOut
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnType
 
@@ -110,7 +114,7 @@ fun SegmentedTabs(
         val reduced = com.acuranza.app.designsystem.theme.LocalReducedMotion.current
         val offset by animateDpAsState(
             targetValue = segment * selectedIndex,
-            animationSpec = if (reduced) snap() else spring(dampingRatio = 0.9f, stiffness = Spring.StiffnessMediumLow),
+            animationSpec = if (reduced) snap() else spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessLow),
             label = "segment",
         )
         Box(
@@ -314,7 +318,7 @@ fun LoadingShimmer(
         initialValue = if (reduced) 2f else -1f,
         targetValue = 2f,
         animationSpec = if (reduced) infiniteRepeatable(tween(0), RepeatMode.Restart)
-        else infiniteRepeatable(tween(1300, easing = LinearEasing), RepeatMode.Restart),
+        else infiniteRepeatable(tween(900, easing = EaseOut), RepeatMode.Restart),
         label = "shimmer-x",
     )
     val base = SumvaloTheme.colors.shimmerBase
@@ -470,10 +474,7 @@ fun Modifier.pressScale(interactionSource: MutableInteractionSource, scaleDown: 
         animationSpec = if (com.acuranza.app.designsystem.theme.LocalReducedMotion.current) {
             androidx.compose.animation.core.snap()
         } else {
-            androidx.compose.animation.core.spring(
-                dampingRatio = androidx.compose.animation.core.Spring.DampingRatioLowBouncy,
-                stiffness = androidx.compose.animation.core.Spring.StiffnessMediumLow,
-            )
+            pressSpring()
         },
         label = "pressScale",
     )

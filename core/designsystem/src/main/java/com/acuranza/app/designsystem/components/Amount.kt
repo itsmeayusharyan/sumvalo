@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.acuranza.app.designsystem.theme.AmountStyles
+import com.acuranza.app.designsystem.theme.Motion
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.designsystem.theme.TabularFigures
 import com.acuranza.app.model.Money
@@ -93,7 +94,7 @@ fun formatAmount(paise: Paise, type: TxnType? = null, compact: Boolean = false, 
 private fun animatedPaise(target: Paise): Paise {
     val anim = remember { Animatable(target.toFloat()) }
     LaunchedEffect(target) {
-        anim.animateTo(target.toFloat(), tween(durationMillis = 650, easing = FastOutSlowInEasing))
+        anim.animateTo(target.toFloat(), tween(durationMillis = Motion.FAST, easing = FastOutSlowInEasing))
     }
     // Float has ~7 significant digits; snap to the exact target when the animation settles.
     return if (anim.isRunning) anim.value.roundToLong() else target

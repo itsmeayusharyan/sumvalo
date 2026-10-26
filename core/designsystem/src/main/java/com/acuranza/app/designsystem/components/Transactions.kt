@@ -1,11 +1,8 @@
 package com.acuranza.app.designsystem.components
 
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,8 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloTheme
-import androidx.compose.animation.core.EaseOut
-import com.acuranza.app.designsystem.theme.LocalReducedMotion
 import com.acuranza.app.designsystem.theme.Motion
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnSource
@@ -248,30 +243,7 @@ fun SwipeActionsRow(
 /**
  * Staggered entrance for list items: fades and slides each item in, delayed by its index.
  * Use as `Modifier.staggeredEntrance(index)` on items of a LazyColumn.
+ * Defined in [com.acuranza.app.designsystem.theme.StaggeredEntrance] — see Motion.kt.
  */
-@Composable
-fun Modifier.staggeredEntrance(index: Int, maxDelayItems: Int = 10): Modifier {
-    if (LocalInspectionMode.current) return this
-    // Reduced motion: compose at full alpha with no staged delay — the raw coroutine delays below
-    // are NOT scaled by the system animation scale, so they must be skipped outright.
-    if (LocalReducedMotion.current) return this
-    val anim = remember { Animatable(0f) }
-    LaunchedEffect(Unit) {
-        kotlinx.coroutines.delay((index.coerceAtMost(maxDelayItems) * Motion.STAGGER_MS))
-        anim.animateTo(1f, tween(Motion.ENTRANCE, easing = EaseOut))
-    }
-    return this.graphicsLayer {
-        alpha = anim.value.coerceIn(0f, 1f)
-        translationY = (1f - anim.value) * 24.dp.toPx()
-    }
-}
-
-/** A quick fade-in for whole sections. */
-@Composable
-fun Modifier.fadeIn(delayMillis: Int = 0): Modifier {
-    if (LocalInspectionMode.current) return this
-    if (LocalReducedMotion.current) return this
-    val anim = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { anim.animateTo(1f, tween(Motion.ENTRANCE, delayMillis, easing = EaseOut)) }
-    return this.graphicsLayer { alpha = anim.value }
-}
+/** A quick fade-in for whole sections. * Defined in [com.acuranza.app.designsystem.theme.fadeIn] — see Motion.kt.
+ */

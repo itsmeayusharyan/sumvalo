@@ -2,8 +2,11 @@ package com.acuranza.app.designsystem.components
 
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
+import com.acuranza.app.designsystem.theme.LocalReducedMotion
+import com.acuranza.app.designsystem.theme.Motion
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -77,12 +80,14 @@ data class ChartPoint(val label: String, val value: Paise)
  * inside the draw code only, so each frame of the animation redraws the chart without recomposing it.
  */
 @Composable
-internal fun rememberEntrance(durationMillis: Int = 900): State<Float> {
+internal fun rememberEntrance(durationMillis: Int = Motion.ENTRANCE): State<Float> {
     // Previews and screenshot tests capture a single frame: show the finished chart there.
     val inspection = LocalInspectionMode.current
     val progress = remember { Animatable(if (inspection) 1f else 0f) }
     if (!inspection) {
-        LaunchedEffect(Unit) { progress.animateTo(1f, tween(durationMillis, easing = FastOutSlowInEasing)) }
+        LaunchedEffect(Unit) {
+            progress.animateTo(1f, tween<Float>(durationMillis, easing = EaseOut))
+        }
     }
     return progress.asState()
 }

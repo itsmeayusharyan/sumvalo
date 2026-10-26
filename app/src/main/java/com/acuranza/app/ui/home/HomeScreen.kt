@@ -71,7 +71,7 @@ import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.StatChip
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.components.TransactionRow
-import com.acuranza.app.designsystem.components.staggeredEntrance
+import com.acuranza.app.designsystem.theme.staggeredEntrance
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer

@@ -75,9 +75,8 @@ fun isReduceMotionEnabled(resolver: android.content.ContentResolver): Boolean =
 fun rememberReducedMotion(): Boolean {
     val resolver = LocalContext.current.contentResolver
     var reduced by remember { mutableStateOf(isReduceMotionEnabled(resolver)) }
-    val observer = androidx.compose.runtime.DisposableEffect(resolver) {
+    LaunchedEffect(resolver) {
         reduced = isReduceMotionEnabled(resolver)
-        onDispose { }
     }
     return reduced
 }
@@ -99,6 +98,16 @@ fun springForCard(): FiniteAnimationSpec<Float> =
     spring(
         dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
         stiffness = androidx.compose.animation.core.Spring.StiffnessLow,
+    )
+
+/**
+ * A spring spec tuned for press feedback: fast settle with zero bounce — press interactions
+ * must feel instant and tactile, never bouncy.
+ */
+fun pressSpring(): FiniteAnimationSpec<Float> =
+    spring(
+        dampingRatio = androidx.compose.animation.core.Spring.DampingRatioNoBouncy,
+        stiffness = androidx.compose.animation.core.Spring.StiffnessMedium,
     )
 
 /**

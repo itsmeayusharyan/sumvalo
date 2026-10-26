@@ -56,7 +56,7 @@ import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.ProgressRing
 import com.acuranza.app.designsystem.components.SegmentedTabs
-import com.acuranza.app.designsystem.components.staggeredEntrance
+import com.acuranza.app.designsystem.theme.staggeredEntrance
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer

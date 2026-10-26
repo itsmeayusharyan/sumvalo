@@ -56,7 +56,7 @@ private fun animatedFraction(target: Float): Float {
     LaunchedEffect(Unit) { started = true }
     val value by animateFloatAsState(
         targetValue = if (started) target else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessVeryLow),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy, stiffness = Spring.StiffnessMedium),
         label = "progress",
     )
     return value
