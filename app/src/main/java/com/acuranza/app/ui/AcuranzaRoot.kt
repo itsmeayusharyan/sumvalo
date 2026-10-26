@@ -459,7 +459,7 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         // When the bar is visible, reserve space for it above the gesture area.
         // padding.calculateBottomPadding() returns 0 because contentWindowInsets is zeros,
         // so we add the bar height plus a small gap manually.
-        val bottomExtra = if (showBar) 60.dp + 12.dp else 0.dp
+        val bottomExtra = if (showBar) 52.dp + 8.dp else 0.dp
         Box(
             Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
         ) {
@@ -506,14 +506,12 @@ fun SumvaloBottomBar(
             .fillMaxWidth()
             // Side margins make the bar a floating pill instead of a docked edge-to-edge strip.
             .padding(horizontal = 16.dp)
-            // System gesture padding keeps it above gesture navigation on all devices.
-            .navigationBarsPadding()
             // Display cutout (notch) support.
             .windowInsetsPadding(WindowInsets.displayCutout)
             .background(colors.cardSurface, barShape)
             .border(1.dp, colors.hairline, barShape)
-            .padding(vertical = 7.dp)
-            .height(60.dp),
+            .padding(vertical = 4.dp)
+            .height(52.dp),
     ) {
         Row(
             Modifier
@@ -546,7 +544,7 @@ fun SumvaloBottomBar(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(vertical = 4.dp)
+                        .padding(vertical = 2.dp)
                         .pressScale(interaction, scaleDown = 0.97f)
                         .clickable(
                             interactionSource = interaction,
