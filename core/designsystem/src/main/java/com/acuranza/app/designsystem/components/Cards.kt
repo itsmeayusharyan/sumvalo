@@ -39,23 +39,23 @@ import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 
 /**
- * The standard content card: white (or dark card) surface, 16dp corners and a 1dp hairline
- * outline. No shadow.
+ * The standard content card: solid card surface, 8dp corners and a 1dp hairline outline.
+ * No shadow, no translucency, no glass edge — flat and legible on every theme.
  */
 @Composable
 fun SumvaloCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.lg),
+    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
     shape: Shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius),
     color: Color = SumvaloTheme.colors.cardSurface,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    // An explicit non-default color is a semantic tint (warning/primary washes): keep it solid.
-    val tinted = color != SumvaloTheme.colors.cardSurface
     Column(
         modifier = modifier
-            .glassSurface(shape, colorOverride = if (tinted) color else null)
+            .clip(shape)
+            .background(color)
+            .border(1.dp, SumvaloTheme.colors.hairline, shape)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(contentPadding),
         content = content,
@@ -66,16 +66,15 @@ fun SumvaloCard(
  * An emphasis card with a flat dark face and white content — the app's hero treatment. The face
  * follows the theme: the brand ink (deep navy) in Light mode, the elevated card surface in Dark
  * and AMOLED modes, so the card never reads as an off-brand black slab. Use sparingly: one per
- * screen at most. The [brush] parameter is kept for compatibility; pass a [SolidColor] to
- * override the face.
+ * screen at most. Solid color, no gradient.
  */
 @Composable
 fun GradientCard(
     modifier: Modifier = Modifier,
     brush: Brush = SolidColor(heroFace()),
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.xl),
-    shape: Shape = RoundedCornerShape(20.dp),
+    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
+    shape: Shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(
@@ -97,12 +96,9 @@ private fun heroFace(): Color =
     if (SumvaloTheme.colors.isDark) SumvaloTheme.colors.cardSurface else SumvaloTheme.colors.ink
 
 /**
- * The glass surface treatment, centralized so every screen shares one implementation: a
- * translucent fill derived from the theme's glass token, a fine glass border, and — in dark
- * modes — a restrained top-edge highlight that suggests a lit glass edge. No real-time blur:
- * Compose has no public in-app backdrop blur, so this scrim-glass is the primary treatment and
- * the deliberate fallback everywhere (dialogs and sheets get true window blur separately on
- * API 31+). Cheap to render (one fill, one border, one line), safe on every API level, and
+ * The standard surface treatment, centralized so every screen shares one implementation: a
+ * solid fill derived from the theme's card surface token and a fine hairline border. No
+ * translucency, no gradient, no real-time blur — cheap to render, safe on every API level,
  * derived entirely from theme tokens so Dark, Light, System, AMOLED and every palette adapt
  * without hardcoding.
  */
@@ -111,22 +107,8 @@ fun Modifier.glassSurface(shape: Shape, colorOverride: Color? = null): Modifier 
     val c = SumvaloTheme.colors
     return this
         .clip(shape)
-        .background(colorOverride ?: c.glass.copy(alpha = if (c.isDark) 0.80f else 0.92f))
-        .border(1.dp, c.glassBorder, shape)
-        .drawWithContent {
-            drawContent()
-            if (c.isDark) {
-                // Restrained lit edge: a 1dp gradient at the top, white at 10% fading out.
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        listOf(Color.White.copy(alpha = 0.10f), Color.Transparent),
-                        startY = 0f,
-                        endY = 6.dp.toPx(),
-                    ),
-                    size = Size(size.width, 6.dp.toPx()),
-                )
-            }
-        }
+        .background(colorOverride ?: c.cardSurface)
+        .border(1.dp, c.hairline, shape)
 }
 
 /** True window-level blur behind dialogs and bottom sheets on Android 12+, no-op below. */

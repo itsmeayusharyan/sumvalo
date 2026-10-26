@@ -460,13 +460,9 @@ private fun BottomBar(nav: NavHostController, current: String?) {
 }
 
 /**
- * A floating navigation pill (v1.13.11): a rounded, elevated, translucent surface that hovers
- * above the gesture area with side margins, instead of a full-width bar. Destinations, icons and
- * order are unchanged. The selected destination gets a large rounded accent-tinted background that
- * springs in behind icon and label — the one expressive gesture on the bar — everything else stays
- * muted. Haptics fire only when the selection actually changes; every animation collapses to
- * instant under reduced motion; colors come from the theme only (no hardcoded values), so Dark,
- * Light, System and AMOLED palettes all flow through.
+ * Bottom navigation bar: solid surface, hairline top edge, restrained 12dp corners.
+ * The selected tab gets an accent-tinted pill behind its icon and label.
+ * No glass, no shadow, no floating — sits cleanly against the gesture area.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -475,45 +471,23 @@ fun SumvaloBottomBar(
     tabs: List<com.acuranza.app.ui.nav.NavTabs.ResolvedTab> =
         com.acuranza.app.ui.nav.NavTabs.resolve(com.acuranza.app.ui.nav.NavTabs.decodeLayout(null), emptyMap(), emptyMap()),
     showLabels: Boolean = true,
-    floating: Boolean = true,
+    floating: Boolean = false,
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
-    val pillShape = RoundedCornerShape(percent = 50)
-    // Translucent glass surface from the centralized treatment — see-through enough to float
-    // over scrolling content, opaque enough to stay readable on every palette.
-    val pillSurface = colors.glass.copy(alpha = if (colors.isDark) 0.88f else 0.92f)
-
-    val barShape = if (floating) pillShape else RoundedCornerShape(0.dp)
+    val barShape = RoundedCornerShape(12.dp)
     Box(
         Modifier
             .fillMaxWidth()
-            .then(
-                if (floating) Modifier
-                    // Float above the gesture area: side margins + nav-bar inset + a breathing gap.
-                    .padding(horizontal = 16.dp)
-                    .navigationBarsPadding()
-                    .padding(top = 2.dp, bottom = 10.dp)
-                    .windowInsetsPadding(WindowInsets.displayCutout)
-                    .shadow(
-                        elevation = 14.dp,
-                        shape = pillShape,
-                        ambientColor = colors.ink.copy(alpha = 0.14f),
-                        spotColor = colors.ink.copy(alpha = 0.18f),
-                    )
-                else Modifier
-                    // Docked: full width against the gesture area — content scrolls to its edge.
-                    .navigationBarsPadding()
-                    .background(colors.glass.copy(alpha = if (colors.isDark) 0.97f else 1f)),
-            )
-            .then(if (floating) Modifier.glassSurface(pillShape) else Modifier)
-            .background(if (floating) pillSurface else androidx.compose.ui.graphics.Color.Transparent, barShape)
-            .height(68.dp),
+            .navigationBarsPadding()
+            .background(colors.cardSurface, barShape)
+            .border(1.dp, colors.hairline, barShape)
+            .height(64.dp),
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
+                .padding(horizontal = 8.dp)
                 .fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -542,7 +516,7 @@ fun SumvaloBottomBar(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = 4.dp)
                         .pressScale(interaction, scaleDown = 0.97f)
                         .clickable(
                             interactionSource = interaction,
@@ -560,17 +534,16 @@ fun SumvaloBottomBar(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // The large rounded indicator is its own layer so the transition only ever
-                    // fades/scales the decoration — the icon and label stay visible in every state.
+                    // Selected-state pill behind icon and label.
                     Box(
                         Modifier
                             .matchParentSize()
                             .graphicsLayer {
                                 alpha = pill
-                                scaleX = 0.72f + 0.28f * pill
-                                scaleY = 0.72f + 0.28f * pill
+                                scaleX = 0.8f + 0.2f * pill
+                                scaleY = 0.8f + 0.2f * pill
                             }
-                            .clip(RoundedCornerShape(24.dp))
+                            .clip(RoundedCornerShape(16.dp))
                             .background(colors.accentTint),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

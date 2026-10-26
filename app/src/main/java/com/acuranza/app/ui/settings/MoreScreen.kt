@@ -184,10 +184,7 @@ fun MoreScreen(nav: NavController) {
             }
         }
         item(key = "footer") {
-            Column(Modifier.fillMaxWidth().padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Made in India for Indians", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
-                Text("Built with Love & Late-Night Commits.", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
-            }
+            Spacer(Modifier.height(24.dp))
         }
     }
 }

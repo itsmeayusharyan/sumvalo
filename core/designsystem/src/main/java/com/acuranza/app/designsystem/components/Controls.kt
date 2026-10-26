@@ -495,7 +495,7 @@ fun PrimaryButton(
     enabled: Boolean = true,
     icon: ImageVector? = null,
 ) {
-    val shape = RoundedCornerShape(50)
+    val shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius)
     val interaction = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
     Row(
@@ -543,12 +543,12 @@ fun QuickAction(
     ) {
         Box(
             Modifier
-                .size(46.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .size(42.dp)
+                .clip(RoundedCornerShape(12.dp))
                 .background(SumvaloTheme.colors.fill),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(21.dp))
+            Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(20.dp))
         }
         Spacer(Modifier.height(6.dp))
         Text(label, style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -567,7 +567,7 @@ fun HeroActionButton(
     filled: Boolean = true,
     icon: ImageVector? = null,
 ) {
-    val shape = RoundedCornerShape(50)
+    val shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius)
     val interaction = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
     Row(
@@ -607,7 +607,7 @@ fun SecondaryButton(
     enabled: Boolean = true,
     icon: ImageVector? = null,
 ) {
-    val shape = RoundedCornerShape(50)
+    val shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius)
     Row(
         modifier = modifier
             .heightIn(min = 52.dp)

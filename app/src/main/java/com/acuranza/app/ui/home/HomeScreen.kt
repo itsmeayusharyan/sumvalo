@@ -488,7 +488,7 @@ fun HomeContent(
                         Spacer(Modifier.height(4.dp))
                         Row(
                             Modifier
-                                .clip(RoundedCornerShape(999.dp))
+                                .clip(RoundedCornerShape(SumvaloTheme.spacing.cardRadius))
                                 .background(SumvaloTheme.colors.accent.copy(alpha = 0.12f))
                                 .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onSafeToSpend)
                                 .padding(horizontal = 10.dp, vertical = 4.dp),
