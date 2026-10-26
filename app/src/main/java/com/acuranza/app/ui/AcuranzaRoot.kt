@@ -2,6 +2,7 @@ package com.acuranza.app.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.statusBars
@@ -387,9 +388,18 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
     val backStack by nav.currentBackStackEntryAsState()
     val current = backStack?.destination?.route
     val landingTabPref = com.acuranza.app.ui.common.LocalSettings.current.landingTab
-    // The pill tucks away while the keyboard is up so text fields keep the space.
+    // The bar tucks away while the keyboard is up so text fields keep the space.
     val imeVisible = WindowInsets.isImeVisible
-    val showBar = current in TabRoutes && !imeVisible
+    // Track the active tab independently of the current route so the bottom bar
+    // stays visible (and the right tab stays highlighted) when the user drills
+    // into sub-screens such as Account Detail or Transaction Detail.
+    var activeTab by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(current) {
+        if (current != null && current in TabRoutes) {
+            activeTab = current
+        }
+    }
+    val showBar = activeTab != null && !imeVisible
 
     LaunchedEffect(initialRoute) {
         val target = when (initialRoute) {
@@ -427,13 +437,17 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
         bottomBar = {
-            AnimatedVisibility(showBar, enter = slideInVertically { it }, exit = slideOutVertically { it }) {
-                BottomBar(nav, current)
+            AnimatedVisibility(
+                visible = showBar,
+                enter = slideInVertically { it },
+                exit = slideOutVertically { it },
+            ) {
+                BottomBar(nav, activeTab)
             }
         },
         floatingActionButton = {
             AnimatedVisibility(
-                current == Routes.HOME || current == Routes.TRANSACTIONS,
+                activeTab == Routes.HOME || activeTab == Routes.TRANSACTIONS,
                 enter = fadeIn(fabEnter),
                 exit = fadeOut(fabExit),
             ) {
@@ -442,27 +456,36 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         },
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
-        Box(Modifier.padding(bottom = if (showBar) padding.calculateBottomPadding() else 0.dp)) {
+        // When the bar is visible, reserve space for it above the gesture area.
+        // padding.calculateBottomPadding() returns 0 because contentWindowInsets is zeros,
+        // so we add the bar height plus a small gap manually.
+        val bottomExtra = if (showBar) 60.dp + 12.dp else 0.dp
+        Box(
+            Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
+        ) {
             SumvaloNavHost(nav)
         }
     }
 }
 
 @Composable
-private fun BottomBar(nav: NavHostController, current: String?) {
+private fun BottomBar(nav: NavHostController, activeTab: String?) {
     val s = com.acuranza.app.ui.common.LocalSettings.current
     val tabs = com.acuranza.app.ui.nav.NavTabs.resolve(
         com.acuranza.app.ui.nav.NavTabs.decodeLayout(s.navTabLayout),
         com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
         com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
     )
-    SumvaloBottomBar(current, onTab = { route -> nav.navigateToTab(route) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
+    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
 }
 
 /**
- * Bottom navigation bar: solid surface, hairline top edge, restrained 12dp corners.
- * The selected tab gets an accent-tinted pill behind its icon and label.
- * No glass, no shadow, no floating — sits cleanly against the gesture area.
+ * Bottom navigation bar: a floating pill-shaped surface that hovers above the gesture area
+ * with side margins, a hairline border and a restrained accent wash behind the selected tab.
+ * No glass, no shadow, no gradient — solid surface derived from theme tokens only.
+ *
+ * The [floating] parameter is accepted for API compatibility (the settings editor persists it);
+ * the bar is always rendered as a floating pill.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -471,23 +494,30 @@ fun SumvaloBottomBar(
     tabs: List<com.acuranza.app.ui.nav.NavTabs.ResolvedTab> =
         com.acuranza.app.ui.nav.NavTabs.resolve(com.acuranza.app.ui.nav.NavTabs.decodeLayout(null), emptyMap(), emptyMap()),
     showLabels: Boolean = true,
-    floating: Boolean = false,
+    floating: Boolean = true,
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
-    val barShape = RoundedCornerShape(12.dp)
+    val barShape = RoundedCornerShape(28.dp)
+    val pillShape = RoundedCornerShape(20.dp)
+
     Box(
         Modifier
             .fillMaxWidth()
+            // Side margins make the bar a floating pill instead of a docked edge-to-edge strip.
+            .padding(horizontal = 16.dp)
+            // System gesture padding keeps it above gesture navigation on all devices.
             .navigationBarsPadding()
+            // Display cutout (notch) support.
+            .windowInsetsPadding(WindowInsets.displayCutout)
             .background(colors.cardSurface, barShape)
             .border(1.dp, colors.hairline, barShape)
-            .height(64.dp),
+            .padding(vertical = 7.dp)
+            .height(60.dp),
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp)
                 .fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -534,16 +564,19 @@ fun SumvaloBottomBar(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // Selected-state pill behind icon and label.
+                    // Selected-state pill: a compact accent wash behind icon + label, sized
+                    // smaller than the tab slot so it reads as a true pill behind the content.
                     Box(
                         Modifier
-                            .matchParentSize()
+                            .width(56.dp)
+                            .height(40.dp)
+                            .align(Alignment.Center)
                             .graphicsLayer {
                                 alpha = pill
-                                scaleX = 0.8f + 0.2f * pill
-                                scaleY = 0.8f + 0.2f * pill
+                                scaleX = 0.85f + 0.15f * pill
+                                scaleY = 0.85f + 0.15f * pill
                             }
-                            .clip(RoundedCornerShape(16.dp))
+                            .clip(pillShape)
                             .background(colors.accentTint),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
