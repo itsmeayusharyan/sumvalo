@@ -487,18 +487,16 @@ private fun BottomBar(nav: NavHostController, activeTab: String?) {
 }
 
 /**
- * Bottom navigation bar with two rendering modes:
+ * A floating navigation pill: a rounded, elevated, translucent surface that hovers
+ * above the gesture area with side margins, instead of a full-width bar. Destinations,
+ * icons and order are unchanged. The selected destination gets a large rounded accent-tinted
+ * background that springs in behind icon and label — the one expressive gesture on the bar —
+ * everything else stays muted. Haptics fire only when the selection actually changes; every
+ * animation collapses to instant under reduced motion; colors come from the theme only
+ * (no hardcoded values), so Dark, Light, System and AMOLED palettes all flow through.
  *
- * [floating = true] — a pill-shaped surface that hovers above the gesture area with side
- * margins, rounded corners and a hairline border. The selected tab gets an accent-tinted
- * pill behind its icon and label.
- *
- * [floating = false] — a docked, edge-to-edge bar that hugs the bottom of the screen with
- * square corners, full width and system navigation padding. The selected tab gets the same
- * accent-tinted pill indicator.
- *
- * Both modes share identical tab rendering, click handling, selected-state animation and
- * haptics. Only the container shape, margins and insets differ.
+ * When [floating] is false, the bar docks edge-to-edge against the bottom of the screen with
+ * square corners and system navigation padding, instead of floating above the gesture area.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -511,32 +509,41 @@ fun SumvaloBottomBar(
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
+    val pillShape = RoundedCornerShape(percent = 50)
+    // Translucent glass surface from the centralized treatment — see-through enough to float
+    // over scrolling content, opaque enough to stay readable on every palette.
+    val pillSurface = colors.glass.copy(alpha = if (colors.isDark) 0.88f else 0.92f)
 
-    val barModifier = if (floating) {
-        // Floating pill: side margins, rounded corners, display cutout support.
-        val barShape = RoundedCornerShape(28.dp)
+    val barShape = if (floating) pillShape else RoundedCornerShape(0.dp)
+    Box(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.displayCutout)
-            .background(colors.cardSurface, barShape)
-            .border(1.dp, colors.hairline, barShape)
-            .padding(vertical = 4.dp)
-            .height(52.dp)
-    } else {
-        // Attached/docked: full width, square corners, system navigation padding.
-        Modifier
-            .fillMaxWidth()
-            .navigationBarsPadding()
-            .background(colors.cardSurface)
-            .border(1.dp, colors.hairline, RoundedCornerShape(0.dp))
-            .height(56.dp)
-    }
-
-    Box(modifier = barModifier) {
+            .then(
+                if (floating) Modifier
+                    // Float above the gesture area: side margins + nav-bar inset + a breathing gap.
+                    .padding(horizontal = 16.dp)
+                    .navigationBarsPadding()
+                    .padding(top = 2.dp, bottom = 10.dp)
+                    .windowInsetsPadding(WindowInsets.displayCutout)
+                    .shadow(
+                        elevation = 14.dp,
+                        shape = pillShape,
+                        ambientColor = colors.ink.copy(alpha = 0.14f),
+                        spotColor = colors.ink.copy(alpha = 0.18f),
+                    )
+                else Modifier
+                    // Docked: full width against the gesture area — content scrolls to its edge.
+                    .navigationBarsPadding()
+                    .background(colors.glass.copy(alpha = if (colors.isDark) 0.97f else 1f)),
+            )
+            .then(if (floating) Modifier.glassSurface(pillShape) else Modifier)
+            .background(if (floating) pillSurface else androidx.compose.ui.graphics.Color.Transparent, barShape)
+            .height(68.dp),
+    ) {
         Row(
             Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 6.dp)
                 .fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -565,7 +572,7 @@ fun SumvaloBottomBar(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(vertical = if (floating) 2.dp else 0.dp)
+                        .padding(vertical = 6.dp)
                         .pressScale(interaction, scaleDown = 0.97f)
                         .clickable(
                             interactionSource = interaction,
@@ -583,18 +590,17 @@ fun SumvaloBottomBar(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // Selected-state pill: accent wash behind icon + label.
+                    // The large rounded indicator is its own layer so the transition only ever
+                    // fades/scales the decoration — the icon and label stay visible in every state.
                     Box(
                         Modifier
-                            .width(if (floating) 56.dp else 48.dp)
-                            .height(if (floating) 40.dp else 32.dp)
-                            .align(Alignment.Center)
+                            .matchParentSize()
                             .graphicsLayer {
                                 alpha = pill
-                                scaleX = if (floating) 0.85f + 0.15f * pill else 1f
-                                scaleY = if (floating) 0.85f + 0.15f * pill else 1f
+                                scaleX = 0.72f + 0.28f * pill
+                                scaleY = 0.72f + 0.28f * pill
                             }
-                            .clip(if (floating) RoundedCornerShape(20.dp) else RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(24.dp))
                             .background(colors.accentTint),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
