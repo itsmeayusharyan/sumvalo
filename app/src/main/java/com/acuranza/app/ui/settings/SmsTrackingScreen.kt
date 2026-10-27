@@ -616,7 +616,6 @@ private fun SmsPendingReviewContent(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(bottom = 20.dp)
                 .navigationBarsPadding(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
@@ -640,7 +639,6 @@ private fun SmsPendingReviewContent(
                 modifier = Modifier.weight(1.6f),
             )
         }
-        Spacer(Modifier.height(12.dp))
     }
 
     choosing?.let { rowId ->

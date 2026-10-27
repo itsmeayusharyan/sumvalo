@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.5",
+        name = "Sumvalo 2.5",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed Review Bank Transactions screen: removed excessive bottom padding on Cancel/Confirm buttons so they sit at a balanced distance above the floating navigation bar", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.4",
         name = "Sumvalo 2.4",
         publishedAt = "",
