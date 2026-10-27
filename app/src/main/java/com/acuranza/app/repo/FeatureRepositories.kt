@@ -84,6 +84,44 @@ class LoanRepository(private val db: SumvaloDatabase) {
         )
     }
 
+    /**
+     * Records every loan EMI due on or before [today] as an expense from the first active bank
+     * or wallet account, so the user confirms it in Review instead of entering it by hand. The
+     * `loan-emi:<loanId>:<day>` fingerprint keeps an occurrence from ever being recorded twice.
+     * Returns how many transactions were added.
+     */
+    suspend fun recordDueEmis(today: LocalDate = Time.today()): Int {
+        val accounts = db.accounts().active()
+        val payer = accounts.firstOrNull { it.type == com.acuranza.app.model.AccountType.BANK || it.type == com.acuranza.app.model.AccountType.WALLET }
+            ?: return 0
+        var added = 0
+        for (loan in db.loans().active()) {
+            val spec = runCatching { spec(loan) }.getOrNull() ?: continue
+            val rows = runCatching { Loans.schedule(spec) }.getOrNull() ?: continue
+            for (row in rows.filter { !it.date.isAfter(today) }) {
+                val fingerprint = "loan-emi:${loan.id}:${row.date.toEpochDay()}"
+                if (db.transactions().countFingerprint(fingerprint) > 0) continue
+                val id = db.transactions().insertIgnore(
+                    com.acuranza.app.data.TransactionEntity(
+                        accountId = payer.id,
+                        type = com.acuranza.app.model.TxnType.EXPENSE,
+                        amount = row.emi,
+                        categoryKey = "emi",
+                        merchant = loan.name,
+                        note = "EMI · ${loan.lender}",
+                        timestamp = Time.startOfDay(row.date) + 9L * 60 * 60 * 1000,
+                        channel = com.acuranza.app.model.TxnChannel.AUTO_DEBIT,
+                        source = com.acuranza.app.model.TxnSource.AUTO,
+                        fingerprint = fingerprint,
+                        reviewed = false,
+                    ),
+                )
+                if (id > 0) added++
+            }
+        }
+        return added
+    }
+
     companion object {
         const val HOME = "HOME"
         val KINDS = listOf("HOME", "CAR", "PERSONAL", "EDUCATION", "OTHER")

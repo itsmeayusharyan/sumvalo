@@ -85,6 +85,7 @@ import com.acuranza.app.repo.MonthSummary
 import com.acuranza.app.repo.NetWorth
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.ui.common.Fmt
+import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.bankEnum
@@ -925,7 +926,16 @@ private fun BillListRow(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
         BankBadge(bank, size = 32.dp)
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
-            Text(b.card?.label() ?: "Card", style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(b.card?.label() ?: "Card", style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                if (urgent || (days != null && days < 0)) {
+                    Spacer(Modifier.width(6.dp))
+                    Pill(
+                        if (days != null && days < 0) "Overdue" else if (days == 0L) "Due today" else Fmt.relativeDays(days ?: 0),
+                        dueColor,
+                    )
+                }
+            }
             Text(days?.let { Fmt.relativeDays(it) } ?: "No due date", style = MaterialTheme.typography.bodySmall, color = dueColor)
         }
         AmountText(b.bill.totalDue, style = AmountStyles.medium, hidden = hidden)

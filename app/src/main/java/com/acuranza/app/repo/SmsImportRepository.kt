@@ -103,6 +103,20 @@ class SmsImportRepository(private val db: SumvaloDatabase, private val attachmen
         )
         for (item in items) {
             if (db.smsImports().hasFingerprint(item.parsed.fingerprint)) continue
+            // Fuzzy duplicate guard: a transaction with the same account, type and amount within
+            // ±1 day is almost always the same money seen twice (an SMS and a CSV import, or two
+            // bank notification formats). Skipped rather than silently double-counted; the
+            // fingerprint check above still allows the same message to be re-reviewed safely.
+            val itemDay = com.acuranza.app.util.Time.epochDayOf(item.timestampMillis)
+            val nearExisting = db.transactions().findAmountNear(
+                item.accountId,
+                item.amount,
+                com.acuranza.app.util.Time.startOfDay(java.time.LocalDate.ofEpochDay(itemDay - 1)),
+                com.acuranza.app.util.Time.startOfDay(java.time.LocalDate.ofEpochDay(itemDay + 1)) - 1,
+            ).any { existing ->
+                (existing.type == item.parsed.type || existing.type == TxnType.TRANSFER) && existing.fingerprint != item.parsed.fingerprint
+            }
+            if (nearExisting) continue
             val confidence = item.confidence
             val txnId = db.transactions().insertIgnore(
                 TransactionEntity(

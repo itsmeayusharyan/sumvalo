@@ -28,6 +28,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
         val today = Time.today()
 
         runCatching { c.recurring.recordDue(today) }
+        runCatching { c.loans.recordDueEmis(today) }
         runCatching { c.netWorth.snapshot(today) }
         runCatching {
             val auto = c.featurePrefs.current().autoBackup

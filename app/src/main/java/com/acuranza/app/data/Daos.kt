@@ -25,6 +25,9 @@ interface AccountDao {
     @Query("SELECT * FROM accounts WHERE archived = 0 ORDER BY type, name")
     fun observeActive(): Flow<List<AccountEntity>>
 
+    @Query("SELECT * FROM accounts WHERE archived = 0 ORDER BY type, name")
+    suspend fun active(): List<AccountEntity>
+
     @Query("SELECT * FROM accounts ORDER BY type, name")
     suspend fun all(): List<AccountEntity>
 

@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.4",
+        name = "Sumvalo 0.4",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Loan EMI auto-recording: each due EMI is added as an unreviewed expense from your first bank or wallet account, ready to confirm in Review — no more entering EMIs by hand", ChangeCategory.ADDED),
+            ChangeItem("Duplicate detection on SMS import: a transaction with the same account, type and amount within ±1 day of an existing one is skipped instead of silently double-counted", ChangeCategory.ADDED),
+            ChangeItem("Bill countdown badges on the home screen: urgent and overdue bills show a coloured \"Due today\" / \"Overdue\" pill next to the card name", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.3",
         name = "Sumvalo 0.3",
         publishedAt = "",
