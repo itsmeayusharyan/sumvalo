@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -283,6 +284,7 @@ fun SmsTrackingScreen(nav: NavController) {
                         refresh++
                     }
                 },
+                padding = padding,
             )
             else -> SmsOverviewContent(
                 settings = s,
@@ -473,15 +475,18 @@ private fun SmsPendingReviewContent(
     pending: List<SmsImportEntity>,
     onCancel: () -> Unit,
     onConfirm: (keep: List<SmsImportEntity>, edits: Map<Long, SmsImportRepository.PendingEdit>) -> Unit,
+    padding: PaddingValues = PaddingValues(0.dp),
 ) {
     val c = LocalContainer.current
     val edits = remember(pending) { pending.associate { it.id to mutableStateOf(PendingEditState()) } }
-    var expanded by remember { mutableLongStateOf(-1L) }
+    // Keyed by `pending` so expand/collapse state never references a stale row after the list changes.
+    var expanded by remember(pending) { mutableLongStateOf(-1L) }
     // Account matching: the hint says where each candidate would land; the user can override it.
     var hints by remember(pending) { mutableStateOf<Map<Long, com.acuranza.app.data.sms.SmsAccountMatcher.Match>>(emptyMap()) }
     var accounts by remember { mutableStateOf<List<com.acuranza.app.data.sms.SmsAccountMatcher.CandidateAccount>>(emptyList()) }
     var chosen by remember(pending) { mutableStateOf<Map<Long, Long>>(emptyMap()) }
-    var choosing by remember { mutableStateOf<Long?>(null) }
+    // Keyed by `pending` so an in-progress account pick isn't lost when the list refreshes.
+    var choosing by remember(pending) { mutableStateOf<Long?>(null) }
     LaunchedEffect(pending) {
         accounts = c.smsImports.pickerAccounts()
         hints = pending.associate { it.id to c.smsImports.accountHint(it) }
@@ -498,7 +503,12 @@ private fun SmsPendingReviewContent(
     }
     val included = pending.count { !edits[it.id]!!.value.excluded }
 
-    Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .padding(horizontal = 20.dp),
+    ) {
         Spacer(Modifier.height(8.dp))
         LazyColumn(
             modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -531,7 +541,8 @@ private fun SmsPendingReviewContent(
                                         Text(
                                             edit.merchant ?: item.merchant ?: item.bank,
                                             style = MaterialTheme.typography.titleMedium,
-                                            maxLines = 1,
+                                            color = SumvaloTheme.colors.ink,
+                                            maxLines = 2,
                                             overflow = TextOverflow.Ellipsis,
                                         )
                                         Text(
@@ -539,6 +550,8 @@ private fun SmsPendingReviewContent(
                                                 dateFormat.format(Instant.ofEpochMilli(item.timestamp)),
                                             style = MaterialTheme.typography.bodySmall,
                                             color = SumvaloTheme.colors.tertiaryText,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                         )
                                         val targetName = chosen[item.id]?.let { id -> accounts.firstOrNull { it.id == id }?.name }
                                             ?: when (val hint = hints[item.id]) {
@@ -547,22 +560,27 @@ private fun SmsPendingReviewContent(
                                                 com.acuranza.app.data.sms.SmsAccountMatcher.Match.None -> null
                                                 null -> null
                                             }
-                                        val needsAccountPick = hints[item.id] is com.acuranza.app.data.sms.SmsAccountMatcher.Match.None
+                                        val needsAccountPick =
+                                            hints[item.id] is com.acuranza.app.data.sms.SmsAccountMatcher.Match.None
                                         Text(
                                             if (targetName != null) "→ $targetName" else "→ new account: ${item.bank}${item.accountLast4?.let { " $it" } ?: ""}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = if (needsAccountPick) SumvaloTheme.colors.warning else SumvaloTheme.colors.accent,
-                                            modifier = Modifier.padding(top = 1.dp).clickable(
-                                                interactionSource = remember { MutableInteractionSource() },
-                                                indication = null,
-                                                role = androidx.compose.ui.semantics.Role.Button,
-                                            ) { choosing = item.id },
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .padding(top = 2.dp)
+                                                .clickable { choosing = item.id },
                                         )
                                     }
                                     Text(
                                         Money.format(edit.amount ?: item.amount),
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = if (item.type == TxnType.INCOME) SumvaloTheme.colors.income else SumvaloTheme.colors.expense,
+                                        color = if (item.type == TxnType.INCOME)
+                                            SumvaloTheme.colors.income
+                                        else SumvaloTheme.colors.expense,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
                                     Spacer(Modifier.width(12.dp))
                                     Switch(checked = !edit.excluded, onCheckedChange = { editState.value = editState.value.copy(excluded = !it) })
@@ -618,6 +636,7 @@ private fun SmsPendingReviewContent(
                     }.toMap()
                     onConfirm(keep, editMap)
                 },
+                enabled = included > 0,
                 modifier = Modifier.weight(1.6f),
             )
         }

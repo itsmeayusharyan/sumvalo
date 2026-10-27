@@ -21,14 +21,18 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
-        tag = "v2.1",
-        name = "Sumvalo 2.1",
+        tag = "v2.2",
+        name = "Sumvalo 2.2",
         publishedAt = "",
         body = null,
         htmlUrl = "",
     ).copy(
         providedChanges = listOf(
-            ChangeItem("Version bump only — no user-visible changes", ChangeCategory.OTHER),
+            ChangeItem("Fixed Review Bank Transactions screen: header text no longer overlaps or duplicates; proper vertical hierarchy with back button, title and subtitle", ChangeCategory.FIXED),
+            ChangeItem("Transaction cards: independent layout bounds, consistent spacing, multiline wrapping for merchant names, dates and account warnings", ChangeCategory.FIXED),
+            ChangeItem("Selection switches stay in sync during scrolling; stable list keys prevent incorrect row reuse", ChangeCategory.FIXED),
+            ChangeItem("Confirm button shows selected-transaction count and disables when nothing is selected", ChangeCategory.FIXED),
+            ChangeItem("Cancel exits without importing; Confirm imports only selected, valid, non-duplicate transactions", ChangeCategory.FIXED),
         ),
     ),
     ReleaseEntry(
