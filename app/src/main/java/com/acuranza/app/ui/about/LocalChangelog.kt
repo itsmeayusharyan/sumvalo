@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.4",
+        name = "Sumvalo 2.4",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Redesigned Changelog screen: cleaner version cards with prominent version numbers, secondary muted release dates, consistent expand/collapse icons, and balanced spacing", ChangeCategory.IMPROVED),
+            ChangeItem("Changelog cards: refined padding, subtle hairline borders, consistent corner radii, and release notes that wrap naturally without clipping", ChangeCategory.IMPROVED),
+            ChangeItem("Empty state: refined spacing and typography for a premium empty state", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.3",
         name = "Sumvalo 2.3",
         publishedAt = "",

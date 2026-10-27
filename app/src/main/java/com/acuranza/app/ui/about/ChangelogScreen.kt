@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,8 +47,6 @@ fun ChangelogScreen(
     nav: androidx.navigation.NavController,
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    val context = LocalContext.current
-
     SumvaloScreen(
         title = "Changelog",
         subtitle = "What's new in each release",
@@ -60,6 +57,7 @@ fun ChangelogScreen(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .padding(bottom = 100.dp) // Clear the floating nav bar and system navigation
                 .verticalScroll(rememberScrollState()),
         ) {
             val releases = LocalChangelog
@@ -68,28 +66,28 @@ fun ChangelogScreen(
                 renderEmpty()
             } else {
                 releases.forEachIndexed { index, release ->
-                    val expanded = remember { mutableStateOf(false) }
+                    val expanded = remember(release.tag) { mutableStateOf(false) }
                     SumvaloCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
-                            .padding(vertical = if (index == 0) 0.dp else 12.dp),
+                            .padding(vertical = 12.dp),
                         onClick = { expanded.value = !expanded.value },
                     ) {
                         Column(
                             Modifier
-                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
                         ) {
+                            // Header row: version number prominent, date secondary, expand icon aligned right
                             Row(
-                                Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Column(Modifier.weight(1f)) {
                                     Text(
                                         release.version,
-                                        style = MaterialTheme.typography.titleMedium,
+                                        style = MaterialTheme.typography.headlineSmall,
                                         color = SumvaloTheme.colors.ink,
-                                        modifier = Modifier.padding(bottom = 2.dp),
                                     )
                                     Text(
                                         "v${release.tag} · ${release.displayDate}",
@@ -104,7 +102,7 @@ fun ChangelogScreen(
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
-                            Spacer(Modifier.height(10.dp))
+                            Spacer(Modifier.height(12.dp))
                             if (expanded.value) {
                                 release.changes.groupBy { it.category }.forEach { (category, items) ->
                                     renderCategory(category, items, SumvaloTheme.colors)
@@ -166,22 +164,22 @@ private fun renderEmpty() {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 24.dp),
+            .padding(horizontal = 20.dp, vertical = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = null,
             tint = colors.tertiaryText,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier.size(40.dp),
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(16.dp))
         Text(
             "No releases yet",
             style = MaterialTheme.typography.titleMedium,
             color = colors.ink,
         )
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(6.dp))
         Text(
             "Check back later for release notes.",
             style = MaterialTheme.typography.bodyMedium,
