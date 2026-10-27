@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v3.0",
+        name = "Sumvalo 3.0",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Whole-app UI redesign: consistent Material 3 shape scale (4/8/12/16/28dp), brand-driven color tokens replacing hardcoded colors, solid loading shimmer (no gradients), floating nav bar shadow removed, deliberate typography scale — cleaner, unique minimal look", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.11",
         name = "Sumvalo 2.11",
         publishedAt = "",

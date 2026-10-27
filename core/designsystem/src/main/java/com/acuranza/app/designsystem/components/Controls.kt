@@ -62,8 +62,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
@@ -322,7 +320,6 @@ fun LoadingShimmer(
         label = "shimmer-x",
     )
     val base = SumvaloTheme.colors.shimmerBase
-    val hi = SumvaloTheme.colors.shimmerHighlight
     BoxWithConstraints(
         modifier
             .fillMaxWidth()
@@ -331,17 +328,19 @@ fun LoadingShimmer(
             .semantics { contentDescription = "Loading" },
     ) {
         val w = constraints.maxWidth.toFloat()
+        val alpha by transition.animateFloat(
+            initialValue = if (reduced) 0.5f else 0.4f,
+            targetValue = if (reduced) 0.5f else 0.75f,
+            animationSpec = if (reduced) infiniteRepeatable(tween(0), RepeatMode.Restart)
+            else infiniteRepeatable(tween(900, easing = EaseOut), RepeatMode.Reverse),
+            label = "shimmer-alpha",
+        )
         Box(
             Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(
-                    Brush.linearGradient(
-                        listOf(base, hi, base),
-                        start = Offset(w * x, 0f),
-                        end = Offset(w * x + w * 0.6f, 0f),
-                    ),
-                ),
+                .alpha(alpha)
+                .background(base),
         )
     }
 }

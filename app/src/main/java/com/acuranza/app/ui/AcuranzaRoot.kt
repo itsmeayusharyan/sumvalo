@@ -533,12 +533,6 @@ fun SumvaloBottomBar(
                     .navigationBarsPadding()
                     .padding(top = 2.dp, bottom = 10.dp)
                     .windowInsetsPadding(WindowInsets.displayCutout)
-                    .shadow(
-                        elevation = 14.dp,
-                        shape = pillShape,
-                        ambientColor = colors.ink.copy(alpha = 0.14f),
-                        spotColor = colors.ink.copy(alpha = 0.18f),
-                    )
                 else Modifier
                     // Docked: full width against the gesture area — content scrolls to its edge.
                     .navigationBarsPadding()

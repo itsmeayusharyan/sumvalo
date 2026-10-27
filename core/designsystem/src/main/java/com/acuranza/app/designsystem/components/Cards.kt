@@ -39,7 +39,7 @@ import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.Paise
 
 /**
- * The standard content card: solid card surface, 8dp corners and a 1dp hairline outline.
+ * The standard content card: solid card surface, theme-driven corners and a 1dp hairline outline.
  * No shadow, no translucency, no glass edge — flat and legible on every theme.
  */
 @Composable

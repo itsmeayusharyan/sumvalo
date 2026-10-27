@@ -96,10 +96,10 @@ private val LightScheme: ColorScheme = lightColorScheme(
 )
 
 internal val SumvaloShapes = Shapes(
-    extraSmall = RoundedCornerShape(8.dp),
-    small = RoundedCornerShape(12.dp),
-    medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(20.dp),
+    extraSmall = RoundedCornerShape(4.dp),
+    small = RoundedCornerShape(8.dp),
+    medium = RoundedCornerShape(12.dp),
+    large = RoundedCornerShape(16.dp),
     extraLarge = RoundedCornerShape(28.dp),
 )
 
@@ -117,7 +117,7 @@ data class Spacing(
     /** Horizontal padding for screen content. */
     val screen: Dp = 20.dp,
     /** Corner radius of standard cards. */
-    val cardRadius: Dp = 20.dp,
+    val cardRadius: Dp = 12.dp,
     /** Vertical gap between sections. */
     val section: Dp = 24.dp,
 )
