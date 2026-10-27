@@ -57,7 +57,6 @@ fun ChangelogScreen(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(bottom = 100.dp) // Clear the floating nav bar and system navigation
                 .verticalScroll(rememberScrollState()),
         ) {
             val releases = LocalChangelog
@@ -70,15 +69,11 @@ fun ChangelogScreen(
                     SumvaloCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = if (index == 0) 0.dp else 16.dp),
                         onClick = { expanded.value = !expanded.value },
                     ) {
-                        Column(
-                            Modifier
-                                .padding(horizontal = 16.dp, vertical = 14.dp),
-                        ) {
-                            // Header row: version number prominent, date secondary, expand icon aligned right
+                        Column(Modifier.fillMaxWidth()) {
+                            // Header: version prominent, date secondary, expand icon aligned right
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
