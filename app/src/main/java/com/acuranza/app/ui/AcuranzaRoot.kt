@@ -768,10 +768,7 @@ private fun SumvaloNavHost(nav: NavHostController) {
         composable(Routes.ABOUT_TERMS) { com.acuranza.app.ui.about.TermsScreen(nav) }
         composable(Routes.ABOUT_GPL) { com.acuranza.app.ui.about.GplScreen(nav) }
         composable(Routes.CHANGELOG) {
-            com.acuranza.app.ui.about.ChangelogScreen(
-                nav,
-                LocalContainer.current.releaseCache,
-            )
+            com.acuranza.app.ui.about.ChangelogScreen(nav)
         }
     }
 }

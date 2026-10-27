@@ -3,11 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Sumvalo is fully offline by design: the app holds no permission that can open a
-         network socket for financial data. The single exception below is the optional
-         changelog check (Settings → About → Changelog), which fetches release notes from
-         GitHub over HTTPS. That feature is opt-in via the About screen; no financial,
-         account or tracking data is ever transmitted. -->
-    <uses-permission android:name="android.permission.INTERNET" />
+         network socket. No financial, account or tracking data ever leaves the phone. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Opt-in self-upgrade: Settings → Financial tools offers installing the Full build from an
          APK file on this device. The file is verified (package + signature) and Android's own

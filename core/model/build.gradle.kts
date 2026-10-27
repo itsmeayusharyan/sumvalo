@@ -15,5 +15,4 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(kotlin("test"))
-    implementation("org.json:json:20240303")
 }

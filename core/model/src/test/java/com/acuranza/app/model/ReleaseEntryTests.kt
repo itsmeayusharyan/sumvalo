@@ -1,7 +1,5 @@
 package com.acuranza.app.model
 
-import org.json.JSONArray
-import org.json.JSONObject
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -101,42 +99,15 @@ class ReleaseEntryTests {
     }
 
     @Test
-    fun testParseFromGitHubApiResponse() {
-        val json = JSONArray()
-        val obj1 = JSONObject()
-        obj1.put("tag_name", "v1.8")
-        obj1.put("name", "Sumvalo v1.8")
-        obj1.put("published_at", "2026-09-15T12:00:00Z")
-        obj1.put("body", "## Fixed\n- Bug fix")
-        obj1.put("html_url", "https://github.com/itsmeayusharyan/sumvalo/releases/tag/v1.8")
-        json.put(obj1)
-
-        val obj2 = JSONObject()
-        obj2.put("tag_name", "v1.9")
-        obj2.put("name", "Sumvalo v1.9")
-        obj2.put("published_at", "2026-10-26T10:00:00Z")
-        obj2.put("body", "## Added\n- New feature")
-        obj2.put("html_url", "https://github.com/itsmeayusharyan/sumvalo/releases/tag/v1.9")
-        json.put(obj2)
-
-        val entries = (0 until json.length()).mapNotNull { i ->
-            val obj = json.getJSONObject(i)
-            ReleaseEntry(
-                tag = obj.getString("tag_name"),
-                name = obj.optString("name", obj.getString("tag_name")),
-                publishedAt = obj.optString("published_at", ""),
-                body = obj.optString("body", null),
-                htmlUrl = obj.getString("html_url"),
-            )
-        }.sortedByDescending { it.publishedAt }
+    fun testChangesSortedNewestFirst() {
+        val entries = listOf(
+            ReleaseEntry("v1.8", "Release 1.8", "2026-09-15", "## Fixed\n- Bug fix", ""),
+            ReleaseEntry("v1.9", "Release 1.9", "2026-10-26", "## Added\n- New feature", ""),
+        ).sortedByDescending { it.publishedAt }
 
         assertEquals(2, entries.size)
-        assertEquals("v1.9", entries[0].tag) // sorted newest first
+        assertEquals("v1.9", entries[0].tag)
         assertEquals("v1.8", entries[1].tag)
-        assertEquals("1.9", entries[0].version)
-        assertEquals("26 Oct 2026", entries[0].publishedDate)
-        assertEquals(1, entries[0].changes.size)
-        assertEquals(ChangeCategory.ADDED, entries[0].changes[0].category)
         assertTrue(entries[0].hasChanges)
         assertTrue(entries[1].hasChanges)
     }

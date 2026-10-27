@@ -15,6 +15,7 @@ data class ReleaseEntry(
     val publishedAt: String,
     val body: String?,
     val htmlUrl: String,
+    private val providedChanges: List<ChangeItem> = emptyList(),
 ) {
     /** The version number without the leading "v", e.g. "1.9". */
     val version: String
@@ -44,37 +45,39 @@ data class ReleaseEntry(
             return "${parts[2]} $month ${parts[0]}"
         }
 
-    /** Categorised change bullets parsed from the release notes, or empty list if none. */
+    /** Categorised change bullets: the provided [providedChanges] list for locally-bundled
+     * entries, otherwise parsed from the [body] markdown. */
     val changes: List<ChangeItem>
-        get() {
-            val bodyText = body ?: return emptyList()
-            val items = mutableListOf<ChangeItem>()
-            var currentCategory: ChangeCategory? = null
-            for (line in bodyText.lines()) {
-                val trimmed = line.trim()
-                if (trimmed.isEmpty()) continue
-                // Category headers: lines starting with ## or #
-                if (trimmed.startsWith("##") || trimmed.startsWith("#")) {
-                    currentCategory = ChangeCategory.fromLine(trimmed)
-                    continue
-                }
-                val firstChar = trimmed.firstOrNull()
-                if (firstChar == '-' || firstChar == '*' || firstChar == '\u2022') {
-                    val text = trimmed.drop(1).trim()
-                    if (text.isNotEmpty()) {
-                        items.add(ChangeItem(text, currentCategory))
-                    }
-                } else if (currentCategory != null && trimmed.firstOrNull() == '#') {
-                    // A new markdown header ends the current category
-                    currentCategory = null
-                }
-            }
-            return items
-        }
+        get() = if (providedChanges.isNotEmpty()) providedChanges else parseFromBody()
 
-    /** Whether this release has any parseable changes. */
+    /** Whether this release has any changes. */
     val hasChanges: Boolean
         get() = changes.isNotEmpty()
+
+    /** Parses change bullets from the [body] markdown. */
+    private fun parseFromBody(): List<ChangeItem> {
+        val bodyText = body ?: return emptyList()
+        val items = mutableListOf<ChangeItem>()
+        var currentCategory: ChangeCategory? = null
+        for (line in bodyText.lines()) {
+            val trimmed = line.trim()
+            if (trimmed.isEmpty()) continue
+            if (trimmed.startsWith("##") || trimmed.startsWith("#")) {
+                currentCategory = ChangeCategory.fromLine(trimmed)
+                continue
+            }
+            val firstChar = trimmed.firstOrNull()
+            if (firstChar == '-' || firstChar == '*' || firstChar == '\u2022') {
+                val text = trimmed.drop(1).trim()
+                if (text.isNotEmpty()) {
+                    items.add(ChangeItem(text, currentCategory))
+                }
+            } else if (currentCategory != null && trimmed.firstOrNull() == '#') {
+                currentCategory = null
+            }
+        }
+        return items
+    }
 }
 
 /** One change bullet within a release. */

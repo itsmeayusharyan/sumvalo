@@ -134,5 +134,5 @@ dependencies {
     implementation(libs.androidx.sqlite)
 
     testImplementation(libs.junit)
-    testImplementation("org.json:json:20240303")
+    testImplementation(kotlin("test"))
 }
