@@ -47,6 +47,7 @@ Sumvalo targets Android 8.0+ (minSdk 26, targetSdk 35). The app requests no netw
 </p>
 
 <p align="center">
+  <img src="docs/screenshots/bottom-bar.png" alt="Floating navigation bar" width="200"/>
   <img src="docs/screenshots/budgets.png" alt="Budgets" width="200"/>
   <img src="docs/screenshots/goals.png" alt="Goals" width="200"/>
   <img src="docs/screenshots/categories.png" alt="Categories" width="200"/>
