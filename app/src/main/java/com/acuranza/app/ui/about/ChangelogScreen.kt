@@ -73,7 +73,8 @@ fun ChangelogScreen(
                         onClick = { expanded.value = !expanded.value },
                     ) {
                         Column(Modifier.fillMaxWidth()) {
-                            // Header: version prominent, date secondary, expand icon aligned right
+                            // Header row: version number prominent, release date secondary muted,
+                            // expand/collapse icon aligned right.
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically,
@@ -81,9 +82,10 @@ fun ChangelogScreen(
                                 Column(Modifier.weight(1f)) {
                                     Text(
                                         release.version,
-                                        style = MaterialTheme.typography.headlineSmall,
+                                        style = MaterialTheme.typography.headlineMedium,
                                         color = SumvaloTheme.colors.ink,
                                     )
+                                    Spacer(Modifier.height(2.dp))
                                     Text(
                                         "v${release.tag} · ${release.displayDate}",
                                         style = MaterialTheme.typography.bodySmall,
@@ -104,6 +106,10 @@ fun ChangelogScreen(
                                 }
                             }
                         }
+                    }
+                    // Subtle divider between release cards for clean visual separation.
+                    if (index < releases.size - 1) {
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
             }
