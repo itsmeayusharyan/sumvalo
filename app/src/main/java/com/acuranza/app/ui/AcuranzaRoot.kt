@@ -456,10 +456,10 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         },
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
-        // contentWindowInsets is zeros, so padding.bottom is 0. Add only a small
-        // visual gap between content and the floating bar; Scaffold positions the
-        // bottomBar above the system navigation/gesture area automatically.
-        val bottomExtra = if (showBar) 8.dp else 0.dp
+        // contentWindowInsets is zeros, so padding.bottom is 0. Scaffold already adds the
+        // bottom bar's height to padding.bottom automatically. No extra bar-height padding
+        // is needed here — just a small visual gap between content and the floating bar.
+        val bottomExtra = if (showBar) 0.dp else 0.dp
         Box(
             Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
         ) {

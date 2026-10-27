@@ -113,7 +113,7 @@ fun RecurringScreen(nav: NavController) {
         val series = detected
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 110.dp),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             item {

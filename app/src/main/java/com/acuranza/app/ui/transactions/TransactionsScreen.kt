@@ -263,7 +263,7 @@ fun TransactionsContent(
 ) {
     val canGoNext = !state.period.endExclusive.isAfter(Time.today())
     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
-        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 110.dp)) {
+        LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 8.dp)) {
             item(key = "head") {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) {
                     Text("Activity", style = SumvaloText.screenTitle)

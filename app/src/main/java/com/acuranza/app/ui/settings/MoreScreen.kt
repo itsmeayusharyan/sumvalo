@@ -94,7 +94,7 @@ fun MoreScreen(nav: NavController) {
 
     LazyColumn(
         Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 110.dp),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
     ) {
         item(key = "head") {
             Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {

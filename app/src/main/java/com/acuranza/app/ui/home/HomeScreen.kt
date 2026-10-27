@@ -454,7 +454,7 @@ fun HomeContent(
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
-        contentPadding = PaddingValues(bottom = 112.dp),
+        contentPadding = PaddingValues(bottom = 8.dp),
     ) {
         item(key = "header") {
             Row(

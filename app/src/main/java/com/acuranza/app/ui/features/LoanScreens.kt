@@ -96,7 +96,7 @@ fun LoansScreen(nav: NavController) {
         val list = loans ?: return@SumvaloScreen
         LazyColumn(
             Modifier.fillMaxSize().padding(pad),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 110.dp),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             if (list.isEmpty()) {
