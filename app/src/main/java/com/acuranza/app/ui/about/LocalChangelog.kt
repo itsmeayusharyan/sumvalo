@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.10",
+        name = "Sumvalo 2.10",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Changelog screen release cards now match the About section card layout exactly — leading version icon in rounded-square container, ChevronRight on the right, same card surface, hairline border, corner radius, internal padding, typography and spacing as Privacy Policy and Terms of Service cards", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.9",
         name = "Sumvalo 2.9",
         publishedAt = "",

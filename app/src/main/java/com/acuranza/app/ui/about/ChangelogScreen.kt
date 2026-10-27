@@ -15,8 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.ExpandLess
-import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
@@ -72,20 +70,15 @@ fun ChangelogScreen(
                     // Each version is its own card — same SumvaloCard styling as About entries
                     // (cardSurface background, hairline border, cardRadius corners).
                     SettingsSection(title = null) {
-                        // Header row — matches RowSkeleton styling exactly.
+                        // Header row — matches RowSkeleton styling exactly:
+                        // leading icon in the same IconBubble container as About cards,
+                        // ChevronRight shown automatically by SettingsRow when onClick is set.
                         SettingsRow(
                             title = release.version,
                             subtitle = "v${release.tag} · ${release.displayDate}",
+                            icon = Icons.Outlined.AutoAwesome,
                             onClick = { expanded.value = !expanded.value },
                             divider = false,
-                            trailing = {
-                                Icon(
-                                    imageVector = if (expanded.value) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
-                                    contentDescription = if (expanded.value) "Collapse" else "Expand",
-                                    tint = SumvaloTheme.colors.tertiaryText,
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            },
                         )
 
                         if (expanded.value) {
