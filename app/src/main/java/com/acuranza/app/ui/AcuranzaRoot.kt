@@ -435,7 +435,7 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0.dp, 0.dp, 0.dp, 0.dp),
         bottomBar = {
             AnimatedVisibility(
                 visible = showBar,
@@ -456,10 +456,10 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         },
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
-        // When the bar is visible, reserve space for it above the gesture area.
-        // padding.calculateBottomPadding() returns 0 because contentWindowInsets is zeros,
-        // so we add the bar height plus a small gap manually.
-        val bottomExtra = if (showBar) 52.dp + 8.dp else 0.dp
+        // contentWindowInsets is zeros, so padding.bottom is 0. Add only a small
+        // visual gap between content and the floating bar; Scaffold positions the
+        // bottomBar above the system navigation/gesture area automatically.
+        val bottomExtra = if (showBar) 8.dp else 0.dp
         Box(
             Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
         ) {
