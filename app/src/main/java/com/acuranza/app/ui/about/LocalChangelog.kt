@@ -26,6 +26,7 @@ val LocalChangelog: List<ReleaseEntry> = listOf(
         providedChanges = listOf(
             ChangeItem("Offline changelog — release notes bundled in app source code", ChangeCategory.ADDED),
             ChangeItem("Automatic SMS inbox scan every 10 minutes while the app is open (background catch-up every 15 minutes, Android minimum)", ChangeCategory.IMPROVED),
+            ChangeItem("Fixed SMS import/review screen: header text no longer overlaps or duplicates; cancel/confirm buttons stay above the navigation bar; review list items have stable keys and independent layout bounds", ChangeCategory.FIXED),
             ChangeItem("Changelog screen works fully offline: no network, account, or API key needed", ChangeCategory.IMPROVED),
             ChangeItem("Removed INTERNET permission and GitHub Releases API fetching", ChangeCategory.FIXED),
         ),

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.clickable
@@ -175,9 +176,12 @@ fun SmsTrackingScreen(nav: NavController) {
         }
     }
 
+    val screenTitle = if (reviewing) "Review bank transactions" else "SMS transaction tracking"
+    val screenSubtitle = if (reviewing) "${pending.size} bank transactions ready" else "Bank messages, shared by you, read on this device only"
+
     SumvaloScreen(
-        title = "SMS transaction tracking",
-        subtitle = "Bank messages, shared by you, read on this device only",
+        title = screenTitle,
+        subtitle = screenSubtitle,
         onBack = { nav.popBackSafely() },
         snackbar = snackbar,
     ) { padding ->
@@ -495,16 +499,20 @@ private fun SmsPendingReviewContent(
     val included = pending.count { !edits[it.id]!!.value.excluded }
 
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp)) {
-        Spacer(Modifier.height(12.dp))
-        Text("${pending.size} bank transactions ready", style = MaterialTheme.typography.titleLarge)
-        Text(
-            "Check each one — edit what's wrong, switch off what isn't yours. Nothing is saved until you confirm.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = SumvaloTheme.colors.subtleText,
-        )
-        Spacer(Modifier.height(12.dp))
-        LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(rows) { row ->
+        Spacer(Modifier.height(8.dp))
+        LazyColumn(
+            modifier = Modifier.weight(1f).fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            items(
+                items = rows,
+                key = { row ->
+                    when (row) {
+                        is PendingList.Header -> "header:${row.text}"
+                        is PendingList.Row -> "row:${row.item.id}"
+                    }
+                },
+            ) { row ->
                 when (row) {
                     is PendingList.Header -> Text(
                         row.text.uppercase(),
@@ -586,8 +594,14 @@ private fun SmsPendingReviewContent(
                 }
             }
         }
-        Spacer(Modifier.height(12.dp))
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Spacer(Modifier.height(8.dp))
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(bottom = 20.dp)
+                .navigationBarsPadding(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
             SecondaryButton("Cancel", onClick = onCancel, modifier = Modifier.weight(1f))
             PrimaryButton(
                 "Confirm import ($included)",
