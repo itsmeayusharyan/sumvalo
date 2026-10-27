@@ -35,6 +35,8 @@ Download signed release APKs from the [Releases page](https://github.com/itsmeay
 
 Both variants share identical code, features, and signing key — upgrades install cleanly over previous versions.
 
+Each APK is a **universal build** — it packages native libraries for all supported CPU architectures (`arm64-v8a`, `armeabi-v7a`, `x86`, `x86_64`) so you can install it on any compatible Android device without selecting a separate architecture-specific APK. Architectural support depends on the native dependencies shipping libraries for each ABI; SQLCipher and the other native dependencies bundled with Sumvalo do.
+
 Sumvalo targets Android 8.0+ (minSdk 26, targetSdk 35). The app requests no network permission — nothing can leave your phone.
 
 ## Preview
