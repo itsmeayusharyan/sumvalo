@@ -781,7 +781,7 @@ private fun SmsOverviewContent(
                         run {
                             SettingsToggle(
                                 title = "Scan inbox automatically",
-                                subtitle = "Every ~6 hours, if the SMS permission stays granted. Off stops future scans; nothing imported is deleted.",
+                                subtitle = "Every 10 minutes while the app is open; background catch-up every 15 minutes (Android minimum), if SMS permission stays granted. Off stops future scans; nothing imported is deleted.",
                                 checked = settings.smsAutoScan && hasSms,
                                 onChecked = { on ->
                                     scope.launch {
