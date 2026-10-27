@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Gavel
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Shield
@@ -74,7 +73,6 @@ fun AboutScreen(nav: androidx.navigation.NavController) {
         onPrivacy = { nav.navigate(Routes.ABOUT_PRIVACY) },
         onTerms = { nav.navigate(Routes.ABOUT_TERMS) },
         onLicence = { nav.navigate(Routes.ABOUT_GPL) },
-        onChangelog = { nav.navigate(Routes.CHANGELOG) },
         snackbar = snackbar,
     )
 }
@@ -90,7 +88,6 @@ fun AboutContent(
     onPrivacy: () -> Unit,
     onTerms: () -> Unit = {},
     onLicence: () -> Unit,
-    onChangelog: () -> Unit = {},
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     device: AboutDeviceInfo = AboutDeviceInfo.fromSystem(),
 ) {
@@ -128,15 +125,6 @@ fun AboutContent(
                 SettingsRow("Android version", "Android ${device.androidRelease} (API ${device.apiLevel})", onClick = null)
                 SettingsRow("Device", "${device.manufacturer} ${device.model}", onClick = null)
                 SettingsRow("App version", device.appVersion, onClick = null, divider = false)
-            }
-
-            SettingsSection("Changelog") {
-                SettingsRow(
-                    "Changelog",
-                    "What's new in each release",
-                    Icons.Outlined.AutoAwesome,
-                    onClick = onChangelog,
-                )
             }
 
             SettingsSection("Legal") {
