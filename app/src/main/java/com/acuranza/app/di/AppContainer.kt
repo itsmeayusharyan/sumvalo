@@ -3,6 +3,7 @@ package com.acuranza.app.di
 import android.content.Context
 import com.acuranza.app.data.DemoData
 import com.acuranza.app.data.SumvaloDatabase
+import com.acuranza.app.data.local.ReleaseCache
 import com.acuranza.app.data.prefs.SettingsStore
 import com.acuranza.app.notify.Notifications
 import com.acuranza.app.repo.AccountRepository
@@ -28,6 +29,8 @@ class AppContainer(context: Context, sandbox: com.acuranza.app.security.DecoySan
     val settings = sandbox?.settings ?: SettingsStore(app)
     // The offline edition has no INTERNET permission; it never tries to fetch NPS prices.
     val notifications = Notifications(app)
+    // Changelog cache: initialised in SumvaloApp.onCreate(); available to all builds.
+    val releaseCache: ReleaseCache = ReleaseCache.apply { init(app) }
 
     val accounts = AccountRepository(db)
     val loans = com.acuranza.app.repo.LoanRepository(db)

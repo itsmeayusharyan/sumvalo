@@ -61,6 +61,7 @@ object Routes {
     const val ABOUT_PRIVACY = "about/privacy"
     const val ABOUT_TERMS = "about/terms"
     const val ABOUT_GPL = "about/gpl"
+    const val CHANGELOG = "changelog"
     const val SAVINGS_GOAL = "savings-goal"
     const val WIDGETS_PREVIEW = "widgets"
 
