@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.1",
+        name = "Sumvalo 2.1",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Version bump only — no user-visible changes", ChangeCategory.OTHER),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.0",
         name = "Sumvalo 2.0",
         publishedAt = "2026-10-27",
