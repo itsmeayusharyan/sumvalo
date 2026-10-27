@@ -96,10 +96,11 @@ ABIS=$(unzip -l "$APK" | grep -o 'lib/[^/]*' | sort -u)
 echo "$ABIS"
 echo "$ABIS" | grep -q arm64-v8a || fail "no arm64-v8a native library"
 echo "$ABIS" | grep -q armeabi-v7a || fail "no armeabi-v7a native library"
-# v1.12.0 ships ARM only (phones; the APK is sideloaded). x86/x86_64 were emulator copies of
-# SQLCipher and 87% of the APK's size — their return would be a size regression.
-[ -z "$(echo "$ABIS" | grep x86)" ] || fail "x86/x86_64 native libraries present (ARM-only since v1.12.0)"
-pass "ARM ABIs packaged; emulator ABIs intentionally absent"
+echo "$ABIS" | grep -q x86 || fail "no x86 native library"
+echo "$ABIS" | grep -q x86_64 || fail "no x86_64 native library"
+# Universal native libraries since v0.3: arm64-v8a, armeabi-v7a, x86, x86_64 all packaged.
+# SQLCipher native libs ship for every ABI; APK size grows accordingly — accepted tradeoff.
+pass "universal ABIs packaged: arm64-v8a armeabi-v7a x86 x86_64"
 
 echo
 echo "== 5/6. DEX contents: network code, trackers =="

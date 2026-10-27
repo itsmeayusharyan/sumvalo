@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.3",
+        name = "Sumvalo 0.3",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Universal APK packaging: both standard and full build variants now include native libraries for arm64-v8a, armeabi-v7a, x86, and x86_64 — any compatible Android CPU architecture can install", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.2",
         name = "Sumvalo 0.2",
         publishedAt = "",

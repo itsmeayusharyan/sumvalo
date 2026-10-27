@@ -15,16 +15,17 @@ android {
         // English-only UI (standing decision): library locale tables for the other ~80
         // languages never ship, which trims resources.arsc.
         resourceConfigurations += setOf("en")
-        // ARM-only native libraries: the app is sideloaded to phones, and every Android phone
-        // is arm64 (armeabi-v7a kept for 32-bit devices). x86/x86_64 served emulators only —
-        // the four SQLCipher copies were 87% of the APK.
+        // Universal native libraries: the app runs on phones and emulators alike.
+        // arm64-v8a (64-bit ARM), armeabi-v7a (32-bit ARM), x86 (32-bit Intel/AMD),
+        // x86_64 (64-bit Intel/AMD) are all packaged so any compatible device can install.
+        // SQLCipher native libs ship for every one of these ABIs; APK size grows accordingly.
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
         }
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.2"
+        versionCode = 3
+        versionName = "0.3"
         vectorDrawables { useSupportLibrary = true }
     }
 
