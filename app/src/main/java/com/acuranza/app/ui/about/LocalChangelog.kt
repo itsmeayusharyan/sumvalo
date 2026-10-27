@@ -21,6 +21,20 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.3",
+        name = "Sumvalo 2.3",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed bottom navigation tab switching: tabs remain responsive after visiting nested Settings screens such as Appearance, Theme, Accent Colour, Haptic Feedback, Edit Navigation Tabs and Changelog", ChangeCategory.FIXED),
+            ChangeItem("Repeated Home taps while on the dashboard scroll to the top and refresh displayed content from local data", ChangeCategory.IMPROVED),
+            ChangeItem("Navigation back stack preserved correctly across tab switches — no duplicate routes or stale navigation state", ChangeCategory.FIXED),
+            ChangeItem("Active tab highlight always matches the current destination", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.2",
         name = "Sumvalo 2.2",
         publishedAt = "",

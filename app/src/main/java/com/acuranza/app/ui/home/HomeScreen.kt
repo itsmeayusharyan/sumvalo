@@ -34,6 +34,7 @@ import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -320,14 +322,24 @@ class HomeViewModel(private val c: AppContainer) : ViewModel() {
 }
 
 @Composable
-fun HomeScreen(nav: NavController) {
+fun HomeScreen(nav: NavController, onHomeReTap: () -> Unit = {}) {
     val vm = acuranzaViewModel { HomeViewModel(it) }
     val state by vm.state.collectAsStateWithLifecycle()
     val hidden = LocalHideAmounts.current
     val container = LocalContainer.current
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
     var loadingDemo by remember { mutableStateOf(false) }
     var planSheet by remember { mutableStateOf(false) }
+
+    // Re-tap on the Home tab while already on Home: scroll to the top and let the
+    // reactive flows re-emit (they are already live via SharingStarted.WhileSubscribed,
+    // so no new database queries are triggered — the UI simply re-renders from the
+    // latest data).
+    LaunchedEffect(onHomeReTap) {
+        listState.scrollToItem(0)
+    }
+
     if (planSheet) {
         SalaryPlanSheet(
             info = state.salaryPlan,
@@ -340,6 +352,7 @@ fun HomeScreen(nav: NavController) {
     HomeContent(
         state = state,
         hidden = hidden,
+        listState = listState,
         onProfile = { nav.navigate(com.acuranza.app.ui.nav.Routes.PROFILE) },
         loadingDemo = loadingDemo,
         onToggleHidden = { vm.toggleHidden(hidden) },

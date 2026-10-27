@@ -28,14 +28,23 @@ fun NavController.popPast(detailRoute: String): Boolean {
     return if (hasDetail) popBackStack(detailRoute, inclusive = true) else popBackSafely()
 }
 
-/**
- * Opens a bottom-bar tab the same way the bar does, so every tab keeps one back stack: tapping Home always
- * returns to Home instead of restoring another tab that was pushed onto Home's stack.
+/** Navigates to a bottom-bar tab, keeping one back stack per tab. Popping up to the start
+ * destination clears any nested screens (e.g. Settings → Appearance) so tapping a tab always
+ * returns to that tab's top level. If the tab is already the current top destination, the call
+ * is a no-op — this prevents NavController state churn when the user taps the active tab.
+ *
+ * For the Home tab specifically, a re-tap while already on Home is surfaced to the caller via
+ * [onHomeReTap]; the caller is responsible for scrolling to the top and refreshing content.
  */
-fun NavController.navigateToTab(route: String) {
+fun NavController.navigateToTab(route: String, onHomeReTap: (() -> Unit)? = null) {
+    val alreadyOnTop = currentBackStackEntry?.destination?.route == route
+    if (alreadyOnTop) {
+        if (route == Routes.HOME) onHomeReTap?.invoke()
+        return
+    }
     navigate(route) {
         popUpTo(graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true
-        restoreState = true
+        restoreState = false
     }
 }

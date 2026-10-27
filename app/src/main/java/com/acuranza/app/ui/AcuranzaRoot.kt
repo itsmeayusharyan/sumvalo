@@ -408,6 +408,14 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
     }
     val showBar = activeTab != null && !imeVisible
 
+    // Home re-tap: when the user taps the Home tab while already on Home, this flag
+    // is set so HomeScreen can scroll to the top and refresh its content. It is
+    // consumed (reset to false) by HomeScreen after handling.
+    var homeScrollToTop by remember { mutableStateOf(false) }
+    val onHomeReTap = {
+        homeScrollToTop = true
+    }
+
     LaunchedEffect(initialRoute) {
         val target = when (initialRoute) {
             Notifications.ROUTE_REVIEW -> Routes.REVIEW
@@ -449,7 +457,7 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
                 enter = slideInVertically { it },
                 exit = slideOutVertically { it },
             ) {
-                BottomBar(nav, activeTab)
+                BottomBar(nav, activeTab, onHomeReTap)
             }
         },
         floatingActionButton = {
@@ -470,20 +478,20 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         Box(
             Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
         ) {
-            SumvaloNavHost(nav)
+            SumvaloNavHost(nav, onHomeReTap)
         }
     }
 }
 
 @Composable
-private fun BottomBar(nav: NavHostController, activeTab: String?) {
+private fun BottomBar(nav: NavHostController, activeTab: String?, onHomeReTap: () -> Unit) {
     val s = com.acuranza.app.ui.common.LocalSettings.current
     val tabs = com.acuranza.app.ui.nav.NavTabs.resolve(
         com.acuranza.app.ui.nav.NavTabs.decodeLayout(s.navTabLayout),
         com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
         com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
     )
-    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
+    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route, onHomeReTap) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
 }
 
 /**
@@ -647,7 +655,7 @@ private fun AddFab(onClick: () -> Unit) {
 }
 
 @Composable
-private fun SumvaloNavHost(nav: NavHostController) {
+private fun SumvaloNavHost(nav: NavHostController, onHomeReTap: () -> Unit) {
     val idArg = listOf(navArgument("id") { type = NavType.LongType })
     // Captured here because NavHost's transition lambdas are not composable scopes.
     val navFadeIn = motionTween<Float>(Motion.STANDARD)
@@ -679,7 +687,7 @@ private fun SumvaloNavHost(nav: NavHostController) {
             ) { it / 4 } + fadeOut(navFadeIn)
         },
     ) {
-        composable(Routes.HOME) { HomeScreen(nav) }
+        composable(Routes.HOME) { HomeScreen(nav, onHomeReTap) }
         composable(Routes.TRANSACTIONS) { TransactionsScreen(nav) }
         composable(Routes.PLANNING) { PlanningScreen(nav) }
         composable(Routes.SETTINGS) { MoreScreen(nav) }
