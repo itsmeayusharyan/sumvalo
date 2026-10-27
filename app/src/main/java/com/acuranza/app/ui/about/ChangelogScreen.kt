@@ -1,6 +1,5 @@
 package com.acuranza.app.ui.about
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,15 +32,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.model.ChangeCategory
-import com.acuranza.app.designsystem.components.SumvaloCard
+import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
+import com.acuranza.app.ui.settings.SettingsDivider
+import com.acuranza.app.ui.settings.SettingsRow
+import com.acuranza.app.ui.settings.SettingsSection
 
 /** Dedicated changelog screen: lists locally-maintained releases newest-first as expandable
- * cards. Works completely offline — no network, account, or API key needed.
- *
- * Reached from Settings → About → Changelog.
+ * cards using the same card styling as the About section (SettingsSection / SettingsRow).
+ * Works completely offline — no network, account, or API key needed.
  */
 @Composable
 fun ChangelogScreen(
@@ -67,95 +68,64 @@ fun ChangelogScreen(
             } else {
                 releases.forEachIndexed { index, release ->
                     val expanded = remember(release.tag) { mutableStateOf(false) }
-                    SumvaloCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = if (index == 0) 4.dp else 8.dp),
-                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
-                        onClick = { expanded.value = !expanded.value },
-                    ) {
-                        Column(Modifier.fillMaxWidth()) {
-                            // Header: version number prominent, release date secondary muted,
-                            // expand/collapse icon aligned right.
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Column(Modifier.weight(1f)) {
-                                    Text(
-                                        release.version,
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        color = SumvaloTheme.colors.ink,
-                                    )
-                                    Spacer(Modifier.height(1.dp))
-                                    Text(
-                                        "v${release.tag} · ${release.displayDate}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = SumvaloTheme.colors.subtleText,
-                                    )
-                                }
+
+                    // Each version is its own card — same SumvaloCard styling as About entries
+                    // (cardSurface background, hairline border, cardRadius corners).
+                    SettingsSection(title = null) {
+                        // Header row — matches RowSkeleton styling exactly.
+                        SettingsRow(
+                            title = release.version,
+                            subtitle = "v${release.tag} · ${release.displayDate}",
+                            onClick = { expanded.value = !expanded.value },
+                            divider = false,
+                            trailing = {
                                 Icon(
                                     imageVector = if (expanded.value) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
                                     contentDescription = if (expanded.value) "Collapse" else "Expand",
                                     tint = SumvaloTheme.colors.tertiaryText,
                                     modifier = Modifier.size(20.dp),
                                 )
-                            }
-                            if (expanded.value) {
-                                Spacer(Modifier.height(6.dp))
-                                release.changes.groupBy { it.category }.forEach { (category, items) ->
-                                    renderCategory(category, items, SumvaloTheme.colors)
+                            },
+                        )
+
+                        if (expanded.value) {
+                            // Hairline divider between header and changelog content,
+                            // matching About row dividers (16.dp start inset, no icon tile).
+                            SettingsDivider(16.dp)
+
+                            release.changes.groupBy { it.category }.forEach { (category, items) ->
+                                Text(
+                                    categoryDisplayName(category),
+                                    style = SumvaloText.sectionLabel,
+                                    color = SumvaloTheme.colors.subtleText,
+                                    modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 4.dp),
+                                )
+                                items.forEach { item ->
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Icon(
+                                            imageVector = categoryIcon(category),
+                                            contentDescription = null,
+                                            tint = categoryColor(category, SumvaloTheme.colors),
+                                            modifier = Modifier.size(14.dp),
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            item.text,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = SumvaloTheme.colors.ink,
+                                            modifier = Modifier.weight(1f),
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                    // Subtle divider between release cards for clean visual separation.
-                    if (index < releases.size - 1) {
-                        Spacer(Modifier.height(8.dp))
-                    }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun renderCategory(
-    category: ChangeCategory?,
-    items: List<com.acuranza.app.model.ChangeItem>,
-    colors: com.acuranza.app.designsystem.theme.SumvaloColors,
-) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp),
-    ) {
-        Text(
-            categoryDisplayName(category),
-            style = MaterialTheme.typography.labelSmall,
-            color = colors.subtleText,
-            modifier = Modifier.padding(bottom = 2.dp),
-        )
-        items.forEach { item ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 2.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = categoryIcon(category),
-                    contentDescription = null,
-                    tint = categoryColor(category, colors),
-                    modifier = Modifier.size(14.dp),
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    item.text,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.ink,
-                    modifier = Modifier.weight(1f),
-                )
             }
         }
     }
