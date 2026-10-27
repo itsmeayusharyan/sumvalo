@@ -1,5 +1,6 @@
 package com.acuranza.app.ui.about
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,11 +70,12 @@ fun ChangelogScreen(
                     SumvaloCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = if (index == 0) 0.dp else 16.dp),
+                            .padding(vertical = if (index == 0) 4.dp else 8.dp),
+                        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                         onClick = { expanded.value = !expanded.value },
                     ) {
                         Column(Modifier.fillMaxWidth()) {
-                            // Header row: version number prominent, release date secondary muted,
+                            // Header: version number prominent, release date secondary muted,
                             // expand/collapse icon aligned right.
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -82,10 +84,10 @@ fun ChangelogScreen(
                                 Column(Modifier.weight(1f)) {
                                     Text(
                                         release.version,
-                                        style = MaterialTheme.typography.headlineMedium,
+                                        style = MaterialTheme.typography.headlineSmall,
                                         color = SumvaloTheme.colors.ink,
                                     )
-                                    Spacer(Modifier.height(2.dp))
+                                    Spacer(Modifier.height(1.dp))
                                     Text(
                                         "v${release.tag} · ${release.displayDate}",
                                         style = MaterialTheme.typography.bodySmall,
@@ -99,8 +101,8 @@ fun ChangelogScreen(
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
-                            Spacer(Modifier.height(12.dp))
                             if (expanded.value) {
+                                Spacer(Modifier.height(6.dp))
                                 release.changes.groupBy { it.category }.forEach { (category, items) ->
                                     renderCategory(category, items, SumvaloTheme.colors)
                                 }
@@ -126,19 +128,19 @@ private fun renderCategory(
     Column(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 2.dp),
     ) {
         Text(
             categoryDisplayName(category),
             style = MaterialTheme.typography.labelSmall,
             color = colors.subtleText,
-            modifier = Modifier.padding(bottom = 4.dp),
+            modifier = Modifier.padding(bottom = 2.dp),
         )
         items.forEach { item ->
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                    .padding(bottom = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
@@ -147,7 +149,7 @@ private fun renderCategory(
                     tint = categoryColor(category, colors),
                     modifier = Modifier.size(14.dp),
                 )
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(6.dp))
                 Text(
                     item.text,
                     style = MaterialTheme.typography.bodyMedium,
@@ -165,22 +167,22 @@ private fun renderEmpty() {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp, vertical = 40.dp),
+            .padding(horizontal = 20.dp, vertical = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = null,
             tint = colors.tertiaryText,
-            modifier = Modifier.size(40.dp),
+            modifier = Modifier.size(36.dp),
         )
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
         Text(
             "No releases yet",
             style = MaterialTheme.typography.titleMedium,
             color = colors.ink,
         )
-        Spacer(Modifier.height(6.dp))
+        Spacer(Modifier.height(4.dp))
         Text(
             "Check back later for release notes.",
             style = MaterialTheme.typography.bodyMedium,
