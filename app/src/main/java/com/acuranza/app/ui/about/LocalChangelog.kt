@@ -14,6 +14,10 @@ import com.acuranza.app.model.ReleaseEntry
  * version being built. See AGENTS.md for the full procedure.
  *
  * Entries are sorted newest first (newest release displayed first).
+ *
+ * Release dates are included only where they can be verified from the project's release history.
+ * For older versions where no verified date exists, the date is left unset and the UI shows
+ * "Date not recorded" rather than fabricating a date.
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
@@ -39,8 +43,108 @@ val LocalChangelog: List<ReleaseEntry> = listOf(
         htmlUrl = "",
     ).copy(
         providedChanges = listOf(
-            ChangeItem("Restored v1.1 navigation bar with floating and docked modes", ChangeCategory.ADDED),
-            ChangeItem("Fixed broken tab navigation and selected-state updates", ChangeCategory.FIXED),
+            ChangeItem("Changelog feature added to the About section", ChangeCategory.ADDED),
+            ChangeItem("Screenshots updated with latest Paparazzi renders", ChangeCategory.IMPROVED),
         ),
     ),
-).sortedByDescending { it.publishedAt }
+    ReleaseEntry(
+        tag = "v1.8",
+        name = "Sumvalo 1.8",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed bottom navigation bar navigation bugs — both floating and attached navigation bars restored to full functionality", ChangeCategory.FIXED),
+            ChangeItem("Restored v1.1 navigation bar with floating and docked modes", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.7",
+        name = "Sumvalo 1.7",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed bottom navigation bar excessive gap — removed excessive bottom padding so content scrolls naturally and the bar stays near the system navigation area", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.6",
+        name = "Sumvalo 1.6",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed oversized floating navigation bar height and padding", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.5",
+        name = "Sumvalo 1.5",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed floating navigation bar — persistent selection, gestures, and window insets", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.4",
+        name = "Sumvalo 1.4",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Replaced glassmorphism and gradients with flat, restrained design", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.3",
+        name = "Sumvalo 1.3",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Package ID switched to com.sumvalo.app", ChangeCategory.OTHER),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.2",
+        name = "Sumvalo 1.2",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Animation audit and fixes", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.1",
+        name = "Sumvalo 1.1",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Floating and docked navigation bar modes", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
+        tag = "v1.0",
+        name = "Sumvalo 1.0",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Initial release", ChangeCategory.ADDED),
+        ),
+    ),
+).sortedWith(compareByDescending<ReleaseEntry> { it.publishedAt }.thenByDescending { it.tag })

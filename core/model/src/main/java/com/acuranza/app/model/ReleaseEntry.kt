@@ -45,6 +45,10 @@ data class ReleaseEntry(
             return "${parts[2]} $month ${parts[0]}"
         }
 
+    /** Display-friendly date; falls back to "Date not recorded" when the release date is unknown. */
+    val displayDate: String
+        get() = publishedDate.takeIf { it.isNotEmpty() } ?: "Date not recorded"
+
     /** Categorised change bullets: the provided [providedChanges] list for locally-bundled
      * entries, otherwise parsed from the [body] markdown. */
     val changes: List<ChangeItem>

@@ -15,6 +15,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.ExpandLess
+import androidx.compose.material.icons.outlined.ExpandMore
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
@@ -22,7 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,8 +38,8 @@ import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
 
-/** Dedicated changelog screen: lists locally-maintained releases newest-first, grouped by
- * change category. Works completely offline — no network, account, or API key needed.
+/** Dedicated changelog screen: lists locally-maintained releases newest-first as expandable
+ * cards. Works completely offline — no network, account, or API key needed.
  *
  * Reached from Settings → About → Changelog.
  */
@@ -64,11 +68,13 @@ fun ChangelogScreen(
                 renderEmpty()
             } else {
                 releases.forEachIndexed { index, release ->
+                    val expanded = remember { mutableStateOf(false) }
                     SumvaloCard(
-                        Modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
                             .padding(vertical = if (index == 0) 0.dp else 12.dp),
+                        onClick = { expanded.value = !expanded.value },
                     ) {
                         Column(
                             Modifier
@@ -86,21 +92,23 @@ fun ChangelogScreen(
                                         modifier = Modifier.padding(bottom = 2.dp),
                                     )
                                     Text(
-                                        "v${release.tag} · ${release.publishedDate}",
+                                        "v${release.tag} · ${release.displayDate}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = SumvaloTheme.colors.subtleText,
                                     )
                                 }
                                 Icon(
-                                    imageVector = Icons.Outlined.Info,
-                                    contentDescription = null,
+                                    imageVector = if (expanded.value) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                                    contentDescription = if (expanded.value) "Collapse" else "Expand",
                                     tint = SumvaloTheme.colors.tertiaryText,
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
                             Spacer(Modifier.height(10.dp))
-                            release.changes.groupBy { it.category }.forEach { (category, items) ->
-                                renderCategory(category, items, SumvaloTheme.colors)
+                            if (expanded.value) {
+                                release.changes.groupBy { it.category }.forEach { (category, items) ->
+                                    renderCategory(category, items, SumvaloTheme.colors)
+                                }
                             }
                         }
                     }
