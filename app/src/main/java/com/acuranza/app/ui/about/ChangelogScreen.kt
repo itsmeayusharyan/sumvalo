@@ -1,5 +1,6 @@
 package com.acuranza.app.ui.about
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,16 +31,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.model.ChangeCategory
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.nav.popBackSafely
 import com.acuranza.app.ui.settings.SettingsDivider
 import com.acuranza.app.ui.settings.SettingsRow
-import com.acuranza.app.ui.settings.SettingsSection
 
 /** Dedicated changelog screen: lists locally-maintained releases newest-first as expandable
- * cards using the same card styling as the About section (SettingsSection / SettingsRow).
+ * cards. Each card uses [SumvaloCard] directly — the same card component [SettingsSection]
+ * wraps — so the release cards match the About section's Privacy Policy / Terms / Licence
+ * cards exactly: same surface, border, corner radius, icon container, padding, row height,
+ * divider, typography and chevron.
+ *
  * Works completely offline — no network, account, or API key needed.
  */
 @Composable
@@ -67,17 +72,23 @@ fun ChangelogScreen(
                 releases.forEachIndexed { index, release ->
                     val expanded = remember(release.tag) { mutableStateOf(false) }
 
-                    // Each version is its own card — same SumvaloCard styling as About entries
-                    // (cardSurface background, hairline border, cardRadius corners).
-                    SettingsSection(title = null) {
-                        // Header row — matches RowSkeleton styling exactly:
-                        // leading icon in the same IconBubble container as About cards,
-                        // ChevronRight shown automatically by SettingsRow when onClick is set.
+                    // Each release is its own SumvaloCard — the same card component SettingsSection
+                    // wraps, but without SettingsSection's 24.dp top spacing (meant for grouping
+                    // multiple rows in one card). Every card is exactly one row tall.
+                    SumvaloCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = if (index == 0) 0.dp else 8.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        onClick = { expanded.value = !expanded.value },
+                    ) {
+                        // Header row — RowSkeleton layout exactly: IconBubble + title + subtitle
+                        // + ChevronRight trailing, all with the same padding and alignment.
                         SettingsRow(
                             title = release.version,
                             subtitle = "v${release.tag} · ${release.displayDate}",
                             icon = Icons.Outlined.AutoAwesome,
-                            onClick = { expanded.value = !expanded.value },
+                            onClick = null,
                             divider = false,
                         )
 
