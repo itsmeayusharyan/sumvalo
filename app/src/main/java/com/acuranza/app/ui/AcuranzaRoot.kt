@@ -388,12 +388,19 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
     val backStack by nav.currentBackStackEntryAsState()
     val current = backStack?.destination?.route
     val landingTabPref = com.acuranza.app.ui.common.LocalSettings.current.landingTab
+    val settings = com.acuranza.app.ui.common.LocalSettings.current
+    val floatingBar = settings.navFloatingBar
     // The bar tucks away while the keyboard is up so text fields keep the space.
     val imeVisible = WindowInsets.isImeVisible
     // Track the active tab independently of the current route so the bottom bar
     // stays visible (and the right tab stays highlighted) when the user drills
     // into sub-screens such as Account Detail or Transaction Detail.
     var activeTab by remember { mutableStateOf<String?>(null) }
+    // Initialize from the current route on first composition so the bar shows
+    // immediately instead of flashing invisible for a frame.
+    if (current != null && current in TabRoutes && activeTab == null) {
+        activeTab = current
+    }
     LaunchedEffect(current) {
         if (current != null && current in TabRoutes) {
             activeTab = current
@@ -456,10 +463,10 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
         },
         floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
-        // contentWindowInsets is zeros, so padding.bottom is 0. Scaffold already adds the
-        // bottom bar's height to padding.bottom automatically. No extra bar-height padding
-        // is needed here — just a small visual gap between content and the floating bar.
-        val bottomExtra = if (showBar) 0.dp else 0.dp
+        // When the bar is attached (docked), reserve space for it so content doesn't
+        // hide underneath. When floating, the bar overlays content and no extra padding
+        // is needed — Scaffold already positions the bottomBar above the content area.
+        val bottomExtra = if (showBar && !floatingBar) 56.dp else 0.dp
         Box(
             Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
         ) {
@@ -480,12 +487,18 @@ private fun BottomBar(nav: NavHostController, activeTab: String?) {
 }
 
 /**
- * Bottom navigation bar: a floating pill-shaped surface that hovers above the gesture area
- * with side margins, a hairline border and a restrained accent wash behind the selected tab.
- * No glass, no shadow, no gradient — solid surface derived from theme tokens only.
+ * Bottom navigation bar with two rendering modes:
  *
- * The [floating] parameter is accepted for API compatibility (the settings editor persists it);
- * the bar is always rendered as a floating pill.
+ * [floating = true] — a pill-shaped surface that hovers above the gesture area with side
+ * margins, rounded corners and a hairline border. The selected tab gets an accent-tinted
+ * pill behind its icon and label.
+ *
+ * [floating = false] — a docked, edge-to-edge bar that hugs the bottom of the screen with
+ * square corners, full width and system navigation padding. The selected tab gets the same
+ * accent-tinted pill indicator.
+ *
+ * Both modes share identical tab rendering, click handling, selected-state animation and
+ * haptics. Only the container shape, margins and insets differ.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -498,21 +511,29 @@ fun SumvaloBottomBar(
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
-    val barShape = RoundedCornerShape(28.dp)
-    val pillShape = RoundedCornerShape(20.dp)
 
-    Box(
+    val barModifier = if (floating) {
+        // Floating pill: side margins, rounded corners, display cutout support.
+        val barShape = RoundedCornerShape(28.dp)
         Modifier
             .fillMaxWidth()
-            // Side margins make the bar a floating pill instead of a docked edge-to-edge strip.
             .padding(horizontal = 16.dp)
-            // Display cutout (notch) support.
             .windowInsetsPadding(WindowInsets.displayCutout)
             .background(colors.cardSurface, barShape)
             .border(1.dp, colors.hairline, barShape)
             .padding(vertical = 4.dp)
-            .height(52.dp),
-    ) {
+            .height(52.dp)
+    } else {
+        // Attached/docked: full width, square corners, system navigation padding.
+        Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .background(colors.cardSurface)
+            .border(1.dp, colors.hairline, RoundedCornerShape(0.dp))
+            .height(56.dp)
+    }
+
+    Box(modifier = barModifier) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -544,7 +565,7 @@ fun SumvaloBottomBar(
                     Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = if (floating) 2.dp else 0.dp)
                         .pressScale(interaction, scaleDown = 0.97f)
                         .clickable(
                             interactionSource = interaction,
@@ -562,19 +583,18 @@ fun SumvaloBottomBar(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // Selected-state pill: a compact accent wash behind icon + label, sized
-                    // smaller than the tab slot so it reads as a true pill behind the content.
+                    // Selected-state pill: accent wash behind icon + label.
                     Box(
                         Modifier
-                            .width(56.dp)
-                            .height(40.dp)
+                            .width(if (floating) 56.dp else 48.dp)
+                            .height(if (floating) 40.dp else 32.dp)
                             .align(Alignment.Center)
                             .graphicsLayer {
                                 alpha = pill
-                                scaleX = 0.85f + 0.15f * pill
-                                scaleY = 0.85f + 0.15f * pill
+                                scaleX = if (floating) 0.85f + 0.15f * pill else 1f
+                                scaleY = if (floating) 0.85f + 0.15f * pill else 1f
                             }
-                            .clip(pillShape)
+                            .clip(if (floating) RoundedCornerShape(20.dp) else RoundedCornerShape(12.dp))
                             .background(colors.accentTint),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
