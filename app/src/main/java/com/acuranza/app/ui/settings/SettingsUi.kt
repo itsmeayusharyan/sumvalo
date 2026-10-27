@@ -79,7 +79,7 @@ fun SettingsDivider(startInset: Dp = 52.dp) {
 /** A titled group of settings rows on a card; rows bring their own padding and dividers. */
 @Composable
 fun SettingsSection(title: String?, content: @Composable ColumnScope.() -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(top = 24.dp)) {
+    Column(Modifier.fillMaxWidth()) {
         // On subpages the page title already names the group, so the in-card label is dropped.
         if (title != null) {
             Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
@@ -153,7 +153,7 @@ private fun RowSkeleton(
                         Modifier
                     }
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {

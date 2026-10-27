@@ -46,7 +46,7 @@ import com.acuranza.app.model.Paise
 fun SumvaloCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     shape: Shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius),
     color: Color = SumvaloTheme.colors.cardSurface,
     content: @Composable ColumnScope.() -> Unit,
@@ -73,7 +73,7 @@ fun GradientCard(
     modifier: Modifier = Modifier,
     brush: Brush = SolidColor(heroFace()),
     onClick: (() -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     shape: Shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius),
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -138,8 +138,8 @@ fun DialogBlurBehind(radiusPx: Int = 80) {
 @Composable
 fun GlassSurface(
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(16.dp),
-    contentPadding: PaddingValues = PaddingValues(SumvaloTheme.spacing.md),
+    shape: Shape = RoundedCornerShape(12.dp),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(

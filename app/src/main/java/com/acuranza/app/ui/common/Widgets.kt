@@ -186,9 +186,9 @@ fun FieldBox(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(12.dp),
         color = SumvaloTheme.colors.cardSurface,
         border = BorderStroke(1.dp, SumvaloTheme.colors.divider),
     ) {
@@ -330,7 +330,7 @@ fun SwitchRow(
         Modifier
             .fillMaxWidth()
             .clickable(enabled = enabled) { onChecked(!checked) }
-            .padding(vertical = 12.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
@@ -372,7 +372,7 @@ fun ActionRow(
         Modifier
             .fillMaxWidth()
             .clickable(enabled = enabled, onClick = onClick)
-            .padding(vertical = 14.dp),
+            .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {

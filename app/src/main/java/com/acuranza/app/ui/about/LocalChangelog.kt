@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v3.1",
+        name = "Sumvalo 3.1",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Shared component spacing tightened: card default padding removed (callers control padding explicitly), section auto-24dp top spacing removed, row vertical padding 12dp→8dp, FieldBox corner radius 16dp→12dp, ActionRow/SwitchRow padding 14dp/12dp→8dp — tighter, more consistent cards across all screens", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v3.0",
         name = "Sumvalo 3.0",
         publishedAt = "",
