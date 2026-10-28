@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.11",
+        name = "Sumvalo 0.11",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Settings: revamped hub icons — Tools (gear), Loans & EMI (wallet), Budgets & goals (pie chart), Notifications (bell) for a cohesive visual language", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.10",
         name = "Sumvalo 0.10",
         publishedAt = "",

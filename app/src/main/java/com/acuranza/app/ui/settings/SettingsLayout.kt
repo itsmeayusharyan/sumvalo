@@ -1,16 +1,16 @@
 package com.acuranza.app.ui.settings
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.RealEstateAgent
+import androidx.compose.material.icons.outlined.PieChart
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Widgets
 import com.acuranza.app.ui.nav.Routes
 
@@ -57,15 +57,15 @@ internal data class SettingsEntryUi(
 
 internal val SettingsEntryDisplay: Map<SettingsEntryKey, SettingsEntryUi> = linkedMapOf(
     SettingsEntryKey.ACCOUNTS to SettingsEntryUi("Accounts & cards", "Accounts, imports and categories", Icons.Outlined.AccountBalance, Routes.SETTINGS_MANAGEMENT),
-    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Tools", "Recurring payments, reports", Icons.AutoMirrored.Outlined.TrendingUp, Routes.SETTINGS_FINANCIAL),
+    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Tools", "Recurring payments, reports", Icons.Outlined.Settings, Routes.SETTINGS_FINANCIAL),
     SettingsEntryKey.LENDING to SettingsEntryUi("Lending", "Money between you and friends or family", Icons.Outlined.Handshake, Routes.DEBTS),
-    SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.RealEstateAgent, Routes.LOANS),
-    SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.TrackChanges, Routes.PLANNING),
+    SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.AccountBalanceWallet, Routes.LOANS),
+    SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.PieChart, Routes.PLANNING),
     SettingsEntryKey.WIDGETS to SettingsEntryUi("Widgets", "Preview and add home-screen widgets", Icons.Outlined.Widgets, Routes.WIDGETS_PREVIEW),
     SettingsEntryKey.APPEARANCE to SettingsEntryUi("Appearance", "Theme, colour theme, accent, AMOLED, hide amounts, edit home", Icons.Outlined.Palette, Routes.SETTINGS_APPEARANCE),
     SettingsEntryKey.PRIVACY to SettingsEntryUi("Privacy & security", "App lock, PINs, encryption and recovery", Icons.Outlined.Shield, Routes.SETTINGS_PRIVACY),
     SettingsEntryKey.DATA to SettingsEntryUi("Data management", "Backups, imports, exports, sample data, erase", Icons.Outlined.Backup, Routes.SETTINGS_DATA),
-    SettingsEntryKey.NOTIFICATIONS to SettingsEntryUi("Notifications", "Reminders, digest, widgets and where your budget month starts", Icons.Outlined.Alarm, Routes.SETTINGS_NOTIFICATIONS),
+    SettingsEntryKey.NOTIFICATIONS to SettingsEntryUi("Notifications", "Reminders, digest, widgets and where your budget month starts", Icons.Outlined.Notifications, Routes.SETTINGS_NOTIFICATIONS),
     SettingsEntryKey.ABOUT to SettingsEntryUi("About", "Version, privacy policy and licence", Icons.Outlined.Info, Routes.ABOUT),
 )
 
