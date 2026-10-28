@@ -21,6 +21,18 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.7",
+        name = "Sumvalo 0.7",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Split Any Expense: shared-expense groups with participants, equal-split transactions, and balance tracking", ChangeCategory.ADDED),
+            ChangeItem("Purchase Memory: purchase records with encrypted receipt attachments, warranty and return deadlines, and offline search", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.6",
         name = "Sumvalo 0.6",
         publishedAt = "",
@@ -41,7 +53,7 @@ val LocalChangelog: List<ReleaseEntry> = listOf(
         providedChanges = listOf(
             ChangeItem("Loan EMI auto-recording: each due EMI is added as an unreviewed expense from your first bank or wallet account, ready to confirm in Review", ChangeCategory.ADDED),
             ChangeItem("Duplicate detection on SMS import: same account, type and amount within ±1 day is skipped instead of double-counted", ChangeCategory.ADDED),
-            ChangeItem("Bill countdown badges on home: urgent/overdue bills show a coloured \"Due today\" / \"Overdue\" pill", ChangeCategory.ADDED),
+            ChangeItem("Bill countdown badges on home: urgent/overdue bills show a coloured Due today / Overdue pill", ChangeCategory.ADDED),
             ChangeItem("SMS confidence threshold setting: pick LOW/MEDIUM/HIGH to gate auto-import vs review", ChangeCategory.ADDED),
             ChangeItem("Tags as quick-add chips in the add-transaction screen", ChangeCategory.ADDED),
             ChangeItem("Universal APKs for arm64-v8a, armeabi-v7a, x86 and x86_64", ChangeCategory.ADDED),
@@ -57,7 +69,7 @@ val LocalChangelog: List<ReleaseEntry> = listOf(
         providedChanges = listOf(
             ChangeItem("Loan EMI auto-recording: each due EMI is added as an unreviewed expense from your first bank or wallet account, ready to confirm in Review — no more entering EMIs by hand", ChangeCategory.ADDED),
             ChangeItem("Duplicate detection on SMS import: a transaction with the same account, type and amount within ±1 day of an existing one is skipped instead of silently double-counted", ChangeCategory.ADDED),
-            ChangeItem("Bill countdown badges on the home screen: urgent and overdue bills show a coloured \"Due today\" / \"Overdue\" pill next to the card name", ChangeCategory.IMPROVED),
+            ChangeItem("Bill countdown badges on the home screen: urgent and overdue bills show a coloured Due today / Overdue pill next to the card name", ChangeCategory.IMPROVED),
         ),
     ),
     ReleaseEntry(

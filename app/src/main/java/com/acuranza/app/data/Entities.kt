@@ -280,3 +280,141 @@ data class AttachmentEntity(
     val label: String? = null,
     val createdAt: Long = System.currentTimeMillis(),
 )
+
+/** A shared-expense group (e.g. "Roommates", "Trip to Manali"). [archived] hides it without deleting history. */
+@Entity(tableName = "split_groups")
+data class SplitGroupEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String,
+    val archived: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** A participant in a split group. Local display name only — no account, registration or internet needed. */
+@Entity(
+    tableName = "split_group_participants",
+    foreignKeys = [
+        ForeignKey(entity = SplitGroupEntity::class, parentColumns = ["id"], childColumns = ["groupId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("groupId")],
+)
+data class SplitGroupParticipantEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val groupId: Long,
+    val name: String,
+    /** Keeps historical splits readable when a participant is renamed. */
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** One shared expense recorded inside a group. [linkedTransactionId] optionally references a personal Sumvalo transaction. */
+@Entity(
+    tableName = "split_expenses",
+    foreignKeys = [
+        ForeignKey(entity = SplitGroupEntity::class, parentColumns = ["id"], childColumns = ["groupId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = SplitGroupParticipantEntity::class, parentColumns = ["id"], childColumns = ["payerId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = TransactionEntity::class, parentColumns = ["id"], childColumns = ["linkedTransactionId"], onDelete = ForeignKey.SET_NULL),
+    ],
+    indices = [Index("groupId"), Index("payerId"), Index("linkedTransactionId")],
+)
+data class SplitExpenseEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val groupId: Long,
+    val description: String,
+    val amount: Paise,
+    /** Epoch day (LocalDate.toEpochDay). */
+    val date: Long,
+    val payerId: Long,
+    val categoryKey: String? = null,
+    val note: String? = null,
+    /** Links this shared expense to an existing personal transaction, if the user chose to create one. */
+    val linkedTransactionId: Long? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** How much one participant owes (or is owed) for one expense. Positive = owes this amount. */
+@Entity(
+    tableName = "split_shares",
+    foreignKeys = [
+        ForeignKey(entity = SplitExpenseEntity::class, parentColumns = ["id"], childColumns = ["expenseId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = SplitGroupParticipantEntity::class, parentColumns = ["id"], childColumns = ["participantId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("expenseId"), Index("participantId")],
+)
+data class SplitShareEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val expenseId: Long,
+    val participantId: Long,
+    /** The participant's share of the expense, in paise. */
+    val share: Paise,
+)
+
+/** A repayment between two participants in a group. [fromId] pays [toId]. */
+@Entity(
+    tableName = "split_settlements",
+    foreignKeys = [
+        ForeignKey(entity = SplitGroupEntity::class, parentColumns = ["id"], childColumns = ["groupId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = SplitGroupParticipantEntity::class, parentColumns = ["id"], childColumns = ["fromId"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(entity = SplitGroupParticipantEntity::class, parentColumns = ["id"], childColumns = ["toId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("groupId"), Index("fromId"), Index("toId")],
+)
+data class SplitSettlementEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val groupId: Long,
+    val fromId: Long,
+    val toId: Long,
+    val amount: Paise,
+    /** Epoch day. */
+    val date: Long,
+    val note: String? = null,
+    /** If true, this settlement was reversed (kept for history, excluded from balances). */
+    val reversed: Boolean = false,
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** A purchase record with optional receipt attachment and warranty/return deadlines. */
+@Entity(tableName = "purchase_records")
+data class PurchaseRecordEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val itemName: String,
+    val merchant: String? = null,
+    /** Epoch day of purchase. */
+    val purchaseDate: Long,
+    val amount: Paise? = null,
+    val category: String? = null,
+    val notes: String? = null,
+    /** Tags stored as \|tag1\|tag2\|. */
+    val tags: String = "",
+    /** Epoch day warranty started, if known. */
+    val warrantyStart: Long? = null,
+    /** Epoch day warranty expires. */
+    val warrantyUntil: Long? = null,
+    /** Epoch day return/replacement deadline. */
+    val returnUntil: Long? = null,
+    val invoiceNo: String? = null,
+    val serialNo: String? = null,
+    /** Links this purchase to an existing personal transaction, if any. */
+    val linkedTransactionId: Long? = null,
+    /** Reminders enabled for this record. */
+    val remindersEnabled: Boolean = true,
+    val createdAt: Long = System.currentTimeMillis(),
+)
+
+/** A document attached to a purchase record (receipt, invoice, warranty card, etc.). */
+@Entity(
+    tableName = "purchase_attachments",
+    foreignKeys = [
+        ForeignKey(entity = PurchaseRecordEntity::class, parentColumns = ["id"], childColumns = ["purchaseId"], onDelete = ForeignKey.CASCADE),
+    ],
+    indices = [Index("purchaseId")],
+)
+data class PurchaseAttachmentEntity(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val purchaseId: Long,
+    /** File name inside the app's private purchase-attachments folder. */
+    val fileName: String,
+    val mimeType: String,
+    val sizeBytes: Long,
+    val label: String? = null,
+    val createdAt: Long = System.currentTimeMillis(),
+)

@@ -64,6 +64,18 @@ object Routes {
     const val CHANGELOG = "changelog"
     const val SAVINGS_GOAL = "savings-goal"
     const val WIDGETS_PREVIEW = "widgets"
+    // Split Any Expense
+    const val SPLIT_GROUPS = "split-groups"
+    const val SPLIT_GROUP_DETAIL = "split-group/{id}"
+    const val SPLIT_GROUP_EDIT = "split-group/edit?id={id}"
+    const val SPLIT_ADD_EXPENSE = "split-expense/add?group={group}"
+    const val SPLIT_EXPENSE_DETAIL = "split-expense/{id}"
+    const val SPLIT_SETTLEMENTS = "split-settlements?group={group}"
+    // Purchase Memory
+    const val PURCHASES = "purchases"
+    const val PURCHASE_DETAIL = "purchase/{id}"
+    const val PURCHASE_ADD = "purchase/add"
+    const val PURCHASE_EDIT = "purchase/edit?id={id}"
 
     fun addTxn(type: TxnType = TxnType.EXPENSE, accountId: Long? = null) = "txn/add?type=${type.name}&account=${accountId ?: -1}"
     fun editTxn(id: Long) = "txn/edit/$id"
@@ -75,6 +87,13 @@ object Routes {
     fun loan(id: Long) = "loan/$id"
     fun editLoan(id: Long? = null) = "loan/edit?id=${id ?: -1}"
     fun yearReview(year: Int) = "reports/year/$year"
+    fun splitGroup(id: Long) = "split-group/$id"
+    fun splitGroupEdit(id: Long? = null) = "split-group/edit?id=${id ?: -1}"
+    fun splitAddExpense(groupId: Long) = "split-expense/add?group=$groupId"
+    fun splitExpense(id: Long) = "split-expense/$id"
+    fun splitSettlements(groupId: Long) = "split-settlements?group=$groupId"
+    fun purchase(id: Long) = "purchase/$id"
+    fun purchaseEdit(id: Long? = null) = "purchase/edit?id=${id ?: -1}"
 }
 
 data class Tab(val route: String, val label: String, val icon: ImageVector, val selectedIcon: ImageVector)

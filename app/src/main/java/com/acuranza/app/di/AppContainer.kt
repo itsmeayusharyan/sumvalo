@@ -63,6 +63,13 @@ class AppContainer(context: Context, sandbox: com.acuranza.app.security.DecoySan
     val decoy = sandbox != null
     val reports = com.acuranza.app.repo.ReportRepository(db, settings, transactions, recurring)
     val demoData = DemoData(db)
+    // Split Any Expense
+    val splitGroups = com.acuranza.app.repo.SplitGroupRepository(db)
+    val splitExpenses = com.acuranza.app.repo.SplitExpenseRepository(db)
+    val splitSettlements = com.acuranza.app.repo.SplitSettlementRepository(db)
+    // Purchase Memory
+    val purchaseStore = com.acuranza.app.repo.PurchaseAttachmentStore(app)
+    val purchases = com.acuranza.app.repo.PurchaseRepository(db, purchaseStore)
 
     /** Runs the full daily refresh (SMS, net worth) once in the background. */
     fun syncNow() = WorkScheduler.syncNow(app)

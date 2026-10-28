@@ -6,6 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.acuranza.app.repo.PurchaseAttachmentDao
+import com.acuranza.app.repo.PurchaseDao
+import com.acuranza.app.repo.SplitExpenseDao
+import com.acuranza.app.repo.SplitGroupDao
+import com.acuranza.app.repo.SplitGroupParticipantDao
+import com.acuranza.app.repo.SplitSettlementDao
 
 @Database(
     entities = [
@@ -26,8 +32,15 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         AttachmentEntity::class,
         SmsImportBatchEntity::class,
         SmsImportEntity::class,
+        SplitGroupEntity::class,
+        SplitGroupParticipantEntity::class,
+        SplitExpenseEntity::class,
+        SplitShareEntity::class,
+        SplitSettlementEntity::class,
+        PurchaseRecordEntity::class,
+        PurchaseAttachmentEntity::class,
     ],
-    version = 13,
+    version = 14,
     exportSchema = true,
 )
 abstract class SumvaloDatabase : RoomDatabase() {
@@ -48,6 +61,12 @@ abstract class SumvaloDatabase : RoomDatabase() {
     abstract fun loans(): LoanDao
     abstract fun attachments(): AttachmentDao
     abstract fun smsImports(): SmsImportDao
+    abstract fun splitGroups(): SplitGroupDao
+    abstract fun splitGroupParticipants(): SplitGroupParticipantDao
+    abstract fun splitExpenses(): SplitExpenseDao
+    abstract fun splitSettlements(): SplitSettlementDao
+    abstract fun purchaseRecords(): PurchaseDao
+    abstract fun purchaseAttachments(): PurchaseAttachmentDao
 
     companion object {
         /** v2 adds `transactions.suspicious`; existing rows keep their data and start unflagged. */

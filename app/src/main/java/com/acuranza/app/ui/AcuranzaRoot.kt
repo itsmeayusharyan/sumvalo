@@ -771,6 +771,35 @@ private fun SumvaloNavHost(nav: NavHostController, onHomeReTap: () -> Unit) {
             com.acuranza.app.ui.features.YearReviewScreen(nav, entry.arguments!!.getInt("year"))
         }
         composable(Routes.CALENDAR) { com.acuranza.app.ui.features.CalendarScreen(nav) }
+        composable(Routes.SPLIT_GROUPS) { com.acuranza.app.ui.features.SplitGroupsScreen(nav) }
+        composable(
+            Routes.SPLIT_GROUP_DETAIL,
+            arguments = listOf(navArgument("id") { type = NavType.LongType }),
+        ) { entry ->
+            com.acuranza.app.ui.features.SplitGroupDetailScreen(
+                nav,
+                entry.arguments!!.getLong("id"),
+            )
+        }
+        composable(
+            Routes.SPLIT_ADD_EXPENSE,
+            arguments = listOf(navArgument("group") { type = NavType.LongType }),
+        ) { entry ->
+            com.acuranza.app.ui.features.SplitAddExpenseScreen(
+                nav,
+                entry.arguments!!.getLong("group"),
+            )
+        }
+        composable(Routes.PURCHASES) { com.acuranza.app.ui.features.PurchasesScreen(nav) }
+        composable(
+            Routes.PURCHASE_DETAIL,
+            arguments = listOf(navArgument("id") { type = NavType.LongType }),
+        ) { entry ->
+            com.acuranza.app.ui.features.PurchaseDetailScreen(
+                nav,
+                entry.arguments!!.getLong("id"),
+            )
+        }
         composable(Routes.ABOUT) { com.acuranza.app.ui.about.AboutScreen(nav) }
         composable(Routes.ABOUT_PRIVACY) { com.acuranza.app.ui.about.PrivacyPolicyScreen(nav) }
         composable(Routes.ABOUT_TERMS) { com.acuranza.app.ui.about.TermsScreen(nav) }
