@@ -25,7 +25,7 @@ import com.acuranza.app.ui.nav.Routes
 /** One hub section; [id] is what persists. */
 enum class SettingsSectionKey(val id: String, val defaultTitle: String) {
     APPEARANCE("appearance", "Appearance & personalization"),
-    FINANCIAL("financial", "Financial tools"),
+    FINANCIAL("financial", "Tools"),
     PRIVACY("privacy", "Privacy & security"),
     DATA("data", "Data management"),
     NOTIFICATIONS("notifications", "Notifications"),
@@ -57,7 +57,7 @@ internal data class SettingsEntryUi(
 
 internal val SettingsEntryDisplay: Map<SettingsEntryKey, SettingsEntryUi> = linkedMapOf(
     SettingsEntryKey.ACCOUNTS to SettingsEntryUi("Accounts & cards", "Accounts, imports and categories", Icons.Outlined.AccountBalance, Routes.SETTINGS_MANAGEMENT),
-    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Financial tools", "Recurring payments, reports", Icons.AutoMirrored.Outlined.TrendingUp, Routes.SETTINGS_FINANCIAL),
+    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Tools", "Recurring payments, reports", Icons.AutoMirrored.Outlined.TrendingUp, Routes.SETTINGS_FINANCIAL),
     SettingsEntryKey.LENDING to SettingsEntryUi("Lending", "Money between you and friends or family", Icons.Outlined.Handshake, Routes.DEBTS),
     SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.RealEstateAgent, Routes.LOANS),
     SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.TrackChanges, Routes.PLANNING),

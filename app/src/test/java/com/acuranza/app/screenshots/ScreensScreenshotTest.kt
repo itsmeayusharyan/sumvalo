@@ -539,7 +539,7 @@ class ScreensScreenshotTest {
         Frame(dark = true) {
             com.acuranza.app.ui.settings.SettingsEditContent(
                 layout = com.acuranza.app.ui.settings.SettingsHubLayout.decodeWithHidden(
-                    "appearance>Appearance & personalization|appearance;!widgets;financial>Financial tools|financial",
+                    "appearance>Appearance & personalization|appearance;!widgets;financial>Tools|financial",
                 ),
             )
         }

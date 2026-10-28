@@ -9,7 +9,7 @@ import com.acuranza.app.SumvaloApp
 /**
  * Share target for SMS transaction tracking — the permissionless capture path. The user shares a
  * bank message from their Messages app; it is parsed here and parked as a pending candidate the
- * user confirms inside Settings → Financial tools. No SMS permission exists anywhere in the app.
+ * user confirms inside Settings → Tools. No SMS permission exists anywhere in the app.
  *
  * Privacy: the shared text is parsed in memory and discarded; only the extracted transaction
  * fields are stored, and nothing is imported before the user reviews and confirms it. Without
@@ -35,7 +35,7 @@ class SmsShareActivity : Activity() {
                     }
                 }
                 when (outcome) {
-                    null -> toast("Enable SMS tracking in Settings → Financial tools first")
+                    null -> toast("Enable SMS tracking in Settings → Tools first")
                     is com.acuranza.app.repo.SmsImportRepository.PendingOutcome.Added ->
                         toast("Bank message saved for review in Sumvalo")
                     is com.acuranza.app.repo.SmsImportRepository.PendingOutcome.Duplicate ->

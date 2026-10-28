@@ -70,7 +70,7 @@ import androidx.compose.ui.text.style.TextOverflow
 private val dateFormat = DateTimeFormatter.ofPattern("d MMM yyyy").withZone(ZoneId.systemDefault())
 
 /**
- * Settings → Financial tools → SMS transaction tracking, permissionless edition: bank messages
+ * Settings → Tools → SMS transaction tracking, permissionless edition: bank messages
  * arrive by Android's share sheet (SmsShareActivity) or by paste, are parsed on-device, and only
  * the extracted details are stored — after the user confirms them. The app holds no SMS
  * permission (Play Protect blocks sideloaded APKs that request one), so nothing ever reads the

@@ -292,7 +292,7 @@ class SettingsStore(
     suspend fun setHideAmounts(hidden: Boolean) = edit { it[Keys.hideAmounts] = hidden }
     suspend fun setBlockScreenshots(blocked: Boolean) = edit { it[Keys.blockScreenshots] = blocked }
 
-    // ---- SMS transaction tracking (Settings → Financial tools) ----
+    // ---- SMS transaction tracking (Settings → Tools) ----
     /** Records explicit consent; nothing is processed — shared, pasted or otherwise — before this. */
     suspend fun setSmsConsent(granted: Boolean) = edit { it[Keys.smsConsent] = granted }
 

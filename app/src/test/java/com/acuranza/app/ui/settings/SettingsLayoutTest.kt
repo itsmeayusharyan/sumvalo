@@ -62,7 +62,7 @@ class SettingsLayoutTest {
 
     @Test
     fun `hidden entries are removed from sections and listed, then re-shown into their default section`() {
-        var l = SettingsHubLayout.decodeWithHidden("appearance>Appearance & personalization|appearance;!widgets;financial>Financial tools|financial")
+        var l = SettingsHubLayout.decodeWithHidden("appearance>Appearance & personalization|appearance;!widgets;financial>Tools|financial")
         assertEquals(listOf(SettingsEntryKey.APPEARANCE), l.sections.first { it.key == SettingsSectionKey.APPEARANCE }.entries)
         assertEquals(listOf(SettingsEntryKey.WIDGETS), l.hidden)
         l = SettingsHubLayout.showEntry(l, SettingsEntryKey.WIDGETS)
@@ -105,7 +105,7 @@ class SettingsLayoutTest {
         assertEquals(titles, titles.sorted())
         // The spec's example ordering, concretely:
         assertEquals(
-            listOf("about", "accounts & cards", "appearance", "budgets & goals", "data management", "financial tools", "lending", "loans & emi", "notifications", "privacy & security", "widgets"),
+            listOf("about", "accounts & cards", "appearance", "budgets & goals", "data management", "lending", "loans & emi", "notifications", "privacy & security", "tools", "widgets"),
             titles,
         )
     }

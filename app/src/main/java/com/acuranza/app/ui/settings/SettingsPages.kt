@@ -146,7 +146,7 @@ fun ManagementSettingsPage(nav: NavController) {
 
 @Composable
 fun FinancialToolsPage(nav: NavController) {
-    SettingsPage("Financial tools", "Everything beyond everyday tracking", nav) {
+    SettingsPage("Tools", "Everything beyond everyday tracking", nav) {
         SettingsSection(null) {
             SettingsRow("SMS transaction tracking", "Bank messages by share or paste, on-device only", Icons.Outlined.Sms) { nav.navigate(Routes.SMS_TRACKING) }
             SettingsRow("Recurring payments", "Upcoming payments, AutoPay mandates, price changes", Icons.Outlined.Autorenew) { nav.navigate(Routes.RECURRING) }
