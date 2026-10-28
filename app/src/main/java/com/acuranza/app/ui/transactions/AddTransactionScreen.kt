@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DeleteOutline
@@ -37,12 +38,14 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.AccountEntity
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.TransactionEntity
+import com.acuranza.app.data.Tags
 import com.acuranza.app.designsystem.components.AmountInputDisplay
 import com.acuranza.app.designsystem.components.BankBadge
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.KeypadExpression
 import com.acuranza.app.designsystem.components.NumberKeypad
 import com.acuranza.app.designsystem.components.PrimaryButton
+import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.designsystem.components.SegmentedTabs
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
@@ -75,11 +78,11 @@ import java.time.ZoneId
 import com.acuranza.app.ui.nav.popBackSafely
 import androidx.compose.ui.text.style.TextOverflow
 
-data class EditorRefs(val accounts: List<AccountEntity> = emptyList(), val categories: List<CategoryEntity> = emptyList())
+data class EditorRefs(val accounts: List<AccountEntity> = emptyList(), val categories: List<CategoryEntity> = emptyList(), val tags: List<String> = emptyList())
 
 class AddTransactionViewModel(private val c: AppContainer) : ViewModel() {
-    val refs: StateFlow<EditorRefs> = combine(c.accounts.observeAccounts(), c.categories.observeAll()) { a, cats ->
-        EditorRefs(a.map { it.account }, cats)
+    val refs: StateFlow<EditorRefs> = combine(c.accounts.observeAccounts(), c.categories.observeAll(), c.transactions.observeAllTags()) { a, cats, tags ->
+        EditorRefs(a.map { it.account }, cats, tags)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), EditorRefs())
 
     suspend fun load(id: Long): TransactionEntity? = c.transactions.byId(id)
@@ -174,6 +177,7 @@ fun AddTransactionContent(
     var timeOfDay by remember { mutableStateOf(java.time.LocalTime.now()) }
     var merchant by remember { mutableStateOf(initialMerchant) }
     var note by remember { mutableStateOf("") }
+    var tags by remember { mutableStateOf(emptySet<String>()) }
     var pickCategory by remember { mutableStateOf(false) }
     var confirmDelete by remember { mutableStateOf(false) }
 
@@ -191,6 +195,7 @@ fun AddTransactionContent(
             timeOfDay = dt.toLocalTime()
             merchant = t.merchant.orEmpty()
             note = t.note.orEmpty()
+            tags = com.acuranza.app.data.Tags.decode(t.tags).toMutableSet()
         }
     }
     // Default account: the first bank account.
@@ -262,6 +267,24 @@ fun AddTransactionContent(
                 }
                 DateField("Date", date, { date = it })
                 SumvaloTextField(note, { note = it }, "Note (optional)")
+                if (refs.tags.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text("Tags", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
+                    Spacer(Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        refs.tags.sorted().forEach { tag ->
+                            val selected = tags.contains(tag)
+                            Pill(
+                                if (selected) "✓ $tag" else tag,
+                                if (selected) SumvaloTheme.colors.accent else SumvaloTheme.colors.fill,
+                                modifier = Modifier.clickable { if (selected) tags -= tag else tags += tag },
+                            )
+                        }
+                    }
+                }
                 if (existing != null) {
                     Text(
                         existing!!.source.label(),
@@ -282,6 +305,7 @@ fun AddTransactionContent(
                 onClick = {
                     haptic()
                     val ts = date.atTime(timeOfDay).atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    val tagList = Tags.encode(tags)
                     val draft = TransactionEntity(
                         accountId = account!!.id,
                         toAccountId = if (type == TxnType.TRANSFER) toAccountId else null,
@@ -292,6 +316,7 @@ fun AddTransactionContent(
                         note = note.trim().ifEmpty { null },
                         timestamp = ts,
                         source = existing?.source ?: TxnSource.MANUAL,
+                        tags = tagList,
                     )
                     onSave(existing, draft)
                 },

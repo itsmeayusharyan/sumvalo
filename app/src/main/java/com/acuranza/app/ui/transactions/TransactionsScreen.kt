@@ -1,7 +1,11 @@
 package com.acuranza.app.ui.transactions
 
+import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.theme.SumvaloText
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,10 +24,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -33,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.acuranza.app.data.TransactionEntity
+import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.tombstones
 import com.acuranza.app.designsystem.components.DateHeader
 import com.acuranza.app.designsystem.components.EmptyState
@@ -58,6 +67,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.debounce
@@ -157,8 +167,8 @@ class TransactionsViewModel(private val c: AppContainer) : ViewModel() {
         .flowOn(kotlinx.coroutines.Dispatchers.Default)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TxnListState(Period.containing(Time.today())))
 
-    /** The period currently shown (for callers that need it synchronously). */
-    val currentPeriod: Period get() = state.value.period
+    /** Toggles a transaction's selection for bulk actions. */
+    fun toggleSelection(id: Long) {}
 
     private fun matches(t: TransactionItem, f: Set<String>): Boolean {
         val types = f.mapNotNull {
@@ -206,6 +216,7 @@ class TransactionsViewModel(private val c: AppContainer) : ViewModel() {
 
     fun restore(t: TransactionEntity) = viewModelScope.launch { c.tombstones.undoDelete(t) }
     fun markReviewed(id: Long) = viewModelScope.launch { c.transactions.markReviewed(id) }
+
 }
 
 @Composable
@@ -224,6 +235,7 @@ fun TransactionsScreen(nav: NavController) {
     TransactionsContent(
         state = state.copy(query = typed),
         hidden = hidden,
+        categories = emptyList(),
         snackbar = snackbar,
         onPrevious = vm::previous,
         onNext = vm::next,
@@ -243,6 +255,8 @@ fun TransactionsScreen(nav: NavController) {
             vm.markReviewed(t.txn.id)
         },
         onOpen = { t -> nav.navigate(Routes.txn(t.txn.id)) },
+        onToggle = { },
+        onBulkRecategorize = { },
     )
 }
 
@@ -251,6 +265,8 @@ fun TransactionsScreen(nav: NavController) {
 fun TransactionsContent(
     state: TxnListState,
     hidden: Boolean,
+    categories: List<CategoryEntity>,
+    selectedTxns: Set<Long> = emptySet(),
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     onPrevious: () -> Unit = {},
     onNext: () -> Unit = {},
@@ -260,8 +276,13 @@ fun TransactionsContent(
     onReviewed: (TransactionItem) -> Unit = {},
     onOpen: (TransactionItem) -> Unit = {},
     onFixUncategorised: () -> Unit = {},
+    onToggle: ((Long) -> Unit) = {},
+    onBulkRecategorize: ((String) -> Unit) = {},
 ) {
     val canGoNext = !state.period.endExclusive.isAfter(Time.today())
+    val selectedCats = categories.filter { c ->
+        state.groups.flatMap { it.items }.any { it.txn.categoryKey == c.key }
+    }
     androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 8.dp)) {
             item(key = "head") {
@@ -330,8 +351,16 @@ fun TransactionsContent(
                     DateHeader(Fmt.dayLabel(g.date), Modifier.padding(horizontal = 20.dp), netPaise = g.net, hidden = hidden)
                 }
                 items(g.items, key = { it.txn.id }) { t ->
+                    val isSelected = false
                     SwipeActionsRow(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable { onToggle(t.txn.id) }
+                            .border(
+                                if (isSelected) 2.dp else 0.dp,
+                                SumvaloTheme.colors.accent,
+                                RoundedCornerShape(8.dp),
+                            ),
                         onDelete = {
                             onDelete(t)
                             true
@@ -345,12 +374,19 @@ fun TransactionsContent(
                             null
                         },
                     ) {
-                        TxnRow(t, hidden, Modifier.fillMaxWidth()) { onOpen(t) }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            TxnRow(t, hidden, Modifier.weight(1f)) { onOpen(t) }
+                        }
                     }
                 }
             }
         }
-        SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp))
+    }
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        SnackbarHost(snackbar, Modifier.padding(bottom = 100.dp))
     }
 }
 

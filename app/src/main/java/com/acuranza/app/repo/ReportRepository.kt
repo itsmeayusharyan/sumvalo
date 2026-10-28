@@ -70,6 +70,15 @@ class ReportRepository(
         return build(title, from, to, months)
     }
 
+    /** Custom date range [from] to [toExclusive] (exclusive). */
+    suspend fun range(from: LocalDate, toExclusive: LocalDate): Report {
+        val months = generateSequence(from) { it.plusMonths(1) }
+            .takeWhile { it.isBefore(toExclusive) }
+            .map { Period(it, it.plusMonths(1)) }
+            .toList()
+        return build("Custom report", from, toExclusive, months)
+    }
+
     suspend fun yearInReview(year: Int, today: LocalDate = Time.today()): YearReview {
         val report = yearly(year, financialYear = false)
         val counted = countedExpenses(report.from, report.toExclusive)

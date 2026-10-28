@@ -131,7 +131,7 @@ class SmsScanRunner(
         } else {
             current.smsLastScanAt - OVERLAP_MILLIS
         }
-        val outcome = SmsScanOrchestrator.scan(source, since, repo.importedFingerprints())
+        val outcome = SmsScanOrchestrator.scan(source, since, repo.importedFingerprints(), current.smsConfidenceThreshold)
 
         if (dryRun) {
             val candidates = outcome.candidates.map {

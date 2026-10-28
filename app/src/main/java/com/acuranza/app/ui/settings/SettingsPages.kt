@@ -51,6 +51,7 @@ import androidx.compose.material.icons.outlined.Rule
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Launch
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material.icons.outlined.Palette
@@ -89,6 +90,7 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.prefs.ThemeMode
 import com.acuranza.app.model.AccentColor
 import com.acuranza.app.model.TxnType
+import com.acuranza.app.sms.SmsConfidence
 import com.acuranza.app.security.BackupCrypto
 import com.acuranza.app.ui.accounts.ordinal
 import com.acuranza.app.ui.common.SumvaloScreen
@@ -309,6 +311,13 @@ fun AppearancePage(nav: NavController) {
             SettingsRow("Edit home", "Choose what appears on your dashboard and in what order", Icons.Outlined.DashboardCustomize, divider = false) {
                 nav.navigate(Routes.EDIT_HOME)
             }
+            SettingsPickerRow(
+                "SMS import threshold",
+                SmsConfidence.entries,
+                s.smsConfidenceThreshold,
+                { it.name },
+                Icons.Outlined.FilterList,
+            ) { threshold -> scope.launch { c.settings.setSmsConfidenceThreshold(threshold) } }
         }
     }
 }

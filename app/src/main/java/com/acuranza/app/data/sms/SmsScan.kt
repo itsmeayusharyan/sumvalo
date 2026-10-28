@@ -58,6 +58,7 @@ object SmsScanOrchestrator {
         source: SmsInboxSource,
         sinceMillis: Long,
         alreadyImported: Set<String>,
+        threshold: SmsConfidence = SmsConfidence.MEDIUM,
     ): SmsScanOutcome {
         val messages = source.query(sinceMillis)
         val candidates = mutableListOf<GradedCandidate>()
@@ -82,8 +83,7 @@ object SmsScanOrchestrator {
                     val graded = SmsConfidenceScorer.score(result.txn, msg.body)
                     when {
                         result.txn.fingerprint in alreadyImported -> skip("already imported")
-                        // LOW confidence is only ever offered to the user, never imported silently.
-                        graded == SmsConfidence.LOW && sinceMillis > 0 -> skip("too little evidence")
+                        graded.points < threshold.points && sinceMillis > 0 -> skip("below confidence threshold")
                         else -> candidates += GradedCandidate(result.txn, raw.sender, graded)
                     }
                 }

@@ -17,6 +17,7 @@ import com.acuranza.app.util.Period
 import com.acuranza.app.util.Time
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
@@ -135,6 +136,14 @@ class TransactionRepository(private val db: SumvaloDatabase) {
     /** Every tag in use, most used first. */
     suspend fun allTags(): List<String> = dao.all().flatMap { com.acuranza.app.data.Tags.decode(it.tags) }
         .groupBy { it.lowercase() }.entries.sortedByDescending { it.value.size }.map { it.value.first() }
+
+    /** Every tag in use, as a flow. */
+    fun observeAllTags(): Flow<List<String>> = flow {
+        val txns = dao.all()
+        val tags = txns.flatMap { com.acuranza.app.data.Tags.decode(it.tags) }
+            .groupBy { it.lowercase() }.entries.sortedByDescending { it.value.size }.map { it.value.first() }
+        emit(tags)
+    }
 
     suspend fun byId(id: Long): TransactionEntity? = dao.byId(id)
 

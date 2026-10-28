@@ -15,6 +15,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.acuranza.app.finance.IndianHolidays
 import com.acuranza.app.finance.PayCycle
 import com.acuranza.app.finance.PayWeekend
+import com.acuranza.app.sms.SmsConfidence
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -91,6 +92,8 @@ data class Settings(
     val smsFirstImportDone: Boolean = false,
     /** Full variant: automatic capture from the SMS app's notifications (consent + system grant). */
     val smsAutoCapture: Boolean = false,
+    /** Lowest confidence the app auto-imports without review; MEDIUM by default. */
+    val smsConfidenceThreshold: SmsConfidence = SmsConfidence.MEDIUM,
     /** App-generated haptic feedback; the system's own touch-feedback setting rules underneath. */
     val hapticsEnabled: Boolean = true,
     /** Haptic categories, all gated by the master switch; individual choices survive it being off. */
@@ -179,6 +182,8 @@ class SettingsStore(
         val smsLastScanStatus = stringPreferencesKey("sms_last_scan_status")
         val smsFirstImportDone = booleanPreferencesKey("sms_first_import_done")
         val smsAutoCapture = booleanPreferencesKey("sms_auto_capture")
+        /** Lowest confidence for auto-import without review; MEDIUM by default. */
+        val smsConfidenceThreshold = stringPreferencesKey("sms_confidence_threshold")
         val hapticsEnabled = booleanPreferencesKey("haptics_enabled")
         val hapticKeypad = booleanPreferencesKey("haptic_keypad")
         val hapticActions = booleanPreferencesKey("haptic_actions")
@@ -236,6 +241,9 @@ class SettingsStore(
             smsLastScanStatus = p[Keys.smsLastScanStatus] ?: "",
             smsFirstImportDone = p[Keys.smsFirstImportDone] ?: false,
             smsAutoCapture = p[Keys.smsAutoCapture] ?: false,
+            /** Lowest confidence the app auto-imports without review; MEDIUM by default. */
+            smsConfidenceThreshold =
+                p[Keys.smsConfidenceThreshold]?.let { runCatching { SmsConfidence.valueOf(it) }.getOrNull() } ?: SmsConfidence.MEDIUM,
             hapticsEnabled = p[Keys.hapticsEnabled] ?: true,
             hapticKeypad = p[Keys.hapticKeypad] ?: true,
             hapticActions = p[Keys.hapticActions] ?: true,
@@ -301,6 +309,9 @@ class SettingsStore(
     // Full variant only: inbox scanning bookkeeping.
     suspend fun setSmsAutoScan(enabled: Boolean) = edit { it[Keys.smsAutoScan] = enabled }
     suspend fun setSmsAutoCapture(enabled: Boolean) = edit { it[Keys.smsAutoCapture] = enabled }
+
+    /** Lowest confidence the app auto-imports without review; below this goes to Review. */
+    suspend fun setSmsConfidenceThreshold(threshold: SmsConfidence) = edit { it[Keys.smsConfidenceThreshold] = threshold.name }
 
     /** Haptic feedback preference (Appearance); system settings still gate the actual vibration. */
     suspend fun setHapticsEnabled(on: Boolean) = edit { it[Keys.hapticsEnabled] = on }

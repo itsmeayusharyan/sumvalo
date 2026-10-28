@@ -30,6 +30,7 @@ class SmsScanOrchestratorTest {
             ),
             sinceMillis = 0,
             alreadyImported = emptySet(),
+            threshold = SmsConfidence.MEDIUM,
         )
         assertEquals(3, outcome.candidates.size)
         assertTrue(outcome.candidates.all { it.confidence != SmsConfidence.LOW })
@@ -49,6 +50,7 @@ class SmsScanOrchestratorTest {
             ),
             sinceMillis = 0,
             alreadyImported = emptySet(),
+            threshold = SmsConfidence.MEDIUM,
         )
         assertEquals(0, outcome.candidates.size)
         // The balance alert is separated out, not counted as a transaction.
@@ -60,9 +62,9 @@ class SmsScanOrchestratorTest {
     @Test
     fun alreadyImportedFingerprintsAreSkipped() = runBlocking {
         val body = "Sent Rs.250.00\nFrom HDFC Bank A/C *1234\nTo SWIGGY\nOn 05/01/25\nRef 412345678901\nNot You? Call 18002586161"
-        val first = SmsScanOrchestrator.scan(inboxOf("AD-HDFCBK" to body), 0, emptySet())
+        val first = SmsScanOrchestrator.scan(inboxOf("AD-HDFCBK" to body), 0, emptySet(), threshold = SmsConfidence.MEDIUM)
         assertEquals(1, first.candidates.size)
-        val second = SmsScanOrchestrator.scan(inboxOf("AD-HDFCBK" to body), 0, setOf(first.candidates.single().txn.fingerprint))
+        val second = SmsScanOrchestrator.scan(inboxOf("AD-HDFCBK" to body), 0, setOf(first.candidates.single().txn.fingerprint), threshold = SmsConfidence.MEDIUM)
         assertEquals(0, second.candidates.size)
         assertEquals(1, second.skippedByReason["already imported"])
     }
@@ -73,6 +75,7 @@ class SmsScanOrchestratorTest {
             inboxOf("TM-FLIPKT" to "Your Flipkart order is out for delivery. Rs.250.00 paid."),
             sinceMillis = 0,
             alreadyImported = emptySet(),
+            threshold = SmsConfidence.MEDIUM,
         )
         assertEquals(0, outcome.candidates.size)
         assertTrue(outcome.skippedByReason.isNotEmpty())
@@ -87,6 +90,7 @@ class SmsScanOrchestratorTest {
             ),
             sinceMillis = 0,
             alreadyImported = emptySet(),
+            threshold = SmsConfidence.MEDIUM,
         )
         assertEquals(0, outcome.candidates.size)
     }

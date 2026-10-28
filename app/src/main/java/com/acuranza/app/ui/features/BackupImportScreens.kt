@@ -285,7 +285,17 @@ fun StatementImportScreen(nav: NavController) {
                 } else {
                     item {
                         SumvaloCard {
-                            Text("${p.fresh.size} new · ${p.duplicates} already in Sumvalo", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                "${p.fresh.size} new · ${p.duplicates.size} already in Sumvalo",
+                                style = MaterialTheme.typography.titleMedium,
+                            )
+                            if (p.duplicates.isNotEmpty()) {
+                                Text(
+                                    "${p.duplicates.size} row(s) match an existing SMS transaction and will be skipped",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = SumvaloTheme.colors.subtleText,
+                                )
+                            }
                             if (p.parsed.skippedLines > 0) {
                                 Text("${p.parsed.skippedLines} lines skipped (totals, balances or unreadable rows)", style = MaterialTheme.typography.bodySmall,
                                     color = SumvaloTheme.colors.subtleText)

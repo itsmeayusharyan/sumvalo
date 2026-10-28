@@ -21,26 +21,33 @@ class StatementImporter(private val db: SumvaloDatabase) {
         val parsed: StatementCsv.Parsed,
         /** Rows that will be added. */
         val fresh: List<StatementCsv.Row>,
-        /** Rows already in Sumvalo. */
-        val duplicates: Int,
+        /** Rows already in Sumvalo (matched by account, type, amount within ±1 day). */
+        val duplicates: List<StatementCsv.Row>,
     )
 
     suspend fun preview(text: String, accountId: Long, columns: StatementCsv.Columns? = null): Preview {
         val parsed = StatementCsv.parse(text, columns)
-        if (parsed.rows.isEmpty()) return Preview(parsed, emptyList(), 0)
+        if (parsed.rows.isEmpty()) return Preview(parsed, emptyList(), emptyList())
         val from = parsed.rows.minOf { it.date }.minusDays(1)
         val existing = db.transactions().since(Time.startOfDay(from)).filter { it.accountId == accountId || it.toAccountId == accountId }
         val used = mutableSetOf<Long>()
-        val fresh = parsed.rows.filter { row ->
+        val fresh = mutableListOf<StatementCsv.Row>()
+        val dupes = mutableListOf<StatementCsv.Row>()
+        val rows = parsed.rows
+        for (row in rows) {
             val day = row.date.toEpochDay()
             val match = existing.firstOrNull { t ->
                 t.id !in used && t.amount == row.amount && abs(Time.epochDayOf(t.timestamp) - day) <= 1 &&
                     (t.type == row.type || t.type == TxnType.TRANSFER || t.fingerprint == fingerprint(accountId, row))
             }
-            if (match != null) used += match.id
-            match == null
+            if (match != null) {
+                used += match.id
+                dupes += row
+            } else {
+                fresh += row
+            }
         }
-        return Preview(parsed, fresh, parsed.rows.size - fresh.size)
+        return Preview(parsed, fresh, dupes)
     }
 
     /** Adds [rows] to [accountId] as unreviewed transactions; returns how many were added. */

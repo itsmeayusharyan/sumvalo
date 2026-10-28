@@ -60,6 +60,7 @@ import com.acuranza.app.repo.TxnFilter
 import com.acuranza.app.repo.YearReview
 import com.acuranza.app.ui.common.ActionRow
 import com.acuranza.app.ui.common.Fmt
+import com.acuranza.app.ui.common.DateField
 import com.acuranza.app.ui.common.SumvaloScreen
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
@@ -160,6 +161,32 @@ fun ReportsScreen(nav: NavController) {
                         PrimaryButton(if (busy) "Preparing…" else "Save PDF", enabled = !busy, icon = Icons.Outlined.PictureAsPdf, modifier = Modifier.fillMaxWidth(), onClick = {
                             export(if (fy) "acuranza-fy-$year.pdf" else "acuranza-$year.pdf") { c.reports.yearly(year, fy) }
                         })
+                    }
+                }
+            }
+            item {
+                Section("Custom date range") {
+                    Column(Modifier.padding(vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        var rangeStart by remember { mutableStateOf(LocalDate.now().minusMonths(1)) }
+                        var rangeEnd by remember { mutableStateOf(LocalDate.now().plusDays(1)) }
+                        DateField("From", rangeStart, { rangeStart = it })
+                        DateField("To", rangeEnd, { rangeEnd = it })
+                        Text(
+                            "Exports transactions from $rangeStart up to (but not including) $rangeEnd.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = SumvaloTheme.colors.subtleText,
+                        )
+                        PrimaryButton(
+                            text = "Save PDF",
+                            enabled = !busy && rangeStart.isBefore(rangeEnd),
+                            icon = Icons.Outlined.PictureAsPdf,
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                export("acuranza-range-${rangeStart}-to-${rangeEnd.minusDays(1)}.pdf") {
+                                    c.reports.range(rangeStart, rangeEnd)
+                                }
+                            },
+                        )
                     }
                 }
             }
