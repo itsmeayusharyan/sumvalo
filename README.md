@@ -19,6 +19,8 @@ Track income, expenses, credit cards, bills, budgets, and goals entirely on your
 | Accounts & cards | Balances that reconcile with your bank, card outstanding and utilisation, mark-paid recording |
 | Budgets & goals | Monthly budgets that follow your salary cycle with pace projection and rollover; savings goals with progress rings |
 | Transactions | Add by hand or import bank-statement CSV; tags, splits, IOUs, encrypted receipts |
+| Shared expenses | Create groups (Roommates, Trip to Manali, Family Expenses, Shared Groceries) with local participants — no account, registration, or internet needed; equal/custom/percentage splits; per-participant balance tracking; simplified settlement suggestions to minimize payments; settlements recorded separately from personal finances |
+| Purchase Memory | Item records with merchant, date, amount, category, notes and tags; encrypted receipt/document attachments (receipts, invoices, warranty cards); warranty and return deadlines with local reminders; offline search by merchant/item/notes/invoice; link records to existing transactions or create new ones |
 | Recurring & bills | Subscriptions, EMIs, UPI AutoPay / NACH mandates; due-date reminders with price-change alerts |
 | Reports & insights | Monthly & yearly PDF reports, Beancount & Ledger export, year-in-review, daily spending calendar, spending spikes, savings rate |
 | Everyday tools | Home-screen widgets, Quick Settings tile, haptic feedback (Light / Standard / Strong), default-landing-tab choice |
