@@ -64,6 +64,7 @@ import androidx.compose.material.icons.outlined.SpaceDashboard
 import androidx.compose.material.icons.outlined.UploadFile
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -151,6 +152,7 @@ fun FinancialToolsPage(nav: NavController) {
             SettingsRow("SMS transaction tracking", "Bank messages by share or paste, on-device only", Icons.Outlined.Sms) { nav.navigate(Routes.SMS_TRACKING) }
             SettingsRow("Recurring payments", "Upcoming payments, AutoPay mandates, price changes", Icons.Outlined.Autorenew) { nav.navigate(Routes.RECURRING) }
             SettingsRow("Reports", "Monthly and yearly PDF, year in review, calendar", Icons.Outlined.Assessment) { nav.navigate(Routes.REPORTS) }
+            SettingsRow("Widgets", "Preview and add home-screen widgets", Icons.Outlined.Widgets, divider = false) { nav.navigate(Routes.WIDGETS_PREVIEW) }
         }
     }
 }

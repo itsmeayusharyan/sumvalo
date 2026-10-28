@@ -38,7 +38,7 @@ class SettingsLayoutTest {
         val decoded = SettingsHubLayout.decode(legacy)
         assertEquals(SettingsSectionKey.entries.toSet(), decoded.sections.map { it.key }.toSet())
         assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET, SettingsEntryKey.WIDGETS),
+            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET),
             decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
         )
         assertEquals(
@@ -56,29 +56,23 @@ class SettingsLayoutTest {
     @Test
     fun `an entry mentioned nowhere keeps its default home`() {
         val decoded = SettingsHubLayout.decode("privacy>privacy")
-        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries.contains(SettingsEntryKey.WIDGETS))
+        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries.contains(SettingsEntryKey.BUDGET))
         assertTrue(decoded.sections.first { it.key == SettingsSectionKey.DATA }.entries.contains(SettingsEntryKey.ACCOUNTS))
     }
 
     @Test
     fun `hidden entries are removed from sections and listed, then re-shown into their default section`() {
-        var l = SettingsHubLayout.decodeWithHidden("appearance>Appearance & personalization|appearance;!widgets;financial>Tools|financial")
+        var l = SettingsHubLayout.decodeWithHidden("appearance>Appearance & personalization|appearance;financial>Tools|financial")
         assertEquals(listOf(SettingsEntryKey.APPEARANCE), l.sections.first { it.key == SettingsSectionKey.APPEARANCE }.entries)
-        assertEquals(listOf(SettingsEntryKey.WIDGETS), l.hidden)
-        l = SettingsHubLayout.showEntry(l, SettingsEntryKey.WIDGETS)
         assertTrue(l.hidden.isEmpty())
-        assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET, SettingsEntryKey.WIDGETS),
-            l.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
-        )
     }
 
     @Test
     fun `hide keeps a shortcut exactly once even if hidden twice`() {
         var l = SettingsHubLayout.DEFAULT
-        l = SettingsHubLayout.hideEntry(l, SettingsEntryKey.WIDGETS)
-        l = SettingsHubLayout.hideEntry(l, SettingsEntryKey.WIDGETS)
-        assertEquals(1, l.hidden.count { it == SettingsEntryKey.WIDGETS })
+        l = SettingsHubLayout.hideEntry(l, SettingsEntryKey.BUDGET)
+        l = SettingsHubLayout.hideEntry(l, SettingsEntryKey.BUDGET)
+        assertEquals(1, l.hidden.count { it == SettingsEntryKey.BUDGET })
     }
 
     @Test
@@ -105,7 +99,7 @@ class SettingsLayoutTest {
         assertEquals(titles, titles.sorted())
         // The spec's example ordering, concretely:
         assertEquals(
-            listOf("about", "accounts & cards", "appearance", "budgets & goals", "data management", "lending", "loans & emi", "notifications", "privacy & security", "tools", "widgets"),
+            listOf("about", "accounts & cards", "appearance", "budgets & goals", "data management", "lending", "loans & emi", "notifications", "privacy & security", "tools"),
             titles,
         )
     }
@@ -124,8 +118,8 @@ class SettingsLayoutTest {
 
     @Test
     fun `hidden shortcuts are excluded from the landing grid`() {
-        val flat = SettingsHubLayout.visibleFlat("appearance>Appearance & personalization|appearance;!widgets")
-        assertEquals(false, flat.contains(SettingsEntryKey.WIDGETS))
+        val flat = SettingsHubLayout.visibleFlat("appearance>Appearance & personalization|appearance;!lending")
+        assertEquals(false, flat.contains(SettingsEntryKey.LENDING))
         assertEquals(true, flat.contains(SettingsEntryKey.ABOUT))
     }
 

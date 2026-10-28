@@ -36,9 +36,9 @@ private const val G_ABOUT = "About"
 val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     // ── Hub destinations ────────────────────────────────────────────────────────────────────────
     SettingsSearchHit(G_ACCOUNT, "Profile", "Profile", "Your display name and profile photo", "profile name photo picture avatar", Routes.PROFILE),
-    SettingsSearchHit(G_GENERAL, "Widgets", "Widgets", "Preview and add home-screen widgets", "widgets home screen add preview", Routes.WIDGETS_PREVIEW),
-    SettingsSearchHit(G_ACCOUNT, "Management", "Management", "Accounts, imports and categories", "accounts cards review", Routes.SETTINGS_MANAGEMENT),
     SettingsSearchHit(G_GENERAL, "Tools", "Tools", "Recurring payments, reports", "sms tracking", Routes.SETTINGS_FINANCIAL),
+    SettingsSearchHit(G_ACCOUNT, "Management", "Management", "Accounts, imports and categories", "accounts cards review", Routes.SETTINGS_MANAGEMENT),
+    SettingsSearchHit(G_GENERAL, "Tools", "Widgets", "Preview and add home-screen widgets", "widgets home screen add preview", Routes.WIDGETS_PREVIEW),
     SettingsSearchHit(G_GENERAL, "Settings", "Lending", "Money between you and friends or family", "debt iou borrow", Routes.DEBTS),
     SettingsSearchHit(G_GENERAL, "Settings", "Loans & EMI", "What's left, prepayment savings, tax split", "loan emi prepayment", Routes.LOANS),
     SettingsSearchHit(G_GENERAL, "Settings", "Budgets & goals", "Budgets, savings goals and your salary plan", "envelope rollover goal", Routes.PLANNING),

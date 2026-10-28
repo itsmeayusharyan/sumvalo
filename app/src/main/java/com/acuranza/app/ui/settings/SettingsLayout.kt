@@ -11,7 +11,6 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.outlined.Widgets
 import com.acuranza.app.ui.nav.Routes
 
 /**
@@ -44,7 +43,6 @@ enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
     LENDING("lending", SettingsSectionKey.FINANCIAL),
     LOANS("loans", SettingsSectionKey.FINANCIAL),
     BUDGET("budget", SettingsSectionKey.FINANCIAL),
-    WIDGETS("widgets", SettingsSectionKey.FINANCIAL),
 }
 
 /** Display data for one hub shortcut, shared by the hub and the Customize screen. */
@@ -61,7 +59,6 @@ internal val SettingsEntryDisplay: Map<SettingsEntryKey, SettingsEntryUi> = link
     SettingsEntryKey.LENDING to SettingsEntryUi("Lending", "Money between you and friends or family", Icons.Outlined.Handshake, Routes.DEBTS),
     SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.AccountBalanceWallet, Routes.LOANS),
     SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.PieChart, Routes.PLANNING),
-    SettingsEntryKey.WIDGETS to SettingsEntryUi("Widgets", "Preview and add home-screen widgets", Icons.Outlined.Widgets, Routes.WIDGETS_PREVIEW),
     SettingsEntryKey.APPEARANCE to SettingsEntryUi("Appearance", "Theme, colour theme, accent, AMOLED, hide amounts, edit home", Icons.Outlined.Palette, Routes.SETTINGS_APPEARANCE),
     SettingsEntryKey.PRIVACY to SettingsEntryUi("Privacy & security", "App lock, PINs, encryption and recovery", Icons.Outlined.Shield, Routes.SETTINGS_PRIVACY),
     SettingsEntryKey.DATA to SettingsEntryUi("Data management", "Backups, imports, exports, sample data, erase", Icons.Outlined.Backup, Routes.SETTINGS_DATA),
