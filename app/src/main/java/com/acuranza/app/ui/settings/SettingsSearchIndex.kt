@@ -53,13 +53,10 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     // ── Financial tools (General) ──────────────────────────────────────────────────────────────
     SettingsSearchHit(G_GENERAL, "Financial tools", "SMS transaction tracking", "Bank messages by share or paste, on-device only", "sms bank messages inbox scan notifications consent withdraw", Routes.SMS_TRACKING),
     SettingsSearchHit(G_GENERAL, "Financial tools", "Recurring payments", "Upcoming payments, AutoPay mandates, price changes", "subscriptions autopay", Routes.RECURRING),
+    SettingsSearchHit(G_GENERAL, "Financial tools", "Loans & EMIs", "What's left, prepayment savings, tax split", "loan emi prepayment", Routes.LOANS),
+    SettingsSearchHit(G_GENERAL, "Financial tools", "Lending", "Money between you and friends or family", "debt iou borrow", Routes.DEBTS),
     SettingsSearchHit(G_GENERAL, "Financial tools", "Reports", "Monthly and yearly PDF, year in review, calendar", "pdf summary", Routes.REPORTS),
-
-    // ── Financial Management ──────────────────────────────────────────────────────────────
-    SettingsSearchHit(G_GENERAL, "Financial Management", "Lending", "Money between you and friends or family", "debt iou borrow", Routes.DEBTS),
-    SettingsSearchHit(G_GENERAL, "Financial Management", "Loans & EMI", "What's left, prepayment savings, tax split", "loan emi prepayment", Routes.LOANS),
-    SettingsSearchHit(G_GENERAL, "Financial Management", "Budget", "Monthly spending limits and rollover", "envelope rollover", Routes.PLANNING),
-    SettingsSearchHit(G_GENERAL, "Financial Management", "Goals", "Savings targets and progress", "savings target", Routes.SAVINGS_GOAL),
+    SettingsSearchHit(G_GENERAL, "Financial tools", "Budgets & goals", "Budgets, savings goals and your salary plan", "envelope rollover goal", Routes.PLANNING),
 
     // ── Appearance ─────────────────────────────────────────────────────────────────────────────
     SettingsSearchHit(G_APPEARANCE, "Appearance", "Theme", "Dark, Light or follow the system", "dark light system mode", Routes.SETTINGS_APPEARANCE),
