@@ -38,7 +38,7 @@ class SettingsLayoutTest {
         val decoded = SettingsHubLayout.decode(legacy)
         assertEquals(SettingsSectionKey.entries.toSet(), decoded.sections.map { it.key }.toSet())
         assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL),
+            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS),
             decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
         )
         assertEquals(
@@ -105,7 +105,7 @@ class SettingsLayoutTest {
         assertEquals(titles, titles.sorted())
         // The spec's example ordering, concretely:
         assertEquals(
-            listOf("about", "accounts & cards", "appearance", "data management", "financial tools", "notifications", "privacy & security", "widgets"),
+            listOf("about", "accounts & cards", "appearance", "data management", "financial tools", "lending", "loans & emi", "notifications", "privacy & security", "widgets"),
             titles,
         )
     }

@@ -38,7 +38,9 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     SettingsSearchHit(G_ACCOUNT, "Profile", "Profile", "Your display name and profile photo", "profile name photo picture avatar", Routes.PROFILE),
     SettingsSearchHit(G_GENERAL, "Widgets", "Widgets", "Preview and add home-screen widgets", "widgets home screen add preview", Routes.WIDGETS_PREVIEW),
     SettingsSearchHit(G_ACCOUNT, "Management", "Management", "Accounts, imports and categories", "accounts cards review", Routes.SETTINGS_MANAGEMENT),
-    SettingsSearchHit(G_GENERAL, "Financial tools", "Financial tools", "Recurring, loans, lending, reports, budgets & goals", "sms tracking", Routes.SETTINGS_FINANCIAL),
+    SettingsSearchHit(G_GENERAL, "Financial tools", "Financial tools", "Recurring payments, reports, budgets & goals", "sms tracking", Routes.SETTINGS_FINANCIAL),
+    SettingsSearchHit(G_GENERAL, "Settings", "Lending", "Money between you and friends or family", "debt iou borrow", Routes.DEBTS),
+    SettingsSearchHit(G_GENERAL, "Settings", "Loans & EMI", "What's left, prepayment savings, tax split", "loan emi prepayment", Routes.LOANS),
     SettingsSearchHit(G_APPEARANCE, "Appearance", "Appearance", "Theme, colour theme, accent, AMOLED, hide amounts, edit home", "dark light system amoled", Routes.SETTINGS_APPEARANCE),
     SettingsSearchHit(G_PRIVACY, "Privacy & security", "Privacy & security", "App lock, PINs, encryption and recovery", "biometric decoy screenshots", Routes.SETTINGS_PRIVACY),
     SettingsSearchHit(G_DATA, "Data management", "Data management", "Backups, imports, exports and destructive actions", "backup restore csv erase", Routes.SETTINGS_DATA),
@@ -53,8 +55,6 @@ val SettingsSearchIndex: List<SettingsSearchHit> = listOf(
     // ── Financial tools (General) ──────────────────────────────────────────────────────────────
     SettingsSearchHit(G_GENERAL, "Financial tools", "SMS transaction tracking", "Bank messages by share or paste, on-device only", "sms bank messages inbox scan notifications consent withdraw", Routes.SMS_TRACKING),
     SettingsSearchHit(G_GENERAL, "Financial tools", "Recurring payments", "Upcoming payments, AutoPay mandates, price changes", "subscriptions autopay", Routes.RECURRING),
-    SettingsSearchHit(G_GENERAL, "Financial tools", "Loans & EMIs", "What's left, prepayment savings, tax split", "loan emi prepayment", Routes.LOANS),
-    SettingsSearchHit(G_GENERAL, "Financial tools", "Lending", "Money between you and friends or family", "debt iou borrow", Routes.DEBTS),
     SettingsSearchHit(G_GENERAL, "Financial tools", "Reports", "Monthly and yearly PDF, year in review, calendar", "pdf summary", Routes.REPORTS),
     SettingsSearchHit(G_GENERAL, "Financial tools", "Budgets & goals", "Budgets, savings goals and your salary plan", "envelope rollover goal", Routes.PLANNING),
 
