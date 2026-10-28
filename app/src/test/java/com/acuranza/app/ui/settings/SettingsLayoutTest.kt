@@ -38,7 +38,7 @@ class SettingsLayoutTest {
         val decoded = SettingsHubLayout.decode(legacy)
         assertEquals(SettingsSectionKey.entries.toSet(), decoded.sections.map { it.key }.toSet())
         assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET),
+            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET, SettingsEntryKey.WIDGETS),
             decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
         )
         assertEquals(
@@ -56,7 +56,7 @@ class SettingsLayoutTest {
     @Test
     fun `an entry mentioned nowhere keeps its default home`() {
         val decoded = SettingsHubLayout.decode("privacy>privacy")
-        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.APPEARANCE }.entries.contains(SettingsEntryKey.WIDGETS))
+        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries.contains(SettingsEntryKey.WIDGETS))
         assertTrue(decoded.sections.first { it.key == SettingsSectionKey.DATA }.entries.contains(SettingsEntryKey.ACCOUNTS))
     }
 
@@ -68,8 +68,8 @@ class SettingsLayoutTest {
         l = SettingsHubLayout.showEntry(l, SettingsEntryKey.WIDGETS)
         assertTrue(l.hidden.isEmpty())
         assertEquals(
-            listOf(SettingsEntryKey.APPEARANCE, SettingsEntryKey.WIDGETS),
-            l.sections.first { it.key == SettingsSectionKey.APPEARANCE }.entries,
+            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET, SettingsEntryKey.WIDGETS),
+            l.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
         )
     }
 

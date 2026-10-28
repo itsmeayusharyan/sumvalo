@@ -36,7 +36,6 @@ enum class SettingsSectionKey(val id: String, val defaultTitle: String) {
 enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
     ACCOUNTS("accounts", SettingsSectionKey.DATA),
     FINANCIAL("financial", SettingsSectionKey.FINANCIAL),
-    WIDGETS("widgets", SettingsSectionKey.APPEARANCE),
     APPEARANCE("appearance", SettingsSectionKey.APPEARANCE),
     PRIVACY("privacy", SettingsSectionKey.PRIVACY),
     DATA("data", SettingsSectionKey.DATA),
@@ -45,6 +44,7 @@ enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
     LENDING("lending", SettingsSectionKey.FINANCIAL),
     LOANS("loans", SettingsSectionKey.FINANCIAL),
     BUDGET("budget", SettingsSectionKey.FINANCIAL),
+    WIDGETS("widgets", SettingsSectionKey.FINANCIAL),
 }
 
 /** Display data for one hub shortcut, shared by the hub and the Customize screen. */
