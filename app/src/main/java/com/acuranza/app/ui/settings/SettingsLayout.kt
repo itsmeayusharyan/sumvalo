@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.RealEstateAgent
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.outlined.TrackChanges
 import androidx.compose.material.icons.outlined.Widgets
 import com.acuranza.app.ui.nav.Routes
 
@@ -43,6 +44,7 @@ enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
     ABOUT("about", SettingsSectionKey.ABOUT),
     LENDING("lending", SettingsSectionKey.FINANCIAL),
     LOANS("loans", SettingsSectionKey.FINANCIAL),
+    BUDGET("budget", SettingsSectionKey.FINANCIAL),
 }
 
 /** Display data for one hub shortcut, shared by the hub and the Customize screen. */
@@ -55,9 +57,10 @@ internal data class SettingsEntryUi(
 
 internal val SettingsEntryDisplay: Map<SettingsEntryKey, SettingsEntryUi> = linkedMapOf(
     SettingsEntryKey.ACCOUNTS to SettingsEntryUi("Accounts & cards", "Accounts, imports and categories", Icons.Outlined.AccountBalance, Routes.SETTINGS_MANAGEMENT),
-    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Financial tools", "Recurring payments, reports, budgets & goals", Icons.AutoMirrored.Outlined.TrendingUp, Routes.SETTINGS_FINANCIAL),
+    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Financial tools", "Recurring payments, reports", Icons.AutoMirrored.Outlined.TrendingUp, Routes.SETTINGS_FINANCIAL),
     SettingsEntryKey.LENDING to SettingsEntryUi("Lending", "Money between you and friends or family", Icons.Outlined.Handshake, Routes.DEBTS),
     SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.RealEstateAgent, Routes.LOANS),
+    SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.TrackChanges, Routes.PLANNING),
     SettingsEntryKey.WIDGETS to SettingsEntryUi("Widgets", "Preview and add home-screen widgets", Icons.Outlined.Widgets, Routes.WIDGETS_PREVIEW),
     SettingsEntryKey.APPEARANCE to SettingsEntryUi("Appearance", "Theme, colour theme, accent, AMOLED, hide amounts, edit home", Icons.Outlined.Palette, Routes.SETTINGS_APPEARANCE),
     SettingsEntryKey.PRIVACY to SettingsEntryUi("Privacy & security", "App lock, PINs, encryption and recovery", Icons.Outlined.Shield, Routes.SETTINGS_PRIVACY),

@@ -151,7 +151,6 @@ fun FinancialToolsPage(nav: NavController) {
             SettingsRow("SMS transaction tracking", "Bank messages by share or paste, on-device only", Icons.Outlined.Sms) { nav.navigate(Routes.SMS_TRACKING) }
             SettingsRow("Recurring payments", "Upcoming payments, AutoPay mandates, price changes", Icons.Outlined.Autorenew) { nav.navigate(Routes.RECURRING) }
             SettingsRow("Reports", "Monthly and yearly PDF, year in review, calendar", Icons.Outlined.Assessment) { nav.navigate(Routes.REPORTS) }
-            SettingsRow("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.TrackChanges, divider = false) { nav.navigate(Routes.PLANNING) }
         }
     }
 }
