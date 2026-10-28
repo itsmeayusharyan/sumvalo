@@ -15,7 +15,7 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Weekend
-import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.Cottage
@@ -31,8 +31,8 @@ import androidx.compose.material.icons.outlined.SpaceDashboard
 import androidx.compose.material.icons.filled.SpaceDashboard
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Assignment
-import androidx.compose.material.icons.outlined.TrendingUp
-import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -64,13 +64,13 @@ object NavTabs {
             IconChoice("query_stats", "Chart", Icons.Outlined.QueryStats, Icons.Filled.QueryStats),
             IconChoice("bar_chart", "Bars", Icons.Outlined.BarChart, Icons.Filled.BarChart),
             IconChoice("pie_chart", "Pie", Icons.Outlined.PieChart, Icons.Filled.PieChart),
-            IconChoice("trending_up", "Trend", Icons.Outlined.TrendingUp, Icons.Filled.TrendingUp),
+            IconChoice("trending_up", "Trend", Icons.AutoMirrored.Outlined.TrendingUp, Icons.AutoMirrored.Filled.TrendingUp),
         ),
         Routes.TRANSACTIONS to listOf(
             IconChoice("receipt_long", "Receipt", Icons.AutoMirrored.Outlined.ReceiptLong, Icons.AutoMirrored.Filled.ReceiptLong),
             IconChoice("receipt", "Stub", Icons.Outlined.Receipt, Icons.Filled.Receipt),
             IconChoice("list_alt", "List", Icons.AutoMirrored.Outlined.ListAlt, Icons.AutoMirrored.Filled.ListAlt),
-            IconChoice("assignment", "Clipboard", Icons.Outlined.Assignment, Icons.AutoMirrored.Filled.Assignment),
+            IconChoice("assignment", "Clipboard", Icons.AutoMirrored.Outlined.Assignment, Icons.AutoMirrored.Filled.Assignment),
         ),
         Routes.SETTINGS to listOf(
             IconChoice("settings", "Gear", Icons.Outlined.Settings, Icons.Filled.Settings),

@@ -10,7 +10,7 @@ import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.outlined.Savings
-import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Speed
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,7 +48,7 @@ val HomeSection.icon: ImageVector
         HomeSection.SPEND -> Icons.Outlined.PieChart
         HomeSection.SIX -> Icons.Outlined.BarChart
         HomeSection.HEAT -> Icons.Outlined.CalendarMonth
-        HomeSection.NETWORTH -> Icons.Outlined.ShowChart
+        HomeSection.NETWORTH -> Icons.AutoMirrored.Outlined.ShowChart
         HomeSection.RECENT -> Icons.AutoMirrored.Outlined.ReceiptLong
         HomeSection.ACCOUNTS -> Icons.Outlined.AccountBalance
     }

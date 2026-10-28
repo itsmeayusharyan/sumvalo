@@ -14,7 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.OpenInNew
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -248,7 +248,7 @@ fun PurchaseDetailScreen(nav: NavController, purchaseId: Long) {
                                         }
                                     },
                                 ) {
-                                    Icon(Icons.Filled.OpenInNew, null)
+                                    Icon(Icons.AutoMirrored.Filled.OpenInNew, null)
                                 }
                                 androidx.compose.material3.IconButton(
                                     onClick = {

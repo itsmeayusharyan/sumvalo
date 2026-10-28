@@ -48,8 +48,10 @@ import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.DashboardCustomize
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Rule
+import androidx.compose.material.icons.automirrored.outlined.Rule
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Launch
+import androidx.compose.material.icons.automirrored.outlined.Launch
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.Handshake
@@ -192,7 +194,7 @@ fun NotificationsPage(nav: NavController) {
                     listOf(true, false),
                     s.txnReminderOnlyIfNone,
                     { onlyIfNone -> if (onlyIfNone) "Only if nothing recorded today" else "Every day" },
-                    Icons.Outlined.Rule,
+                    Icons.AutoMirrored.Outlined.Rule,
                 ) { onlyIfNone -> scope.launch { c.settings.setTxnReminderOnlyIfNone(onlyIfNone) } }
                 ReminderTimeRow(s.txnReminderMinuteOfDay) { minute ->
                     com.acuranza.app.work.WorkScheduler.setTxnReminder(context, true, minute)
@@ -305,7 +307,7 @@ fun AppearancePage(nav: NavController) {
                 com.acuranza.app.ui.nav.Tabs,
                 com.acuranza.app.ui.nav.Tabs.firstOrNull { it.route == s.landingTab } ?: com.acuranza.app.ui.nav.Tabs.first(),
                 { it.label },
-                Icons.Outlined.Launch,
+                Icons.AutoMirrored.Outlined.Launch,
             ) { tab -> scope.launch { c.settings.setLandingTab(tab.route) } }
             SettingsRow("Edit home", "Choose what appears on your dashboard and in what order", Icons.Outlined.DashboardCustomize, divider = false) {
                 nav.navigate(Routes.EDIT_HOME)

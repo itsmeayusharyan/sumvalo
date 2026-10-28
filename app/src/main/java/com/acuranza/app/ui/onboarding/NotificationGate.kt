@@ -28,7 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.NotificationsActive
-import androidx.compose.material.icons.outlined.ReceiptLong
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -121,7 +121,7 @@ private fun openNotificationSettings(context: Context) {
 fun NotificationReasons() {
     Column(Modifier.fillMaxWidth()) {
         ReasonRow(Icons.Outlined.CreditCard, "Card bills", "A reminder before each due date, so interest and late fees never sneak up on you.")
-        ReasonRow(Icons.Outlined.ReceiptLong, "Spending alerts", "A heads-up when an unusual spend is detected or a budget runs hot.")
+        ReasonRow(Icons.AutoMirrored.Outlined.ReceiptLong, "Spending alerts", "A heads-up when an unusual spend is detected or a budget runs hot.")
         ReasonRow(Icons.Outlined.VerifiedUser, "Things you planned", "Subscriptions that got pricier, payments you scheduled, budgets that need attention.")
     }
 }

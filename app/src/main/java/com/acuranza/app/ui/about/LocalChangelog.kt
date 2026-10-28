@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.14",
+        name = "Sumvalo 0.14",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Settings: replaced deprecated icon references with AutoMirrored equivalents across nav tabs, home, onboarding, purchase memory and settings screens", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.13",
         name = "Sumvalo 0.13",
         publishedAt = "",
