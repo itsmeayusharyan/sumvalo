@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v2.0",
+        name = "Sumvalo 2.0",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Cleaned up unused code and resources — removed dead functions, unused layout/drawable/value files, and legacy SMS tracking helpers", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.14",
         name = "Sumvalo 0.14",
         publishedAt = "",

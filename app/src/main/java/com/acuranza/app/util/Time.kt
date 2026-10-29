@@ -14,8 +14,6 @@ object Time {
 
     fun startOfDay(date: LocalDate): Long = date.atStartOfDay(zone).toInstant().toEpochMilli()
 
-    fun endOfDay(date: LocalDate): Long = startOfDay(date.plusDays(1)) - 1
-
     fun toDate(millis: Long): LocalDate = Instant.ofEpochMilli(millis).atZone(zone).toLocalDate()
 
     fun epochDayOf(millis: Long): Long = toDate(millis).toEpochDay()

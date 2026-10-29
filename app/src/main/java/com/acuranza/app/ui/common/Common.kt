@@ -121,9 +121,6 @@ fun TxnSource.label(): String = when (this) {
 
 fun Severity.toUi(): InsightSeverity = InsightSeverity.valueOf(name)
 
-/** Parses a rupee amount typed in a text field ("1,20,000.50") into paise. */
-fun parseRupees(text: String): Long? = com.acuranza.app.model.Money.parse(text.trim())
-
 fun Long.toRupeeInput(): String {
     val r = this / 100
     val p = this % 100

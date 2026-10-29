@@ -78,12 +78,6 @@ class LoanRepository(private val db: SumvaloDatabase) {
     /** Total still owed on every active loan today. */
     suspend fun totalOutstanding(): Paise = active().sumOf { it.outstanding }
 
-    /** Home-loan interest and principal paid in the financial year starting April [fyStartYear], for the tax planner. */
-    suspend fun homeLoanYear(fyStartYear: Int): Loans.YearSplit =
-        db.loans().active().filter { it.kind == HOME }
-            .mapNotNull { runCatching { Loans.financialYear(spec(it), fyStartYear) }.getOrNull() }
-            .fold(Loans.YearSplit(0, 0)) { a, b -> Loans.YearSplit(a.interest + b.interest, a.principal + b.principal) }
-
     fun status(loan: LoanEntity, today: LocalDate = Time.today()): LoanStatus {
         val spec = runCatching { spec(loan) }.getOrNull()
         val rows = spec?.let { runCatching { Loans.schedule(it) }.getOrNull() }.orEmpty()
@@ -209,8 +203,6 @@ class SplitGroupRepository(private val db: SumvaloDatabase) {
 
     fun observeParticipants(groupId: Long): Flow<List<SplitGroupParticipantEntity>> =
         db.splitGroupParticipants().observeForGroup(groupId)
-    suspend fun participantsFor(groupId: Long): List<SplitGroupParticipantEntity> =
-        db.splitGroupParticipants().forGroup(groupId)
     suspend fun saveParticipant(p: SplitGroupParticipantEntity): Long =
         db.splitGroupParticipants().upsert(p)
     suspend fun deleteParticipant(id: Long) = db.splitGroupParticipants().delete(id)
@@ -346,11 +338,6 @@ class PurchaseRepository(
 
     /** Reads attachment bytes (encrypted at rest, decrypted on read). */
     suspend fun attachmentBytes(a: PurchaseAttachmentEntity): ByteArray = store.read(a.fileName)
-
-    data class PurchaseWithAttachments(
-        val record: PurchaseRecordEntity,
-        val attachments: List<PurchaseAttachmentEntity>,
-    )
 }
 
 /** Encrypted storage for purchase attachments (separate folder from receipt attachments). */
@@ -452,62 +439,11 @@ object SplitCalculator {
         }
     }
 
-    /** Greedy algorithm: settles debts with the fewest transactions possible. */
-    fun simplifyDebts(balances: List<ParticipantBalance>): List<SettlementSuggestion> {
-        val creditors = mutableListOf<ParticipantBalance>()
-        val debtors = mutableListOf<ParticipantBalance>()
-        for (b in balances) {
-            if (b.netBalance > 0) creditors += b
-            else if (b.netBalance < 0) debtors += b
-        }
-        creditors.sortByDescending { it.netBalance }
-        debtors.sortBy { it.netBalance }
-
-        val suggestions = mutableListOf<SettlementSuggestion>()
-        var ci = 0
-        var di = 0
-        while (ci < creditors.size && di < debtors.size) {
-            val c = creditors[ci]
-            val d = debtors[di]
-            val amount = minOf(c.netBalance, -d.netBalance)
-            if (amount > 0) {
-                suggestions += SettlementSuggestion(
-                    fromId = d.participantId,
-                    fromName = d.participantName,
-                    toId = c.participantId,
-                    toName = c.participantName,
-                    amount = amount,
-                )
-                val newC = c.copy(netBalance = c.netBalance - amount)
-                val newD = d.copy(netBalance = d.netBalance + amount)
-                creditors[ci] = newC
-                debtors[di] = newD
-                if (newC.netBalance == 0L) ci++
-                if (newD.netBalance == 0L) di++
-            }
-        }
-        return suggestions
-    }
-
     /** Splits an amount equally among n participants, rounding to paise. Largest remainder method. */
     fun equalSplit(total: Paise, n: Int): List<Paise> {
         require(n > 0) { "At least one participant" }
         val base = total / n
         val remainder = total % n
         return List(n) { i -> base + (if (i < remainder) 1 else 0) }
-    }
-
-    /** Splits by custom amounts. Validates they sum to total. */
-    fun validateCustom(shares: List<Paise>, total: Paise): Boolean =
-        shares.sumOf { it } == total
-
-    /** Splits by percentage. Rounds each to paise, adjusts largest to make sum exact. */
-    fun percentageSplit(total: Paise, percents: List<Double>): List<Paise> {
-        require(percents.isNotEmpty()) { "At least one participant" }
-        val raw = percents.map { p -> total * p / 100.0 }
-        val rounded = raw.map { Math.round(it) }
-        var diff = total - rounded.sum()
-        val maxIdx = rounded.indices.maxByOrNull { rounded[it] } ?: 0
-        return rounded.indices.map { i -> if (i == maxIdx) rounded[i] + diff else rounded[i] }
     }
 }
