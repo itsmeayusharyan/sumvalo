@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Transactions List — Dark Mode, De-Sloped -->
+  <!-- Palette: BG #0B1220, Card #151E2E, Border #2A3850, Text #F3F6FB, Sub #9FADC4 -->
+  <!-- Emerald #047857 (income), Red #DC2626 (expense), Blue #2563EB (transfer) -->
+  
+  <rect width="360" height="800" fill="#0B1220"/>
+  
+  <!-- Header -->
+  <text x="20" y="44" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Activity</text>
+  <text x="20" y="64" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">₹45,230 spent this month</text>
+  
+  <!-- Filter chips -->
+  <rect x="20" y="92" width="72" height="32" fill="#151E2E" rx="16" stroke="#2563EB" stroke-width="1"/>
+  <text x="45" y="110" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="12" font-weight="500">All</text>
+  
+  <rect x="98" y="92" width="96" height="32" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="130" y="110" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Expenses</text>
+  
+  <rect x="200" y="92" width="140" height="32" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="222" y="110" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Last 30 days</text>
+  
+  <!-- List Items -->
+  
+  <!-- Item 1 -->
+  <rect x="20" y="140" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="176" r="20" fill="#DC2626"/>
+  <text x="90" y="166" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Swiggy</text>
+  <text x="90" y="184" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Food delivery • UPI</text>
+  <text x="290" y="166" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹450</text>
+  
+  <!-- Item 2 -->
+  <rect x="20" y="222" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="258" r="20" fill="#047857"/>
+  <text x="90" y="248" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Salary credit</text>
+  <text x="90" y="266" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">HDFC Bank • Salary</text>
+  <text x="286" y="248" fill="#047857" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">+₹45,000</text>
+  
+  <!-- Item 3 -->
+  <rect x="20" y="304" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="340" r="20" fill="#DC2626"/>
+  <text x="90" y="330" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Amazon.in</text>
+  <text x="90" y="348" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Online shopping • Card</text>
+  <text x="272" y="330" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹1,299</text>
+  
+  <!-- Item 4 -->
+  <rect x="20" y="386" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="422" r="20" fill="#2563EB"/>
+  <text x="90" y="412" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Rent transfer</text>
+  <text x="90" y="430" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">To: Priya Sharma • UPI</text>
+  <text x="268" y="412" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹15,000</text>
+  
+  <!-- Item 5 -->
+  <rect x="20" y="468" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="504" r="20" fill="#047857"/>
+  <text x="90" y="494" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Freelance payment</text>
+  <text x="90" y="512" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Client transfer • Bank</text>
+  <text x="268" y="494" fill="#047857" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">+₹8,000</text>
+  
+  <!-- Item 6 -->
+  <rect x="20" y="550" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="586" r="20" fill="#DC2626"/>
+  <text x="90" y="576" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Zomato</text>
+  <text x="90" y="594" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Food delivery • UPI</text>
+  <text x="292" y="576" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹245</text>
+  
+  <!-- Item 7 -->
+  <rect x="20" y="632" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="668" r="20" fill="#2563EB"/>
+  <text x="90" y="658" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Electricity bill</text>
+  <text x="90" y="676" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Tata Power • AutoPay</text>
+  <text x="278" y="658" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹1,850</text>
+  
+  <!-- Item 8 -->
+  <rect x="20" y="714" width="320" height="72" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="750" r="20" fill="#DC2626"/>
+  <text x="90" y="740" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Netflix subscription</text>
+  <text x="90" y="758" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Monthly • Card</text>
+  <text x="286" y="740" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹199</text>
+</svg>

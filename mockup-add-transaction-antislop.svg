@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Add Transaction — Anti-Slop Minimal -->
+  <!-- Tokens: BG #0B1220 / Surface #151E2E / Border #2A3850 / Ink #F3F6FB / Muted #9FADC4 / Blue #2563EB / Red #DC2626 / Emerald #047857 -->
+
+  <rect width="360" height="800" fill="#0B1220"/>
+
+  <rect x="0" y="0" width="360" height="56" fill="#0B1220"/>
+  <text x="20" y="100" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Add expense</text>
+
+  <!-- Amount -->
+  <rect x="20" y="130" width="320" height="120" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="158" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Amount</text>
+  <text x="40" y="190" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="48" font-weight="700">₹0.00</text>
+
+  <!-- Type chips -->
+  <text x="20" y="270" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Type</text>
+
+  <!-- Expense (selected) -->
+  <rect x="20" y="284" width="100" height="56" fill="#DC2626" rx="16"/>
+  <text x="60" y="308" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Expense</text>
+
+  <!-- Income -->
+  <rect x="140" y="284" width="100" height="56" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="180" y="308" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Income</text>
+
+  <!-- Transfer -->
+  <rect x="260" y="284" width="80" height="56" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="290" y="308" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14" font-weight="500">Transfer</text>
+
+  <!-- Date -->
+  <text x="20" y="360" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Date</text>
+  <rect x="20" y="374" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="402" r="16" fill="#2563EB"/>
+  <text x="90" y="406" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Oct 28, 2026</text>
+  <path d="M300 402L305 397L305 407Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <!-- Category -->
+  <text x="20" y="448" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Category</text>
+  <rect x="20" y="462" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="490" r="16" fill="#2563EB"/>
+  <text x="90" y="494" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Food &amp; dining</text>
+  <path d="M300 490L305 485L305 495Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <!-- Merchant -->
+  <text x="20" y="536" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Merchant</text>
+  <rect x="20" y="550" width="320" height="56" fill="#151E2E" rx="16"/>
+  <text x="40" y="576" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16">Swiggy</text>
+
+  <!-- Notes -->
+  <text x="20" y="624" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Notes</text>
+  <rect x="20" y="638" width="320" height="96" fill="#151E2E" rx="16"/>
+  <text x="40" y="664" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Add a note...</text>
+
+  <!-- Save button -->
+  <rect x="20" y="750" width="320" height="56" fill="#DC2626" rx="16"/>
+  <text x="180" y="782" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="middle">Save transaction</text>
+</svg>

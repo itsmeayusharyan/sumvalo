@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo About / Changelog — Dark Mode, De-Sloped -->
+  <!-- Palette: BG #0B1220, Card #151E2E, Border #2A3850, Text #F3F6FB, Sub #9FADC4, Blue #2563EB -->
+  
+  <rect width="360" height="800" fill="#0B1220"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="360" height="100" fill="#0B1220"/>
+  <text x="20" y="44" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">About</text>
+  <text x="20" y="64" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Offline-first personal finance</text>
+  
+  <!-- App card -->
+  <rect x="20" y="100" width="320" height="130" fill="#151E2E" rx="24" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="55" cy="160" r="40" fill="#2563EB"/>
+  <path d="M55 140L55 180M48 164L62 164M48 164L55 171M62 164L55 171" fill="none" stroke="#FFFFFF" stroke-width="3"/>
+  <text x="110" y="150" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Sumvalo</text>
+  <text x="110" y="170" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="13">Offline-first personal finance</text>
+  <text x="110" y="188" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="12">v2.0 • Build 20</text>
+  
+  <!-- Section: App -->
+  <text x="20" y="250" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">APP</text>
+  
+  <rect x="20" y="264" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="292" r="18" fill="#2563EB"/>
+  <text x="90" y="297" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Version</text>
+  <text x="300" y="297" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">2.0</text>
+  
+  <rect x="20" y="330" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="358" r="18" fill="#2563EB"/>
+  <text x="90" y="363" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Version code</text>
+  <text x="268" y="363" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">20</text>
+  
+  <rect x="20" y="396" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="424" r="18" fill="#2563EB"/>
+  <text x="90" y="429" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Database version</text>
+  <text x="252" y="429" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">14</text>
+  
+  <!-- Section: Security -->
+  <text x="20" y="470" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">SECURITY</text>
+  
+  <rect x="20" y="484" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="512" r="18" fill="#047857"/>
+  <text x="90" y="517" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Database encryption</text>
+  <text x="300" y="517" fill="#047857" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">AES-256</text>
+  
+  <rect x="20" y="550" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="578" r="18" fill="#047857"/>
+  <text x="90" y="583" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">App lock</text>
+  <text x="288" y="583" fill="#047857" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">PIN / Biometric</text>
+  
+  <rect x="20" y="616" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="644" r="18" fill="#047857"/>
+  <text x="90" y="649" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Offline-first</text>
+  <text x="312" y="649" fill="#047857" font-family="system-ui, sans-serif" font-size="14" text-anchor="end">No internet</text>
+  
+  <!-- Section: Legal -->
+  <text x="20" y="690" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">LEGAL</text>
+  
+  <rect x="20" y="704" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="732" r="18" fill="#2563EB"/>
+  <text x="90" y="737" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Privacy policy</text>
+  <path d="M300 732L305 727L305 737Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <rect x="20" y="770" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="798" r="18" fill="#2563EB"/>
+  <text x="90" y="803" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">GPL-3.0 licence</text>
+  <path d="M300 798L305 793L305 803Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+</svg>

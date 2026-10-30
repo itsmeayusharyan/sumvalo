@@ -350,12 +350,12 @@ fun HomeScreen(nav: NavController, onHomeReTap: () -> Unit = {}) {
             onUpcoming = { planSheet = false; nav.navigate(Routes.RECURRING) },
         )
     }
-    HomeContent(
+    HomeScreenDesloped(
+        nav = nav,
         state = state,
         hidden = hidden,
         listState = listState,
         onProfile = { nav.navigate(com.acuranza.app.ui.nav.Routes.PROFILE) },
-        loadingDemo = loadingDemo,
         onToggleHidden = { vm.toggleHidden(hidden) },
         onInsights = { nav.navigateToTab(Routes.INSIGHTS) },
         onReview = { nav.navigate(Routes.REVIEW) },

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Settings — Swiss Minimalist -->
+  <!-- Design system from ui-ux-pro-max: Minimalism & Swiss Style -->
+
+  <rect width="360" height="800" fill="#0B1220"/>
+
+  <rect x="0" y="0" width="360" height="44" fill="#0B1220"/>
+  <text x="20" y="80" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="-0.02em">Settings</text>
+  <text x="20" y="102" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="14">Your money, on your phone</text>
+
+  <!-- Search -->
+  <rect x="20" y="130" width="320" height="48" fill="#151E2E" rx="14" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="44" cy="154" r="10" fill="#2563EB"/>
+  <text x="64" y="160" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="15">Search settings</text>
+
+  <!-- Section: Tools -->
+  <text x="20" y="176" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="0.1em">Tools</text>
+
+  <rect x="20" y="190" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="222" r="20" fill="#2563EB"/>
+  <text x="90" y="227" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Lending</text>
+  <text x="90" y="245" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Money between you and friends or family</text>
+  <path d="M290 222L295 217L300 222Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <rect x="20" y="264" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="296" r="20" fill="#2563EB"/>
+  <text x="90" y="301" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Loans &amp; EMI</text>
+  <text x="90" y="319" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">What's left, prepayment savings, tax split</text>
+  <path d="M290 296L295 291L300 296Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <rect x="20" y="338" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="370" r="20" fill="#2563EB"/>
+  <text x="90" y="375" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Budgets &amp; goals</text>
+  <text x="90" y="393" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Monthly spending limits and rollover</text>
+  <path d="M290 370L295 365L300 370Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <!-- Section: Financial Tools -->
+  <text x="20" y="416" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="0.1em">Financial tools</text>
+
+  <rect x="20" y="430" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="462" r="20" fill="#2563EB"/>
+  <text x="90" y="467" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">SMS transaction tracking</text>
+  <text x="90" y="485" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Bank messages by share or paste, on-device only</text>
+  <path d="M290 462L295 457L300 462Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <rect x="20" y="504" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="536" r="20" fill="#2563EB"/>
+  <text x="90" y="541" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Recurring payments</text>
+  <text x="90" y="559" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Upcoming payments, AutoPay mandates, price changes</text>
+  <path d="M290 536L295 531L300 536Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <rect x="20" y="578" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="610" r="20" fill="#2563EB"/>
+  <text x="90" y="615" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Reports</text>
+  <text x="90" y="633" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Monthly and yearly PDF, year in review, calendar</text>
+  <path d="M290 610L295 605L300 610Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <!-- Section: Appearance -->
+  <text x="20" y="656" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="0.1em">Appearance</text>
+
+  <rect x="20" y="670" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="702" r="20" fill="#2563EB"/>
+  <text x="90" y="707" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Appearance</text>
+  <text x="90" y="725" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">Theme, colour theme, accent, AMOLED, hide amounts</text>
+  <path d="M290 702L295 697L300 702Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+
+  <!-- Section: Privacy & Security -->
+  <text x="20" y="748" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="0.1em">Privacy &amp; security</text>
+
+  <rect x="20" y="762" width="320" height="64" fill="#151E2E" rx="14"/>
+  <circle cx="55" cy="794" r="20" fill="#2563EB"/>
+  <text x="90" y="799" fill="#F3F6FB" font-family="Inter, system-ui, sans-serif" font-size="16" font-weight="500">Privacy &amp; security</text>
+  <text x="90" y="817" fill="#9FADC4" font-family="Inter, system-ui, sans-serif" font-size="13">App lock, PINs, encryption and recovery</text>
+  <path d="M290 794L295 789L300 794Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+</svg>

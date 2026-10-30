@@ -20,12 +20,12 @@ android {
         // x86_64 (64-bit Intel/AMD) are all packaged so any compatible device can install.
         // SQLCipher native libs ship for every one of these ABIs; APK size grows accordingly.
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
+            abiFilters += setOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
         }
         minSdk = 26
         targetSdk = 35
-        versionCode = 20
-        versionName = "2.0"
+        versionCode = 30
+        versionName = "3.0"
         vectorDrawables { useSupportLibrary = true }
     }
 

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Transactions — Anti-Slop Minimal -->
+  <!-- Tokens: BG #0B1220 / Surface #151E2E / Border #2A3850 / Ink #F3F6FB / Muted #9FADC4 / Blue #2563EB / Emerald #047857 / Red #DC2626 -->
+
+  <rect width="360" height="800" fill="#0B1220"/>
+
+  <rect x="0" y="0" width="360" height="56" fill="#0B1220"/>
+  <text x="20" y="100" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Activity</text>
+  <text x="20" y="120" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">₹45,230 spent this month</text>
+
+  <!-- Filter chips -->
+  <rect x="20" y="148" width="72" height="32" fill="#151E2E" rx="16" stroke="#2563EB" stroke-width="1"/>
+  <text x="45" y="166" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="12" font-weight="500">All</text>
+
+  <rect x="98" y="148" width="96" height="32" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="130" y="166" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Expenses</text>
+
+  <rect x="200" y="148" width="140" height="32" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="222" y="166" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Last 30 days</text>
+
+  <!-- Transaction: Swiggy -->
+  <rect x="20" y="196" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="232" r="16" fill="#DC2626"/>
+  <text x="90" y="220" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Swiggy</text>
+  <text x="90" y="236" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Food delivery • UPI</text>
+  <text x="300" y="220" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹450</text>
+
+  <!-- Transaction: Salary -->
+  <rect x="20" y="262" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="298" r="16" fill="#047857"/>
+  <text x="90" y="286" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Salary credit</text>
+  <text x="90" y="302" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">HDFC Bank</text>
+  <text x="288" y="286" fill="#047857" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">+₹45,000</text>
+
+  <!-- Transaction: Amazon -->
+  <rect x="20" y="328" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="364" r="16" fill="#DC2626"/>
+  <text x="90" y="352" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Amazon</text>
+  <text x="90" y="368" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Online shopping • Card</text>
+  <text x="292" y="352" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹1,299</text>
+
+  <!-- Transaction: Rent -->
+  <rect x="20" y="394" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="430" r="16" fill="#2563EB"/>
+  <text x="90" y="418" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Rent transfer</text>
+  <text x="90" y="434" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">To: Priya Sharma • UPI</text>
+  <text x="268" y="418" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹15,000</text>
+
+  <!-- Transaction: Freelance -->
+  <rect x="20" y="460" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="496" r="16" fill="#047857"/>
+  <text x="90" y="484" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Freelance payment</text>
+  <text x="90" y="500" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Client transfer • Bank</text>
+  <text x="268" y="484" fill="#047857" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">+₹8,000</text>
+
+  <!-- Transaction: Zomato -->
+  <rect x="20" y="526" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="562" r="16" fill="#DC2626"/>
+  <text x="90" y="550" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Zomato</text>
+  <text x="90" y="566" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Food delivery • UPI</text>
+  <text x="292" y="550" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹245</text>
+
+  <!-- Transaction: Electricity -->
+  <rect x="20" y="592" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="628" r="16" fill="#DC2626"/>
+  <text x="90" y="616" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Electricity bill</text>
+  <text x="90" y="632" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Tata Power • AutoPay</text>
+  <text x="278" y="616" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹1,850</text>
+
+  <!-- Transaction: Netflix -->
+  <rect x="20" y="658" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="694" r="16" fill="#DC2626"/>
+  <text x="90" y="682" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Netflix subscription</text>
+  <text x="90" y="698" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Monthly • Card</text>
+  <text x="286" y="682" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹199</text>
+
+  <!-- Bottom navigation -->
+  <rect x="20" y="730" width="320" height="56" fill="#151E2E" rx="28"/>
+  <circle cx="55" cy="758" r="14" fill="#151E2E"/>
+  <text x="55" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Home</text>
+
+  <circle cx="130" cy="758" r="14" fill="#2563EB"/>
+  <text x="130" y="770" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Activity</text>
+
+  <circle cx="205" cy="758" r="14" fill="#151E2E"/>
+  <text x="205" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Insights</text>
+
+  <circle cx="280" cy="758" r="14" fill="#151E2E"/>
+  <text x="280" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Settings</text>
+</svg>

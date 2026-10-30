@@ -21,9 +21,20 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v3.0",
+        name = "Sumvalo 3.0",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Home screen de-sloped — flat surfaces, 1dp hairline borders, real type hierarchy, no gradients or glow, Swiss minimalism per kill-ai-slop taxonomy", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v2.0",
         name = "Sumvalo 2.0",
-        publishedAt = "",
+        publishedAt = "2026-10-27",
         body = null,
         htmlUrl = "",
     ).copy(

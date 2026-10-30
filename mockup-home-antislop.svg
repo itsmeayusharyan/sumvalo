@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Home — Anti-Slop Minimal -->
+  <!-- Tokens: BG #0B1220 / Surface #151E2E / Border #2A3850 / Ink #F3F6FB / Muted #9FADC4 / Blue #2563EB / Emerald #047857 / Red #DC2626 -->
+  <!-- Rules: flat only, no gradients, no drop shadows, no inner glow, 1dp hairlines, consistent stroke weight, 4dp grid -->
+
+  <rect width="360" height="800" fill="#0B1220"/>
+
+  <!-- Safe area header -->
+  <rect x="0" y="0" width="360" height="56" fill="#0B1220"/>
+
+  <!-- Title -->
+  <text x="20" y="100" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Home</text>
+  <text x="20" y="120" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">₹1,24,500 net worth</text>
+
+  <!-- Net worth card -->
+  <rect x="20" y="150" width="320" height="96" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="178" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="0.05em">NET WORTH</text>
+  <text x="40" y="204" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="32" font-weight="700">₹1,24,500</text>
+  <text x="40" y="224" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="13">+₹3,200 this month</text>
+
+  <!-- Balance cards -->
+  <rect x="20" y="260" width="150" height="88" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="280" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="0.05em">Cash</text>
+  <text x="40" y="300" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="18" font-weight="600">₹8,420</text>
+
+  <rect x="190" y="260" width="150" height="88" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <text x="210" y="280" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12" font-weight="600" letter-spacing="0.05em">Credit</text>
+  <text x="210" y="300" fill="#DC2626" font-family="system-ui, sans-serif" font-size="18" font-weight="600">−₹12,000</text>
+
+  <!-- Quick actions -->
+  <text x="20" y="372" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Quick actions</text>
+
+  <!-- Action: Add expense -->
+  <rect x="20" y="386" width="108" height="88" fill="#151E2E" rx="18"/>
+  <circle cx="74" cy="418" r="20" fill="#2563EB"/>
+  <path d="M68 412L80 412M74 406L74 424" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="74" y="456" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="12" font-weight="500" text-anchor="middle">Expense</text>
+
+  <!-- Action: Add income -->
+  <rect x="142" y="386" width="108" height="88" fill="#151E2E" rx="18"/>
+  <circle cx="196" cy="418" r="20" fill="#047857"/>
+  <path d="M190 412L202 412M194 412L194 424" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="196" y="456" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="12" font-weight="500" text-anchor="middle">Income</text>
+
+  <!-- Action: Transfer -->
+  <rect x="262" y="386" width="78" height="88" fill="#151E2E" rx="18"/>
+  <circle cx="301" cy="418" r="20" fill="#9FADC4"/>
+  <path d="M295 412L307 412M300 412L300 424" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="301" y="456" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Transfer</text>
+
+  <!-- Recent transactions -->
+  <text x="20" y="500" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Recent</text>
+
+  <!-- Item: Swiggy -->
+  <rect x="20" y="514" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="550" r="16" fill="#DC2626"/>
+  <text x="90" y="538" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Swiggy</text>
+  <text x="90" y="554" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Food delivery • UPI</text>
+  <text x="300" y="538" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹450</text>
+
+  <!-- Item: Salary -->
+  <rect x="20" y="580" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="616" r="16" fill="#047857"/>
+  <text x="90" y="604" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Salary credit</text>
+  <text x="90" y="620" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">HDFC Bank</text>
+  <text x="288" y="604" fill="#047857" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">+₹45,000</text>
+
+  <!-- Item: Amazon -->
+  <rect x="20" y="646" width="320" height="56" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="682" r="16" fill="#DC2626"/>
+  <text x="90" y="670" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="15" font-weight="500">Amazon</text>
+  <text x="90" y="686" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">Online shopping • Card</text>
+  <text x="292" y="670" fill="#DC2626" font-family="system-ui, sans-serif" font-size="16" font-weight="600" text-anchor="end">−₹1,299</text>
+
+  <!-- Bottom navigation -->
+  <rect x="20" y="730" width="320" height="56" fill="#151E2E" rx="28"/>
+  <circle cx="55" cy="758" r="14" fill="#2563EB"/>
+  <text x="55" y="770" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Home</text>
+
+  <circle cx="130" cy="758" r="14" fill="#151E2E"/>
+  <text x="130" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Activity</text>
+
+  <circle cx="205" cy="758" r="14" fill="#151E2E"/>
+  <text x="205" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Insights</text>
+
+  <circle cx="280" cy="758" r="14" fill="#151E2E"/>
+  <text x="280" y="770" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500" text-anchor="middle">Settings</text>
+</svg>

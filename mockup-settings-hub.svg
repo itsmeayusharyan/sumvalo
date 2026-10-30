@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Settings Hub — Dark Mode, De-Sloped -->
+  <!-- Palette: BG #0B1220, Card #151E2E, Border #2A3850, Text #F3F6FB, Sub #9FADC4, Blue #2563EB -->
+  
+  <rect width="360" height="800" fill="#0B1220"/>
+  
+  <!-- Header -->
+  <text x="20" y="44" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Settings</text>
+  <text x="20" y="64" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Your money, on your phone</text>
+  
+  <!-- Search -->
+  <rect x="20" y="96" width="320" height="48" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="44" cy="120" r="10" fill="#2563EB"/>
+  <text x="64" y="126" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16">Search settings</text>
+  
+  <!-- Section: Tools -->
+  <text x="20" y="118" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">TOOLS</text>
+  
+  <!-- Row: Lending -->
+  <rect x="20" y="128" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="160" r="22" fill="#2563EB"/>
+  <text x="90" y="165" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Lending</text>
+  <text x="90" y="183" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Money between you and friends or family</text>
+  <path d="M290 160L295 155L300 160Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Row: Loans & EMI -->
+  <rect x="20" y="202" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="234" r="22" fill="#2563EB"/>
+  <text x="90" y="239" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Loans &amp; EMI</text>
+  <text x="90" y="257" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">What's left, prepayment savings, tax split</text>
+  <path d="M290 234L295 229L300 234Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Row: Budgets & Goals -->
+  <rect x="20" y="276" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="308" r="22" fill="#2563EB"/>
+  <text x="90" y="313" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Budgets &amp; goals</text>
+  <text x="90" y="331" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Monthly spending limits and rollover</text>
+  <path d="M290 308L295 303L300 308Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Section: Financial Tools -->
+  <text x="20" y="355" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">FINANCIAL TOOLS</text>
+  
+  <!-- Row: SMS Transaction Tracking -->
+  <rect x="20" y="365" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="397" r="22" fill="#2563EB"/>
+  <text x="90" y="402" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">SMS transaction tracking</text>
+  <text x="90" y="420" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Bank messages by share or paste, on-device only</text>
+  <path d="M290 397L295 392L300 397Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Row: Recurring Payments -->
+  <rect x="20" y="440" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="472" r="22" fill="#2563EB"/>
+  <text x="90" y="477" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Recurring payments</text>
+  <text x="90" y="495" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Upcoming payments, AutoPay mandates, price changes</text>
+  <path d="M290 472L295 467L300 472Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Row: Reports -->
+  <rect x="20" y="514" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="546" r="22" fill="#2563EB"/>
+  <text x="90" y="551" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Reports</text>
+  <text x="90" y="569" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Monthly and yearly PDF, year in review, calendar</text>
+  <path d="M290 546L295 541L300 546Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Section: Appearance -->
+  <text x="20" y="589" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">APPEARANCE</text>
+  
+  <!-- Row: Appearance -->
+  <rect x="20" y="599" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="631" r="22" fill="#2563EB"/>
+  <text x="90" y="636" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Appearance</text>
+  <text x="90" y="654" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Theme, colour theme, accent, AMOLED, hide amounts, edit home</text>
+  <path d="M290 631L295 626L300 631Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Section: Privacy & Security -->
+  <text x="20" y="683" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">PRIVACY &amp; SECURITY</text>
+  
+  <!-- Row: Privacy & Security -->
+  <rect x="20" y="693" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="725" r="22" fill="#2563EB"/>
+  <text x="90" y="730" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Privacy &amp; security</text>
+  <text x="90" y="748" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">App lock, PINs, encryption and recovery</text>
+  <path d="M290 725L295 720L300 725Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+  
+  <!-- Section: Data Management -->
+  <text x="20" y="777" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="0.5">DATA MANAGEMENT</text>
+  
+  <!-- Row: Data Management -->
+  <rect x="20" y="787" width="320" height="64" fill="#151E2E" rx="16"/>
+  <circle cx="55" cy="819" r="22" fill="#2563EB"/>
+  <text x="90" y="824" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="500">Data management</text>
+  <text x="90" y="842" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Backups, imports, exports, sample data, erase</text>
+  <path d="M290 819L295 814L300 819Z" fill="none" stroke="#9FADC4" stroke-width="2"/>
+</svg>

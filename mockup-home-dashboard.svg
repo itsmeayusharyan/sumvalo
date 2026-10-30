@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 800">
+  <!-- Sumvalo Home Dashboard — Dark Mode, De-Sloped -->
+  <!-- Palette: BG #0B1220, Card #151E2E, Border #2A3850, Text #F3F6FB, Sub #9FADC4, Blue #2563EB, Emerald #047857 -->
+  
+  <rect width="360" height="800" fill="#0B1220"/>
+  
+  <!-- Header -->
+  <text x="20" y="44" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Home</text>
+  <text x="20" y="64" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Oct 28, 2026 · Safe to spend: ₹8,420</text>
+  
+  <!-- Net Worth Card -->
+  <rect x="20" y="92" width="320" height="110" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="120" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">Net worth</text>
+  <text x="40" y="148" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="28" font-weight="600">₹1,24,500</text>
+  <text x="40" y="172" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="14">+₹3,200 this month</text>
+  
+  <!-- Quick Actions Row -->
+  <text x="20" y="222" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Quick actions</text>
+  
+  <!-- Quick Action 1: Add Expense -->
+  <rect x="20" y="242" width="100" height="92" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="70" cy="272" r="16" fill="#DC2626"/>
+  <path d="M64 266L76 266M70 260L70 272" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="30" y="300" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="12" font-weight="500">Add expense</text>
+  
+  <!-- Quick Action 2: Add Income -->
+  <rect x="140" y="242" width="100" height="92" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="190" cy="272" r="16" fill="#047857"/>
+  <path d="M184 266L196 266M190 260L190 272M184 266L196 266" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="150" y="300" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="12" font-weight="500">Add income</text>
+  
+  <!-- Quick Action 3: Transfer -->
+  <rect x="260" y="242" width="100" height="92" fill="#151E2E" rx="16" stroke="#2A3850" stroke-width="1"/>
+  <circle cx="310" cy="272" r="16" fill="#2563EB"/>
+  <path d="M304 266L316 266M307 263L313 269" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="274" y="300" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="12" font-weight="500">Transfer</text>
+  
+  <!-- Spending Chart -->
+  <rect x="20" y="346" width="320" height="160" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="370" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Spending this month</text>
+  
+  <!-- Chart bars -->
+  <rect x="40" y="420" width="28" height="40" fill="#2563EB" rx="4"/>
+  <rect x="74" y="400" width="28" height="60" fill="#2563EB" rx="4"/>
+  <rect x="108" y="440" width="28" height="20" fill="#2563EB" rx="4"/>
+  <rect x="142" y="360" width="28" height="100" fill="#2563EB" rx="4"/>
+  <rect x="176" y="460" width="28" height="0" fill="#2563EB" rx="4"/>
+  <rect x="210" y="400" width="28" height="60" fill="#2563EB" rx="4"/>
+  <rect x="244" y="420" width="28" height="40" fill="#2563EB" rx="4"/>
+  <rect x="278" y="380" width="28" height="80" fill="#2563EB" rx="4"/>
+  
+  <text x="46" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">M</text>
+  <text x="80" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">T</text>
+  <text x="114" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">W</text>
+  <text x="148" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">T</text>
+  <text x="182" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">F</text>
+  <text x="216" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">S</text>
+  <text x="250" y="520" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="12">S</text>
+  
+  <!-- Cards Section -->
+  <text x="20" y="566" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="16" font-weight="600">Accounts &amp; cards</text>
+  
+  <!-- Card 1 -->
+  <rect x="20" y="586" width="150" height="130" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="40" y="610" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">HDFC Bank</text>
+  <text x="40" y="632" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">•••• 4242</text>
+  <text x="40" y="656" fill="#66A3FF" font-family="system-ui, sans-serif" font-size="14">₹45,000 available</text>
+  
+  <!-- Card 2 -->
+  <rect x="190" y="586" width="150" height="130" fill="#151E2E" rx="20" stroke="#2A3850" stroke-width="1"/>
+  <text x="210" y="610" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="14">ICICI Credit Card</text>
+  <text x="210" y="632" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="20" font-weight="600">•••• 1234</text>
+  <text x="210" y="656" fill="#DC2626" font-family="system-ui, sans-serif" font-size="14">₹12,000 due</text>
+  
+  <!-- Bottom Navigation -->
+  <rect x="20" y="730" width="320" height="56" fill="#151E2E" rx="28"/>
+  <circle cx="55" cy="758" r="14" fill="#2563EB"/>
+  <text x="55" y="770" fill="#F3F6FB" font-family="system-ui, sans-serif" font-size="11" font-weight="500">Home</text>
+  
+  <circle cx="130" cy="758" r="14" fill="#151E2E"/>
+  <text x="122" y="768" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500">Activity</text>
+  <text x="124" y="778" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="10">• 3</text>
+  
+  <circle cx="205" cy="758" r="14" fill="#151E2E"/>
+  <text x="197" y="768" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500">Insights</text>
+  
+  <circle cx="280" cy="758" r="14" fill="#151E2E"/>
+  <text x="270" y="768" fill="#9FADC4" font-family="system-ui, sans-serif" font-size="11" font-weight="500">Settings</text>
+</svg>
