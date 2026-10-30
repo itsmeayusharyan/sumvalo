@@ -236,9 +236,32 @@ abstract class SumvaloDatabase : RoomDatabase() {
             }
         }
 
+        /** v13→14 adds shared-expense groups, participants, expenses, shares, settlements and purchase memory records with attachments. */
+        val MIGRATION_13_14 = object : Migration(13, 14) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS `split_groups` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `archived` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `split_group_participants` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` INTEGER NOT NULL, `name` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`groupId`) REFERENCES `split_groups`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_group_participants_groupId` ON `split_group_participants` (`groupId`)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `split_expenses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` INTEGER NOT NULL, `description` TEXT NOT NULL, `amount` INTEGER NOT NULL, `date` INTEGER NOT NULL, `payerId` INTEGER NOT NULL, `categoryKey` TEXT, `note` TEXT, `linkedTransactionId` INTEGER, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`groupId`) REFERENCES `split_groups`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY(`payerId`) REFERENCES `split_group_participants`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_expenses_groupId` ON `split_expenses` (`groupId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_expenses_payerId` ON `split_expenses` (`payerId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_expenses_linkedTransactionId` ON `split_expenses` (`linkedTransactionId`)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `split_shares` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `expenseId` INTEGER NOT NULL, `participantId` INTEGER NOT NULL, `share` INTEGER NOT NULL, FOREIGN KEY(`expenseId`) REFERENCES `split_expenses`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY(`participantId`) REFERENCES `split_group_participants`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_shares_expenseId` ON `split_shares` (`expenseId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_shares_participantId` ON `split_shares` (`participantId`)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `split_settlements` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `groupId` INTEGER NOT NULL, `fromId` INTEGER NOT NULL, `toId` INTEGER NOT NULL, `amount` INTEGER NOT NULL, `date` INTEGER NOT NULL, `note` TEXT, `reversed` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`groupId`) REFERENCES `split_groups`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY(`fromId`) REFERENCES `split_group_participants`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE, FOREIGN KEY(`toId`) REFERENCES `split_group_participants`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_settlements_groupId` ON `split_settlements` (`groupId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_settlements_fromId` ON `split_settlements` (`fromId`)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_split_settlements_toId` ON `split_settlements` (`toId`)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `purchase_records` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `itemName` TEXT NOT NULL, `merchant` TEXT, `purchaseDate` INTEGER NOT NULL, `amount` INTEGER, `category` TEXT, `notes` TEXT, `tags` TEXT NOT NULL, `warrantyStart` INTEGER, `warrantyUntil` INTEGER, `returnUntil` INTEGER, `invoiceNo` TEXT, `serialNo` TEXT, `linkedTransactionId` INTEGER, `remindersEnabled` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS `purchase_attachments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `purchaseId` INTEGER NOT NULL, `fileName` TEXT NOT NULL, `mimeType` TEXT NOT NULL, `sizeBytes` INTEGER NOT NULL, `label` TEXT, `createdAt` INTEGER NOT NULL, FOREIGN KEY(`purchaseId`) REFERENCES `purchase_records`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+                db.execSQL("CREATE INDEX IF NOT EXISTS `index_purchase_attachments_purchaseId` ON `purchase_attachments` (`purchaseId`)")
+            }
+        }
+
         val ALL_MIGRATIONS = arrayOf(
             MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9,
-            MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13,
+            MIGRATION_9_10, MIGRATION_10_11, MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_14,
         )
 
         /**

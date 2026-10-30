@@ -37,7 +37,7 @@ class AttachmentStore(private val context: Context) {
 
     /** Stores already-prepared [bytes] (used when restoring a backup). */
     fun saveBytes(bytes: ByteArray, mimeType: String, fileName: String = UUID.randomUUID().toString() + ".bin"): Saved {
-        File(dir, fileName).writeBytes(LocalSecrets.seal(key, bytes))
+        File(dir, safe(fileName)).writeBytes(LocalSecrets.seal(key, bytes))
         return Saved(fileName, mimeType, bytes.size.toLong())
     }
 

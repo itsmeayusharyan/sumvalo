@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.15",
+        name = "Sumvalo 0.15",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fixed database migration v13→14 — missing MIGRATION_13_14 added so upgrades create shared-expense and purchase-memory tables", ChangeCategory.FIXED),
+            ChangeItem("Fixed path traversal in attachment restore — saveBytes() now sanitizes file names through the same safe() check as read() and delete()", ChangeCategory.FIXED),
+            ChangeItem("Removed duplicate icon import in Routes.kt", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.14",
         name = "Sumvalo 0.14",
         publishedAt = "",

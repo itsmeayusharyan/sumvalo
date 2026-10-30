@@ -9,7 +9,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.QueryStats
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.acuranza.app.model.TxnType
 
