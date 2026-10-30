@@ -421,7 +421,8 @@ fun FormColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.(
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
 }
 
-/** A pill label. */
+/** A pill label. Deprecated in v3.1 — use plain Text instead; tinted pill containers are AI-generated slop. */
+@Deprecated("Use plain Text instead — tinted pill containers are AI-generated slop")
 @Composable
 fun Pill(text: String, color: androidx.compose.ui.graphics.Color, modifier: Modifier = Modifier) {
     Text(

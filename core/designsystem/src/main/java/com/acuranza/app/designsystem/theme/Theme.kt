@@ -98,9 +98,9 @@ private val LightScheme: ColorScheme = lightColorScheme(
 internal val SumvaloShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
     small = RoundedCornerShape(12.dp),
-    medium = RoundedCornerShape(16.dp),
-    large = RoundedCornerShape(20.dp),
-    extraLarge = RoundedCornerShape(28.dp),
+    medium = RoundedCornerShape(14.dp),
+    large = RoundedCornerShape(16.dp),
+    extraLarge = RoundedCornerShape(24.dp),
 )
 
 /** Spacing scale used across the app (4dp grid). */
@@ -111,15 +111,14 @@ data class Spacing(
     val sm: Dp = 8.dp,
     val md: Dp = 12.dp,
     val lg: Dp = 16.dp,
-    val xl: Dp = 20.dp,
-    val xxl: Dp = 24.dp,
-    val xxxl: Dp = 32.dp,
+    val xl: Dp = 24.dp,
+    val xxl: Dp = 32.dp,
     /** Horizontal padding for screen content. */
     val screen: Dp = 20.dp,
     /** Corner radius of standard cards. */
-    val cardRadius: Dp = 20.dp,
+    val cardRadius: Dp = 14.dp,
     /** Vertical gap between sections. */
-    val section: Dp = 24.dp,
+    val section: Dp = 20.dp,
 )
 
 val LocalSpacing = staticCompositionLocalOf { Spacing() }

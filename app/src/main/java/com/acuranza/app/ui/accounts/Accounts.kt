@@ -56,7 +56,6 @@ import com.acuranza.app.designsystem.components.BankBadge
 import com.acuranza.app.designsystem.components.CreditCardVisual
 import com.acuranza.app.designsystem.components.DateHeader
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.GradientCard
 import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
@@ -335,11 +334,11 @@ fun AccountDetailScreen(nav: NavController, id: Long) {
                         hidden = hidden,
                     )
                 } else {
-                    GradientCard {
-                        Text("Current balance", color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.8f), style = MaterialTheme.typography.labelLarge)
-                        AmountText(a.balance, style = AmountStyles.hero, hidden = hidden, animate = true, color = androidx.compose.ui.graphics.Color.White)
+                    SumvaloCard {
+                        Text("Current balance", style = MaterialTheme.typography.labelLarge, color = SumvaloTheme.colors.subtleText)
+                        AmountText(a.balance, style = AmountStyles.hero, hidden = hidden, animate = true, color = SumvaloTheme.colors.ink)
                         a.account.reportedAt?.let {
-                            Text("Last confirmed by bank SMS ${Fmt.ago(it)}", color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.labelSmall)
+                            Text("Last confirmed by bank SMS ${Fmt.ago(it)}", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
                         }
                     }
                 }

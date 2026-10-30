@@ -21,6 +21,20 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v3.2",
+        name = "Sumvalo 3.2",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Home dashboard redesigned — flat hero card replaces GradientCard, decorative sparkline removed, flat PrimaryAction buttons replace filled hero buttons", ChangeCategory.IMPROVED),
+            ChangeItem("Accounts screen — GradientCard balance display replaced with flat SumvaloCard, no decorative backgrounds", ChangeCategory.IMPROVED),
+            ChangeItem("Design system — card radius reduced to 14dp, hero amount 34sp with tabular figures, spacing scale 4/8/12/16/24/32dp", ChangeCategory.IMPROVED),
+            ChangeItem("Removed GradientCard, IconBubble, GlassSurface components — deprecated stubs retained for compatibility", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v3.1",
         name = "Sumvalo 3.1",
         publishedAt = "",

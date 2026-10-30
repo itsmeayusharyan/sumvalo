@@ -71,7 +71,8 @@ import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.StatChip
 import com.acuranza.app.designsystem.components.ThinProgressBar
 import com.acuranza.app.designsystem.components.TransactionRow
-import com.acuranza.app.designsystem.theme.staggeredEntrance
+import com.acuranza.app.designsystem.components.PrimaryAction
+import com.acuranza.app.designsystem.components.QuickAction
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.di.AppContainer
@@ -118,12 +119,6 @@ import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Assessment
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.runtime.CompositionLocalProvider
-import com.acuranza.app.designsystem.components.GradientCard
-import com.acuranza.app.designsystem.components.HeroActionButton
-import com.acuranza.app.designsystem.components.QuickAction
-import com.acuranza.app.designsystem.components.Sparkline
 
 data class HomeState(
     val loading: Boolean = true,
@@ -534,39 +529,42 @@ fun HomeContent(
 
         item(key = "hero") {
             val nw = state.netWorth
-            GradientCard(pad.padding(top = 20.dp), contentPadding = PaddingValues(20.dp)) {
-                CompositionLocalProvider(LocalContentColor provides Color.White) {
-                    Text("Net worth", style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.72f))
+            SumvaloCard(pad.padding(top = 20.dp), onClick = onSafeToSpend) {
+                Column(Modifier.fillMaxWidth()) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("Net worth", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
+                        Spacer(Modifier.weight(1f))
+                        IconButton(onClick = onToggleHidden) {
+                            Icon(
+                                if (hidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                                contentDescription = if (hidden) "Show amounts" else "Hide amounts",
+                                tint = SumvaloTheme.colors.subtleText,
+                                modifier = Modifier.size(16.dp),
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(2.dp))
                     Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.fillMaxWidth()) {
                         AmountText(
                             paise = nw?.total ?: 0,
                             style = AmountStyles.hero,
-                            color = Color.White,
+                            color = SumvaloTheme.colors.ink,
                             hidden = hidden,
-                            animate = true,
                             modifier = Modifier.weight(1f),
                         )
-                        if (state.trend.size >= 2) {
-                            Sparkline(
-                                values = state.trend,
-                                modifier = Modifier.padding(bottom = 8.dp).size(width = 72.dp, height = 28.dp),
-                                color = Color.White,
-                                fill = false,
-                            )
-                        }
                     }
                     if (nw != null) {
                         Spacer(Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                            MiniFigure("Cash & bank", nw.liquid, hidden, onDark = true)
-                            MiniFigure(if (nw.loans > 0) "Dues & loans" else "Card dues", nw.cardDebt + nw.loans, hidden, onDark = true)
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            MiniFigure("Cash & bank", nw.liquid, hidden)
+                            MiniFigure("Card dues", nw.cardDebt, hidden)
+                            if (nw.loans > 0) MiniFigure("Loans", nw.loans, hidden)
                         }
                     }
                     Spacer(Modifier.height(16.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        HeroActionButton("Add expense", onAddExpense, Modifier.weight(1f), filled = true, icon = Icons.Outlined.Add)
-                        HeroActionButton("Add income", onAddIncome, Modifier.weight(1f), filled = false, icon = Icons.Outlined.Add)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        PrimaryAction("Add expense", onAddExpense, Modifier.weight(1f), icon = Icons.Outlined.Add)
+                        PrimaryAction("Add income", onAddIncome, Modifier.weight(1f), icon = Icons.Outlined.Add)
                     }
                 }
             }

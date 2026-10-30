@@ -122,7 +122,7 @@ private fun HeroContent() {
         label = "Net worth",
         amount = 4_825_634_50,
         deltaPaise = 1_250_000,
-        trend = listOf(3f, 3.2f, 3.1f, 3.6f, 3.9f, 4.1f, 4.4f, 4.8f),
+        deltaLabel = "this month",
         hidden = hidden,
         onToggleHidden = { hidden = !hidden },
     ) {

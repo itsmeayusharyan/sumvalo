@@ -420,7 +420,7 @@ fun StatChip(
         )
         if (deltaPaise != null) {
             Spacer(Modifier.height(6.dp))
-            DeltaChip(deltaPaise = deltaPaise, hidden = hidden, onDark = onDark, positiveIsGood = positiveIsGood)
+            DeltaChip(deltaPaise = deltaPaise, hidden = hidden)
         }
     }
 }
