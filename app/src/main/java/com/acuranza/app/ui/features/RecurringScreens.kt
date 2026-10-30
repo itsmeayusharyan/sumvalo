@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Delete
@@ -253,7 +254,14 @@ private fun SeriesCard(s: Recurring.Series, hidden: Boolean, today: LocalDate, o
         }
         if (pills.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { pills.forEach { (t, col) -> Pill(t, col) } }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { pills.forEach { (t, col) ->
+                Text(
+                    t,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = col,
+                    modifier = Modifier.clickable { },
+                )
+            }}
         }
     }
 }

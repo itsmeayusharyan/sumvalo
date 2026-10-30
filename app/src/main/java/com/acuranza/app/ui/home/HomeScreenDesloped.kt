@@ -5,8 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +23,6 @@ import com.acuranza.app.model.Bank
 import com.acuranza.app.model.Paise
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.common.bankEnum
 import com.acuranza.app.ui.common.label
 import com.acuranza.app.ui.nav.Routes
@@ -268,9 +266,10 @@ private fun BillRow(b: com.acuranza.app.repo.BillItem, hidden: Boolean, onClick:
                 Text(b.card?.label() ?: "Card", style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 if (urgent || (days != null && days < 0)) {
                     Spacer(Modifier.width(6.dp))
-                    Pill(
+                    Text(
                         if (days != null && days < 0) "Overdue" else if (days == 0L) "Due today" else Fmt.relativeDays(days ?: 0),
-                        dueColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = dueColor,
                     )
                 }
             }

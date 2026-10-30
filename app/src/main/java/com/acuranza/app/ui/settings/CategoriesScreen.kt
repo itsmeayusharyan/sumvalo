@@ -196,7 +196,7 @@ fun CategoriesContent(
                         Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.weight(1f))
+                        Text(title, style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.weight(1f))
                         Text(
                             "Add category",
                             style = MaterialTheme.typography.labelMedium,

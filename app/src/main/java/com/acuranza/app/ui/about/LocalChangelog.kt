@@ -21,14 +21,18 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
-        tag = "v3.0",
-        name = "Sumvalo 3.0",
+        tag = "v3.1",
+        name = "Sumvalo 3.1",
         publishedAt = "",
         body = null,
         htmlUrl = "",
     ).copy(
         providedChanges = listOf(
             ChangeItem("Home screen de-sloped — flat surfaces, 1dp hairline borders, real type hierarchy, no gradients or glow, Swiss minimalism per kill-ai-slop taxonomy", ChangeCategory.IMPROVED),
+            ChangeItem("Removed badge & pill spam — notification bell, bill overdue tags, settings toggle states now plain text", ChangeCategory.IMPROVED),
+            ChangeItem("Removed tinted icon tiles — settings rows and edit-home drag affordance now use plain icons without bubble containers", ChangeCategory.IMPROVED),
+            ChangeItem("Removed drop shadows — drag affordance in edit-home no longer casts elevation shadow", ChangeCategory.IMPROVED),
+            ChangeItem("Removed ALL-CAPS section headers — settings sections, category groups, insight severity labels now sentence case", ChangeCategory.IMPROVED),
         ),
     ),
     ReleaseEntry(

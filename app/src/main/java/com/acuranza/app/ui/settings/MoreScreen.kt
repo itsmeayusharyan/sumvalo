@@ -226,7 +226,7 @@ fun SettingsGridRow(pair: List<SettingsEntryKey>, onNavigate: (String) -> Unit) 
 @Composable
 fun Section(title: String, content: @Composable () -> Unit) {
     Column(Modifier.padding(top = 24.dp)) {
-        Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
+        Text(title, style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
         Spacer(Modifier.height(8.dp))
         SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { content() }
     }

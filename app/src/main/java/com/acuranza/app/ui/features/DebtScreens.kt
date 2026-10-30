@@ -162,7 +162,11 @@ private fun DebtCard(d: DebtEntity, hidden: Boolean, today: LocalDate, onClick: 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (due != null) {
                     val overdue = due.isBefore(today)
-                    Pill(if (overdue) "Was due ${Fmt.date(due)}" else "Due ${Fmt.date(due)}", if (overdue) SumvaloTheme.colors.alert else SumvaloTheme.colors.tip)
+                    Text(
+                        if (overdue) "Was due ${Fmt.date(due)}" else "Due ${Fmt.date(due)}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (overdue) SumvaloTheme.colors.alert else SumvaloTheme.colors.tip,
+                    )
                 }
                 Spacer(Modifier.weight(1f))
                 if (onRepay != null) TextButton(onClick = onRepay) { Text("Record repayment") }

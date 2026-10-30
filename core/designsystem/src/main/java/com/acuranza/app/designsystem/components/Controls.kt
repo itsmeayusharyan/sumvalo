@@ -439,7 +439,7 @@ fun SectionHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            title.uppercase(),
+            title,
             style = SumvaloText.sectionLabel,
             color = SumvaloTheme.colors.subtleText,
             modifier = Modifier.weight(1f),

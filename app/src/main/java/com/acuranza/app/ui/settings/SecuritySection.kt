@@ -107,7 +107,11 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
             if (encrypted) "AES-256 (SQLCipher), key kept in the phone's secure hardware keystore" else "Sumvalo will encrypt it on the next launch",
             Icons.Outlined.Lock,
             trailing = {
-                Pill(if (encrypted) "On" else "Pending", if (encrypted) SumvaloTheme.colors.good else SumvaloTheme.colors.warning)
+                Text(
+                    if (encrypted) "On" else "Pending",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (encrypted) SumvaloTheme.colors.good else SumvaloTheme.colors.warning,
+                )
             },
         )
         SettingsRow(

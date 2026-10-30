@@ -277,9 +277,10 @@ fun AddTransactionContent(
                     ) {
                         refs.tags.sorted().forEach { tag ->
                             val selected = tags.contains(tag)
-                            Pill(
+                            Text(
                                 if (selected) "✓ $tag" else tag,
-                                if (selected) SumvaloTheme.colors.accent else SumvaloTheme.colors.fill,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (selected) SumvaloTheme.colors.accent else SumvaloTheme.colors.fill,
                                 modifier = Modifier.clickable { if (selected) tags -= tag else tags += tag },
                             )
                         }

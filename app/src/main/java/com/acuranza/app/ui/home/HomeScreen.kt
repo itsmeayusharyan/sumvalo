@@ -1,8 +1,6 @@
 package com.acuranza.app.ui.home
 
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.ChevronRight
@@ -85,7 +83,6 @@ import com.acuranza.app.repo.MonthSummary
 import com.acuranza.app.repo.NetWorth
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.bankEnum
@@ -413,24 +410,11 @@ private fun InsightsBulbButton(onInsights: () -> Unit) {
 @Composable
 private fun NotificationsBellButton(unread: Int, onOpen: () -> Unit) {
     IconButton(onClick = onOpen) {
-        BadgedBox(
-            badge = {
-                if (unread > 0) {
-                    Badge(
-                        containerColor = SumvaloTheme.colors.accent,
-                        contentColor = SumvaloTheme.colors.onInk,
-                    ) {
-                        Text("$unread")
-                    }
-                }
-            },
-        ) {
-            Icon(
-                Icons.Outlined.Notifications,
-                contentDescription = if (unread > 0) "Notifications, $unread unread" else "Notifications",
-                tint = SumvaloTheme.colors.subtleText,
-            )
-        }
+        Icon(
+            Icons.Outlined.Notifications,
+            contentDescription = if (unread > 0) "Notifications, $unread unread" else "Notifications",
+            tint = SumvaloTheme.colors.subtleText,
+        )
     }
 }
 
@@ -930,9 +914,10 @@ private fun BillListRow(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
                 Text(b.card?.label() ?: "Card", style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (urgent || (days != null && days < 0)) {
                     Spacer(Modifier.width(6.dp))
-                    Pill(
+                    Text(
                         if (days != null && days < 0) "Overdue" else if (days == 0L) "Due today" else Fmt.relativeDays(days ?: 0),
-                        dueColor,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = dueColor,
                     )
                 }
             }

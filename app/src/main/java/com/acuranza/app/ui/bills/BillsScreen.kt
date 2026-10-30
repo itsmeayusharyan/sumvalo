@@ -228,7 +228,11 @@ fun BillRow(b: BillItem, hidden: Boolean, onPay: () -> Unit, onUnpay: (() -> Uni
             SourceBadge(b.bill.source)
             if (b.isOverdue) {
                 Spacer(Modifier.width(8.dp))
-                Pill("Overdue", SumvaloTheme.colors.alert)
+                Text(
+                    "Overdue",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = SumvaloTheme.colors.alert,
+                )
             }
             Spacer(Modifier.weight(1f))
             if (onDelete != null) TextButton(onClick = onDelete) { Text("Remove", color = SumvaloTheme.colors.subtleText) }

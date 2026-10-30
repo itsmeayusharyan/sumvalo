@@ -255,7 +255,7 @@ fun InsightsContent(
         cards.groupBy { it.severity }.toSortedMap().forEach { (sev, items) ->
             item(key = "h-$sev") {
                 Text(
-                    sev.heading().uppercase(),
+                    sev.heading(),
                     style = MaterialTheme.typography.labelMedium,
                     color = sev.toUi().accent().first,
                     fontWeight = FontWeight.Bold,

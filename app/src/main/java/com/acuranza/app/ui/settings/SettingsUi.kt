@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.PaddingValues
 import com.acuranza.app.designsystem.components.SumvaloCard
-import com.acuranza.app.designsystem.components.IconBubble
 import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 
@@ -82,7 +81,7 @@ fun SettingsSection(title: String?, content: @Composable ColumnScope.() -> Unit)
     Column(Modifier.fillMaxWidth().padding(top = 24.dp)) {
         // On subpages the page title already names the group, so the in-card label is dropped.
         if (title != null) {
-            Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
+            Text(title, style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
             Spacer(Modifier.height(8.dp))
         }
         SumvaloCard(contentPadding = PaddingValues(0.dp)) {
@@ -94,19 +93,17 @@ fun SettingsSection(title: String?, content: @Composable ColumnScope.() -> Unit)
 @Composable
 private fun RowTile(icon: ImageVector, tone: RowTone, enabled: Boolean) {
     val colors = SumvaloTheme.colors
-    val (tile, tint) = when (tone) {
-        RowTone.NORMAL -> colors.fill to colors.ink
-        RowTone.MUTED -> colors.fill to colors.tertiaryText
-        RowTone.DESTRUCTIVE -> colors.alertTint to colors.alert
+    val tint = when (tone) {
+        RowTone.NORMAL -> colors.ink
+        RowTone.MUTED -> colors.tertiaryText
+        RowTone.DESTRUCTIVE -> colors.alert
     }
-    IconBubble(color = tile, size = 36.dp, shape = RoundedCornerShape(12.dp), alpha = 1f) {
-        Icon(
-            icon,
-            contentDescription = null,
-            tint = if (enabled) tint else tint.copy(alpha = 0.45f),
-            modifier = Modifier.size(20.dp),
-        )
-    }
+    Icon(
+        icon,
+        contentDescription = null,
+        tint = if (enabled) tint else tint.copy(alpha = 0.45f),
+        modifier = Modifier.size(20.dp),
+    )
 }
 
 @Composable

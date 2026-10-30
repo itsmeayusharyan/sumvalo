@@ -525,7 +525,7 @@ private fun SmsPendingReviewContent(
             ) { row ->
                 when (row) {
                     is PendingList.Header -> Text(
-                        row.text.uppercase(),
+                        row.text,
                         style = SumvaloText.sectionLabel,
                         color = SumvaloTheme.colors.subtleText,
                         modifier = Modifier.padding(top = 4.dp),

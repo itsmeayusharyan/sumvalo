@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.acuranza.app.designsystem.components.SumvaloCard
-import com.acuranza.app.designsystem.components.IconBubble
 import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.ui.common.SumvaloScreen
@@ -186,9 +185,6 @@ fun EditHomeContent(
                     .fillMaxWidth()
                     .animateItem()
                     .offset { IntOffset(0, offsetY.roundToPx()) }
-                    .graphicsLayer {
-                        shadowElevation = if (isDragging) 8f else 0f
-                    }
                     .pointerInput(section) {
                         detectDragGesturesAfterLongPress(
                             onDragStart = { dragging = section; dragOffset = 0f },
@@ -262,9 +258,7 @@ fun EditHomeContent(
                     Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconBubble(color = SumvaloTheme.colors.fill, size = 36.dp, shape = RoundedCornerShape(12.dp)) {
-                        Icon(Icons.Outlined.RestartAlt, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(20.dp))
-                    }
+                    Icon(Icons.Outlined.RestartAlt, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(14.dp))
                     Column(Modifier.weight(1f)) {
                         Text("Reset to default", style = MaterialTheme.typography.bodyLarge)
@@ -322,14 +316,12 @@ private fun EditHomeRow(
             Spacer(Modifier.width(24.dp))
         }
         Spacer(Modifier.width(6.dp))
-        IconBubble(color = colors.fill, size = 36.dp, shape = RoundedCornerShape(12.dp)) {
-            Icon(
-                section.icon,
-                contentDescription = null,
-                tint = if (visible) colors.ink else colors.tertiaryText,
-                modifier = Modifier.size(20.dp),
-            )
-        }
+        Icon(
+            section.icon,
+            contentDescription = null,
+            tint = if (visible) colors.ink else colors.tertiaryText,
+            modifier = Modifier.size(20.dp),
+        )
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Text(
