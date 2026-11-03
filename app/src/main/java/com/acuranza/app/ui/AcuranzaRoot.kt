@@ -518,10 +518,8 @@ fun SumvaloBottomBar(
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
     val pillShape = RoundedCornerShape(percent = 50)
-    // Translucent glass surface from the centralized treatment — see-through enough to float
-    // over scrolling content, opaque enough to stay readable on every palette.
-    val pillSurface = colors.glass.copy(alpha = if (colors.isDark) 0.88f else 0.92f)
-
+    // Reference treatment: a solid bordered container instead of glass — cardSurface with a
+    // hairline outline, the active destination on a filled rounded segment inside it.
     val barShape = if (floating) pillShape else RoundedCornerShape(0.dp)
     Box(
         Modifier
@@ -544,8 +542,8 @@ fun SumvaloBottomBar(
                     .navigationBarsPadding()
                     .background(colors.glass.copy(alpha = if (colors.isDark) 0.97f else 1f)),
             )
-            .then(if (floating) Modifier.glassSurface(pillShape) else Modifier)
-            .background(if (floating) pillSurface else androidx.compose.ui.graphics.Color.Transparent, barShape)
+            .background(colors.cardSurface, barShape)
+            .then(if (floating) Modifier.border(1.dp, colors.hairline, pillShape) else Modifier)
             .height(68.dp),
     ) {
         Row(
@@ -554,6 +552,7 @@ fun SumvaloBottomBar(
                 .padding(horizontal = 6.dp)
                 .fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             tabs.filter { it.visible }.forEach { tab ->
                 val resolvedIcon = com.acuranza.app.ui.nav.NavTabs.iconOf(tab.route, tab.iconId)
@@ -566,7 +565,7 @@ fun SumvaloBottomBar(
                     label = "tab-pill",
                 )
                 val iconTint by animateColorAsState(
-                    targetValue = if (selected) colors.accent else colors.tertiaryText,
+                    targetValue = if (selected) colors.ink else colors.tertiaryText,
                     animationSpec = com.acuranza.app.designsystem.theme.motionTween(220),
                     label = "tab-icon",
                 )
@@ -598,7 +597,7 @@ fun SumvaloBottomBar(
                         },
                     contentAlignment = Alignment.Center,
                 ) {
-                    // The large rounded indicator is its own layer so the transition only ever
+                    // The filled segment is its own layer so the transition only ever
                     // fades/scales the decoration — the icon and label stay visible in every state.
                     Box(
                         Modifier
@@ -608,8 +607,8 @@ fun SumvaloBottomBar(
                                 scaleX = 0.72f + 0.28f * pill
                                 scaleY = 0.72f + 0.28f * pill
                             }
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(colors.accentTint),
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(colors.fill),
                     )
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
@@ -621,9 +620,9 @@ fun SumvaloBottomBar(
                         if (showLabels) {
                             Text(
                                 tab.label,
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 10.sp,
+                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
+                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                fontSize = 11.sp,
                                 color = labelColor,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,

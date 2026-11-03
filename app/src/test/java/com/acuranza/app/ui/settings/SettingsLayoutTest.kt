@@ -50,10 +50,12 @@ class SettingsLayoutTest {
     @Test
     fun `duplicate ids are ignored on decode`() {
         val decoded = SettingsHubLayout.decode("more>about,about,about")
-        // Duplicate "about" in the entry list is ignored: ABOUT appears once, FINANCIAL appended.
+        // Duplicate "about" in the entry list is ignored: ABOUT appears once in More; FINANCIAL
+        // (mentioned nowhere) keeps its default home under Preferences.
         val moreEntries = decoded.sections.first { it.key == SettingsSectionKey.MORE }.entries
         assertEquals(1, moreEntries.count { it == SettingsEntryKey.ABOUT })
-        assertEquals(1, moreEntries.count { it == SettingsEntryKey.FINANCIAL })
+        val prefEntries = decoded.sections.first { it.key == SettingsSectionKey.PREFERENCES }.entries
+        assertEquals(1, prefEntries.count { it == SettingsEntryKey.FINANCIAL })
     }
 
     @Test
@@ -85,7 +87,7 @@ class SettingsLayoutTest {
         assertEquals(SettingsSectionKey.MORE.defaultTitle, SettingsSectionKey.MORE.defaultTitle)
         // The key, the entries and the routes are untouched.
         assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.ABOUT),
+            listOf(SettingsEntryKey.ABOUT),
             l.sections.first { it.key == SettingsSectionKey.MORE }.entries,
         )
     }

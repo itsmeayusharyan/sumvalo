@@ -1,0 +1,9 @@
+Sumvalo 0.19
+
+- Home trimmed to the essentials: the dashboard ends at Budget progress; Recent, Accounts and the deeper analytics sections moved off it (Activity, Insights and Accounts still carry everything)
+- Bottom navigation redesigned: solid bordered container, active destination on a filled segment, Chakra Petch labels
+- Default dark palette retuned from blue-navy to the neutral black direction
+- Activity filter chips select with the app's ink pill instead of a separate blue
+- Home date strip is interactive: tap a day or step weeks with the arrows; a Today chip returns to the current date
+- Net worth hide/show eye moved beside its title; the 1M/6M/1Y/All selector is one bordered pill
+- Settings: Tools moved from More into Preferences

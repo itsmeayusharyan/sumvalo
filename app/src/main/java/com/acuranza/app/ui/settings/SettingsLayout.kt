@@ -39,7 +39,7 @@ enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
     NOTIFICATIONS("notifications", SettingsSectionKey.PREFERENCES),
     DATA("data", SettingsSectionKey.DATA_PRIVACY),
     PRIVACY("privacy", SettingsSectionKey.DATA_PRIVACY),
-    FINANCIAL("financial", SettingsSectionKey.MORE),
+    FINANCIAL("financial", SettingsSectionKey.PREFERENCES),
     ABOUT("about", SettingsSectionKey.MORE),
 }
 

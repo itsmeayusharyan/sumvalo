@@ -21,6 +21,23 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.19",
+        name = "Sumvalo 0.19",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Home trimmed to the essentials — the dashboard now ends at Budget progress; Recent, Accounts and the deeper analytics sections moved off the dashboard (Activity, Insights and Accounts screens still carry everything)", ChangeCategory.IMPROVED),
+            ChangeItem("Bottom navigation redesigned — solid bordered container with the active destination on a filled segment, Chakra Petch labels", ChangeCategory.IMPROVED),
+            ChangeItem("Default dark palette retuned from blue-navy to the neutral black direction (backgrounds, cards, hairlines, text greys)", ChangeCategory.IMPROVED),
+            ChangeItem("Activity filter chips now select with the app's ink pill instead of a separate blue", ChangeCategory.FIXED),
+            ChangeItem("Home date strip is interactive — tap a day or step weeks with the arrows; a Today chip returns to the current date", ChangeCategory.ADDED),
+            ChangeItem("Net worth hide/show eye moved beside its title; the 1M/6M/1Y/All selector is one bordered pill", ChangeCategory.IMPROVED),
+            ChangeItem("Settings: Tools moved from More into Preferences", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.18",
         name = "Sumvalo 0.18",
         publishedAt = "",

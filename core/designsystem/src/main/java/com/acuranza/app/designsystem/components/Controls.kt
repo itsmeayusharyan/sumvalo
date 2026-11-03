@@ -253,8 +253,10 @@ fun FilterChipsRow(
                 label = { Text(option, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 shape = RoundedCornerShape(50),
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                    // The app's selection language is the ink pill (nav, month switcher, range
+                    // selectors) — not the accent blue, which read as a separate palette here.
+                    selectedContainerColor = SumvaloTheme.colors.ink,
+                    selectedLabelColor = SumvaloTheme.colors.onInk,
                     containerColor = SumvaloTheme.colors.cardSurfaceHigh,
                 ),
                 border = null,

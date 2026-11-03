@@ -25,6 +25,7 @@ import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Assessment
+import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.CompareArrows
 import androidx.compose.material.icons.outlined.Notifications
@@ -51,6 +52,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -74,6 +78,7 @@ import com.acuranza.app.model.Money
 import com.acuranza.app.repo.BillItem
 import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.label
+import com.acuranza.app.ui.common.rememberHaptic
 import com.acuranza.app.ui.settings.ProfileAvatar
 import com.acuranza.app.util.Time
 import java.time.DayOfWeek
@@ -202,7 +207,11 @@ internal fun HomeHeader(
 @Composable
 private fun DateStrip() {
     val today = Time.today()
-    val monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+    // The strip is a real date navigator: the days are tappable and the arrows step a week in
+    // either direction; LocalDate arithmetic carries month and year boundaries for free.
+    var selectedEpochDay by rememberSaveable { mutableStateOf(today.toEpochDay()) }
+    val selected = java.time.LocalDate.ofEpochDay(selectedEpochDay)
+    val monday = selected.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
     Row(
         Modifier
             .fillMaxWidth()
@@ -214,49 +223,133 @@ private fun DateStrip() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            "%02d".format(today.dayOfMonth),
+            "%02d".format(selected.dayOfMonth),
             style = chakraText(FontWeight.Bold, 34, 38, -0.5f),
             color = SumvaloTheme.colors.ink,
         )
         Spacer(Modifier.width(8.dp))
         Column {
             Text(
-                today.month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
+                selected.month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
                 style = chakraText(FontWeight.SemiBold, 10, 12, 1f),
                 color = SumvaloTheme.colors.tertiaryText,
             )
             Text(
-                today.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
+                selected.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
                 style = chakraText(FontWeight.SemiBold, 10, 12, 1f),
                 color = SumvaloTheme.colors.tertiaryText,
+            )
+        }
+        if (selected != today) {
+            Spacer(Modifier.width(8.dp))
+            Text(
+                "Today",
+                style = chakraText(FontWeight.SemiBold, 10, 12, 0.5f),
+                color = SumvaloTheme.colors.accent,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { selectedEpochDay = today.toEpochDay() }
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
             )
         }
         Spacer(Modifier.width(14.dp))
         Box(Modifier.width(1.dp).height(34.dp).background(SumvaloTheme.colors.hairline))
         Spacer(Modifier.weight(1f))
+        Icon(
+            Icons.Outlined.ChevronLeft,
+            contentDescription = "Previous week",
+            tint = SumvaloTheme.colors.tertiaryText,
+            modifier = Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .clickable(role = Role.Button) { selectedEpochDay = selected.minusDays(7).toEpochDay() }
+                .padding(2.dp),
+        )
         Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
             (0 until 7).forEach { i ->
                 val d = monday.plusDays(i.toLong())
+                val isSelected = d == selected
                 val isToday = d == today
-                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(role = Role.Button) { selectedEpochDay = d.toEpochDay() }
+                        .padding(vertical = 2.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     Text(
                         d.dayOfWeek.getDisplayName(java.time.format.TextStyle.NARROW, Locale.ENGLISH),
-                        style = chakraText(if (isToday) FontWeight.Bold else FontWeight.Medium, 10, 12),
-                        color = if (isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText,
+                        style = chakraText(if (isSelected || isToday) FontWeight.Bold else FontWeight.Medium, 10, 12),
+                        color = if (isSelected || isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText,
                     )
                     Text(
                         "${d.dayOfMonth}",
-                        style = chakraText(if (isToday) FontWeight.Bold else FontWeight.Medium, 13, 18),
-                        color = if (isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.subtleText,
+                        style = chakraText(if (isSelected || isToday) FontWeight.Bold else FontWeight.Medium, 13, 18),
+                        color = if (isSelected || isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.subtleText,
                     )
                     Box(
                         Modifier
                             .padding(top = 2.dp)
                             .size(width = 12.dp, height = 2.dp)
                             .clip(RoundedCornerShape(50))
-                            .background(if (isToday) SumvaloTheme.colors.ink else Color.Transparent),
+                            .background(
+                                when {
+                                    isSelected -> SumvaloTheme.colors.accent
+                                    isToday -> SumvaloTheme.colors.ink
+                                    else -> Color.Transparent
+                                },
+                            ),
                     )
                 }
+            }
+        }
+        Icon(
+            Icons.Outlined.ChevronRight,
+            contentDescription = "Next week",
+            tint = SumvaloTheme.colors.tertiaryText,
+            modifier = Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .clickable(role = Role.Button) { selectedEpochDay = selected.plusDays(7).toEpochDay() }
+                .padding(2.dp),
+        )
+    }
+}
+
+/**
+ * The hero's four-way range selector: all options inside one bordered pill container, the active
+ * range on a filled segment — the same treatment as the header's bell/profile pill controls.
+ */
+@Composable
+private fun HeroRangeSelector(labels: List<String>, selectedIndex: Int, onSelect: (Int) -> Unit) {
+    val haptic = rememberHaptic()
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .border(1.dp, colors.hairline, RoundedCornerShape(10.dp))
+            .background(colors.cardSurface)
+            .padding(2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        labels.forEachIndexed { i, label ->
+            val active = i == selectedIndex
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (active) colors.fill else Color.Transparent)
+                    .clickable { if (!active) { haptic.tick(); onSelect(i) } }
+                    .padding(horizontal = 9.dp, vertical = 5.dp)
+                    .semantics { role = Role.Tab; this.selected = active },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    label,
+                    style = chakraText(if (active) FontWeight.SemiBold else FontWeight.Medium, 12, 16),
+                    color = if (active) colors.ink else colors.subtleText,
+                    maxLines = 1,
+                )
             }
         }
     }
@@ -296,8 +389,9 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
                     "Net worth",
                     style = chakraText(FontWeight.Medium, 13, 18),
                     color = SumvaloTheme.colors.subtleText,
-                    modifier = Modifier.weight(1f),
                 )
+                // The hide/show toggle sits right beside the title it controls.
+                Spacer(Modifier.width(6.dp))
                 Icon(
                     if (hidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
                     contentDescription = if (hidden) "Show amounts" else "Hide amounts",
@@ -308,8 +402,8 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
                         .clickable(role = Role.Button, onClick = onToggleHidden)
                         .padding(4.dp),
                 )
-                Spacer(Modifier.width(8.dp))
-                RangeChips(labels, ranges.indexOf(range), onSelect = { range = ranges[it] })
+                Spacer(Modifier.weight(1f))
+                HeroRangeSelector(labels, ranges.indexOf(range), onSelect = { range = ranges[it] })
             }
             Spacer(Modifier.height(10.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {

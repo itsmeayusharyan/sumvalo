@@ -20,40 +20,24 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.components.AmountText
-import com.acuranza.app.designsystem.components.BarChart
-import com.acuranza.app.designsystem.components.ChartSlice
-import com.acuranza.app.designsystem.components.DonutChart
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.InsightCard
-import com.acuranza.app.designsystem.components.RangeChips
 import com.acuranza.app.designsystem.components.SectionHeader
-import com.acuranza.app.designsystem.components.SpendHeatmap
 import com.acuranza.app.designsystem.components.SumvaloCard
-import com.acuranza.app.designsystem.components.TrendChart
 import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
-import com.acuranza.app.model.TxnType
-import com.acuranza.app.ui.common.Fmt
 import com.acuranza.app.ui.common.color
-import com.acuranza.app.ui.common.toUi
 
 /**
  * Stateless Home screen, rendered from [HomeState]; used by the app and by screenshot tests.
@@ -197,159 +181,6 @@ fun HomeContent(
                 HomeSection.BUDGETS -> if (state.budgets.any { !it.isOverall }) item(key = "budgets") {
                     Box(Modifier.animateItem()) {
                         BudgetsSectionV2(state, hidden, onPlanning)
-                    }
-                }
-                HomeSection.INSIGHT -> state.insights.firstOrNull()?.let { top -> item(key = "insight") {
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Insight", actionLabel = if (state.insights.size > 1) "All ${state.insights.size}" else null, onAction = onInsights)
-                        InsightCard(
-                            severity = top.severity.toUi(),
-                            title = top.title,
-                            message = top.message,
-                            compact = true,
-                            onClick = onInsights,
-                        )
-                    }
-                } }
-                HomeSection.SPEND -> {
-                    val spend = state.summary?.byCategory.orEmpty()
-                    if (spend.isNotEmpty()) item(key = "spend") {
-                        val slices = remember(spend) {
-                            spend.take(6).map { ChartSlice(it.category?.name ?: it.categoryKey, it.total, it.category.color()) }
-                        }
-                        Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                            SectionHeader("Where it went", actionLabel = "Details", onAction = onActivity)
-                            SumvaloCard {
-                                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                                    DonutChart(
-                                        slices = slices,
-                                        size = 188.dp,
-                                        thickness = 12.dp,
-                                        centerLabel = "Spent",
-                                        centerValue = state.summary?.expense,
-                                        hidden = hidden,
-                                    )
-                                }
-                                Spacer(Modifier.height(16.dp))
-                                spend.take(6).forEachIndexed { i, c ->
-                                    if (i > 0) ListHairline(start = 18.dp)
-                                    Column(
-                                        Modifier
-                                            .fillMaxWidth()
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .clickable { onCategory(c.categoryKey) }
-                                            .padding(vertical = 10.dp),
-                                    ) {
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Box(Modifier.size(8.dp).clip(CircleShape).background(c.category.color()))
-                                            Spacer(Modifier.width(10.dp))
-                                            Text(c.category?.name ?: c.categoryKey, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                            Text(Fmt.pct(c.share * 100, 0), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.tertiaryText)
-                                            Spacer(Modifier.width(12.dp))
-                                            AmountText(c.total, style = AmountStyles.small, hidden = hidden, compact = true)
-                                            Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
-                                        }
-                                        Spacer(Modifier.height(8.dp))
-                                        // Share of the month's spend, as in the reference breakdown.
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(4.dp)
-                                                .clip(CircleShape)
-                                                .background(SumvaloTheme.colors.fill),
-                                        ) {
-                                            Box(
-                                                Modifier
-                                                    .fillMaxWidth(c.share.coerceIn(0.0, 1.0).toFloat())
-                                                    .height(4.dp)
-                                                    .clip(CircleShape)
-                                                    .background(SumvaloTheme.colors.accent),
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                HomeSection.SIX -> if (state.charts.hasSixMonths) item(key = "six") {
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Income vs spending")
-                        SumvaloCard {
-                            BarChart(groups = state.charts.sixMonths, height = 170.dp, hidden = hidden)
-                            Spacer(Modifier.height(10.dp))
-                            Text("SAVINGS RATE", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
-                            Spacer(Modifier.height(4.dp))
-                            Row(Modifier.fillMaxWidth()) {
-                                state.charts.savingsRates.forEach { r ->
-                                    Text(
-                                        r,
-                                        style = MaterialTheme.typography.labelMedium,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = if (r.startsWith("-")) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
-                                        textAlign = TextAlign.Center,
-                                        modifier = Modifier.weight(1f),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-                HomeSection.HEAT -> if (state.charts.hasHeat) item(key = "heat") {
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Daily spending")
-                        SumvaloCard {
-                            SpendHeatmap(weeks = state.charts.heatWeeks, dayLabels = state.charts.heatLabels, hidden = hidden)
-                        }
-                    }
-                }
-                HomeSection.NETWORTH -> if (state.charts.netWorth.size >= 2 || state.charts.todayHourly.size >= 2) item(key = "networth") {
-                    var range by remember { mutableStateOf(TrendRange.M1) }
-                    var selectedIdx by remember(range) { mutableStateOf<Int?>(null) }
-                    val points = remember(state.charts.netWorth, state.charts.todayHourly, range) {
-                        state.charts.trendPoints(range)
-                    }
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Net worth trend")
-                        SumvaloCard {
-                            AmountText(
-                                paise = points.getOrNull(selectedIdx ?: points.lastIndex)?.value
-                                    ?: state.netWorth?.total ?: 0,
-                                style = AmountStyles.medium,
-                                compact = true,
-                                hidden = hidden,
-                            )
-                            Spacer(Modifier.height(10.dp))
-                            if (points.size >= 2) {
-                                TrendChart(points = points, height = 150.dp, hidden = hidden, onSelectionChanged = { selectedIdx = it })
-                            } else {
-                                Text("Not enough history for this range yet.", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                            }
-                            Spacer(Modifier.height(14.dp))
-                            RangeChips(listOf("1D", "1W", "1M", "6M", "1Y", "ALL"), range.ordinal, onSelect = { range = TrendRange.values()[it] })
-                        }
-                    }
-                }
-                HomeSection.RECENT -> if (state.recent.isNotEmpty()) item(key = "recent") {
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Recent", actionLabel = "See all", onAction = onActivity)
-                        SumvaloCard(contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
-                            state.recent.forEachIndexed { i, t ->
-                                if (i > 0) ListHairline(start = 56.dp)
-                                TxnRow(t, hidden) { onTransaction(t.txn.id) }
-                            }
-                        }
-                    }
-                }
-                HomeSection.ACCOUNTS -> if (state.accounts.isNotEmpty()) item(key = "accounts") {
-                    Column(Modifier.animateItem().padding(horizontal = 16.dp).padding(top = 20.dp)) {
-                        SectionHeader("Accounts", actionLabel = "Manage", onAction = onAccounts)
-                        SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
-                            state.accounts.forEachIndexed { i, a ->
-                                if (i > 0) ListHairline(start = 48.dp)
-                                AccountListRow(a, hidden) { onAccount(a.id) }
-                            }
-                        }
                     }
                 }
             }

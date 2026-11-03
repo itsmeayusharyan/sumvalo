@@ -27,21 +27,21 @@ object BrandPalette {
     val SumvaloInkTertiary = Color(0xFF8A94A6)
     val SumvaloFill = Color(0xFFEFF1F4)
 
-    // Neutrals (dark) — deep slate-navy, not black
-    val SumvaloNight = Color(0xFF0B1220)
-    val SumvaloNightCard = Color(0xFF151E2E)
-    val SumvaloNightHairline = Color(0xFF2A3850)
-    val SumvaloNightFill = Color(0xFF1D2737)
-    val SumvaloSnow = Color(0xFFF3F6FB)
-    val SumvaloSnowSecondary = Color(0xFF9FADC4)
-    val SumvaloSnowTertiary = Color(0xFF6C7B96)
+    // Neutrals (dark) — the design's neutral black direction
+    val SumvaloNight = Color(0xFF0E0E0E)
+    val SumvaloNightCard = Color(0xFF171717)
+    val SumvaloNightHairline = Color(0xFF2A2A2A)
+    val SumvaloNightFill = Color(0xFF212121)
+    val SumvaloSnow = Color(0xFFF5F5F5)
+    val SumvaloSnowSecondary = Color(0xFFA3A3A3)
+    val SumvaloSnowTertiary = Color(0xFF8A8A8A)
 
     // Accent — the brand blue
     val SumvaloBlue = Color(0xFF2563EB)
     val SumvaloBlueDeep = Color(0xFF1D4ED8)
     val SumvaloBlueBright = Color(0xFF66A3FF)
     val SumvaloBlueTint = Color(0xFFEFF6FF)
-    val SumvaloBlueTintDark = Color(0xFF16233C)
+    val SumvaloBlueTintDark = Color(0xFF2A2A2A)
 
     // Money in — the only green
     val SumvaloEmerald = Color(0xFF047857)

@@ -2,17 +2,11 @@ package com.acuranza.app.ui.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.Bolt
-import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Equalizer
 import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.outlined.Savings
-import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.Speed
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -28,13 +22,6 @@ enum class HomeSection(val id: String, val label: String, val description: Strin
     PACE("pace", "Spending pace", "This month against your usual pace"),
     BILLS("bills", "Upcoming bills", "Card bills that are due"),
     BUDGETS("budgets", "Budget progress", "Category budgets at a glance"),
-    INSIGHT("insight", "Insight", "The most important finding right now"),
-    SPEND("spend", "Where it went", "Category breakdown of this month's spending"),
-    SIX("six", "Income vs spending", "Six months of income against spending"),
-    HEAT("heat", "Daily spending", "A day-by-day heatmap of the month"),
-    NETWORTH("networth", "Net worth trend", "How your net worth moved over time"),
-    RECENT("recent", "Recent", "Your latest transactions"),
-    ACCOUNTS("accounts", "Accounts", "Balances across your accounts"),
 }
 
 /** The section's icon in the Edit-home list; one consistent outline style. */
@@ -46,13 +33,6 @@ val HomeSection.icon: ImageVector
         HomeSection.PACE -> Icons.Outlined.Speed
         HomeSection.BILLS -> Icons.Outlined.CreditCard
         HomeSection.BUDGETS -> Icons.Outlined.PieChart
-        HomeSection.INSIGHT -> Icons.Outlined.Bolt
-        HomeSection.SPEND -> Icons.Outlined.PieChart
-        HomeSection.SIX -> Icons.Outlined.BarChart
-        HomeSection.HEAT -> Icons.Outlined.CalendarMonth
-        HomeSection.NETWORTH -> Icons.AutoMirrored.Outlined.ShowChart
-        HomeSection.RECENT -> Icons.AutoMirrored.Outlined.ReceiptLong
-        HomeSection.ACCOUNTS -> Icons.Outlined.AccountBalance
     }
 
 /**
