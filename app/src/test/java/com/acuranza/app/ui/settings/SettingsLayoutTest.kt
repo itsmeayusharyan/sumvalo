@@ -18,7 +18,7 @@ class SettingsLayoutTest {
 
     @Test
     fun `garbage decodes safely to the default`() {
-        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.decodeWithHidden("~~;;>>>"))
+        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.decodeWithHidden("~~;;>>>" ))
     }
 
     @Test
@@ -31,40 +31,43 @@ class SettingsLayoutTest {
 
     @Test
     fun `unknown ids are dropped and known sections missing from an old string come back`() {
-        // An old install's string missing a section added later: the section returns, entries intact.
-        // A v1.0.25-era layout string mentioning the retired "management"/"general" sections:
-        // unknown sections drop out, and their entries return via their NEW default homes.
-        val legacy = "management>Account|accounts;general>General|financial,widgets;appearance>Appearance|appearance"
+        // An old install's string mentions retired section ids ("management", "general") plus
+        // one current one ("money"). Unknown sections drop out; their entries return via their
+        // NEW default homes. Sections mentioned keep their listed entries plus defaults not listed.
+        val legacy = "management>Account|accounts;general>General|financial;money~Money>accounts,budget"
         val decoded = SettingsHubLayout.decode(legacy)
         assertEquals(SettingsSectionKey.entries.toSet(), decoded.sections.map { it.key }.toSet())
         assertEquals(
-            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.LENDING, SettingsEntryKey.LOANS, SettingsEntryKey.BUDGET),
-            decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries,
+            listOf(SettingsEntryKey.ACCOUNTS, SettingsEntryKey.BUDGET, SettingsEntryKey.LOANS, SettingsEntryKey.LENDING),
+            decoded.sections.first { it.key == SettingsSectionKey.MONEY }.entries,
         )
         assertEquals(
-            listOf(SettingsEntryKey.ACCOUNTS, SettingsEntryKey.DATA),
-            decoded.sections.first { it.key == SettingsSectionKey.DATA }.entries,
+            listOf(SettingsEntryKey.DATA, SettingsEntryKey.PRIVACY),
+            decoded.sections.first { it.key == SettingsSectionKey.DATA_PRIVACY }.entries,
         )
     }
 
     @Test
     fun `duplicate ids are ignored on decode`() {
-        val decoded = SettingsHubLayout.decode("about>about,about,about")
-        assertEquals(listOf(SettingsEntryKey.ABOUT), decoded.sections.first { it.key == SettingsSectionKey.ABOUT }.entries)
+        val decoded = SettingsHubLayout.decode("more>about,about,about")
+        // Duplicate "about" in the entry list is ignored: ABOUT appears once, FINANCIAL appended.
+        val moreEntries = decoded.sections.first { it.key == SettingsSectionKey.MORE }.entries
+        assertEquals(1, moreEntries.count { it == SettingsEntryKey.ABOUT })
+        assertEquals(1, moreEntries.count { it == SettingsEntryKey.FINANCIAL })
     }
 
     @Test
     fun `an entry mentioned nowhere keeps its default home`() {
         val decoded = SettingsHubLayout.decode("privacy>privacy")
-        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.FINANCIAL }.entries.contains(SettingsEntryKey.BUDGET))
-        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.DATA }.entries.contains(SettingsEntryKey.ACCOUNTS))
+        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.MONEY }.entries.contains(SettingsEntryKey.BUDGET))
+        assertTrue(decoded.sections.first { it.key == SettingsSectionKey.DATA_PRIVACY }.entries.contains(SettingsEntryKey.DATA))
     }
 
     @Test
     fun `hidden entries are removed from sections and listed, then re-shown into their default section`() {
-        var l = SettingsHubLayout.decodeWithHidden("appearance>Appearance & personalization|appearance;financial>Tools|financial")
-        assertEquals(listOf(SettingsEntryKey.APPEARANCE), l.sections.first { it.key == SettingsSectionKey.APPEARANCE }.entries)
-        assertTrue(l.hidden.isEmpty())
+        var l = SettingsHubLayout.decodeWithHidden("money~Money>accounts,budget;!lending")
+        assertEquals(false, l.sections.first { it.key == SettingsSectionKey.MONEY }.entries.contains(SettingsEntryKey.LENDING))
+        assertTrue(l.hidden.contains(SettingsEntryKey.LENDING))
     }
 
     @Test
@@ -77,20 +80,20 @@ class SettingsLayoutTest {
 
     @Test
     fun `rename changes only the displayed title`() {
-        val l = SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.ABOUT, "About Sumvalo")
-        assertEquals("About Sumvalo", l.sections.first { it.key == SettingsSectionKey.ABOUT }.title)
-        assertEquals(SettingsSectionKey.ABOUT.defaultTitle, SettingsSectionKey.ABOUT.defaultTitle)
+        val l = SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.MORE, "About Sumvalo")
+        assertEquals("About Sumvalo", l.sections.first { it.key == SettingsSectionKey.MORE }.title)
+        assertEquals(SettingsSectionKey.MORE.defaultTitle, SettingsSectionKey.MORE.defaultTitle)
         // The key, the entries and the routes are untouched.
         assertEquals(
-            listOf(SettingsEntryKey.ABOUT),
-            l.sections.first { it.key == SettingsSectionKey.ABOUT }.entries,
+            listOf(SettingsEntryKey.FINANCIAL, SettingsEntryKey.ABOUT),
+            l.sections.first { it.key == SettingsSectionKey.MORE }.entries,
         )
     }
 
     @Test
     fun `blank or overlong renames are rejected`() {
-        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.ABOUT, "   "))
-        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.ABOUT, "x".repeat(41)))
+        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.MORE, "   "))
+        assertEquals(SettingsHubLayout.DEFAULT, SettingsHubLayout.renameSection(SettingsHubLayout.DEFAULT, SettingsSectionKey.MORE, "x".repeat(41)))
     }
 
     @Test
@@ -99,7 +102,18 @@ class SettingsLayoutTest {
         assertEquals(titles, titles.sorted())
         // The spec's example ordering, concretely:
         assertEquals(
-            listOf("about", "accounts & cards", "appearance", "budgets & goals", "data management", "lending", "loans & emi", "notifications", "privacy & security", "tools"),
+            listOf(
+                "about",
+                "accounts & cards",
+                "appearance",
+                "budgets & goals",
+                "data management",
+                "lending",
+                "loans & emi",
+                "notifications",
+                "privacy & security",
+                "tools",
+            ),
             titles,
         )
     }
@@ -118,7 +132,7 @@ class SettingsLayoutTest {
 
     @Test
     fun `hidden shortcuts are excluded from the landing grid`() {
-        val flat = SettingsHubLayout.visibleFlat("appearance>Appearance & personalization|appearance;!lending")
+        val flat = SettingsHubLayout.visibleFlat("money>Money|accounts,budget;!lending")
         assertEquals(false, flat.contains(SettingsEntryKey.LENDING))
         assertEquals(true, flat.contains(SettingsEntryKey.ABOUT))
     }
@@ -126,7 +140,7 @@ class SettingsLayoutTest {
     @Test
     fun `section order persists through encode and decode`() {
         var l = SettingsHubLayout.DEFAULT
-        l = SettingsHubLayout.moveSection(l, l.sections.indexOfFirst { it.key == SettingsSectionKey.ABOUT }, up = true)
+        l = SettingsHubLayout.moveSection(l, l.sections.indexOfFirst { it.key == SettingsSectionKey.MORE }, up = true)
         val decoded = SettingsHubLayout.decodeWithHidden(SettingsHubLayout.encode(l))
         assertEquals(l.sections.map { it.key }, decoded.sections.map { it.key })
     }
@@ -134,9 +148,9 @@ class SettingsLayoutTest {
     @Test
     fun `entry order persists through encode and decode`() {
         var l = SettingsHubLayout.DEFAULT
-        l = SettingsHubLayout.moveEntry(l, SettingsSectionKey.DATA, 1, up = true)
+        l = SettingsHubLayout.moveEntry(l, SettingsSectionKey.MONEY, 1, up = true)
         val decoded = SettingsHubLayout.decodeWithHidden(SettingsHubLayout.encode(l))
-        assertEquals(l.sections.first { it.key == SettingsSectionKey.DATA }.entries, decoded.sections.first { it.key == SettingsSectionKey.DATA }.entries)
+        assertEquals(l.sections.first { it.key == SettingsSectionKey.MONEY }.entries, decoded.sections.first { it.key == SettingsSectionKey.MONEY }.entries)
     }
 
     @Test

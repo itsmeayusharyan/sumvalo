@@ -21,6 +21,20 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.17",
+        name = "Sumvalo 0.17",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Settings hub redesigned — labeled groups (Money, Preferences, Data & privacy, More), profile tile, search field, 52dp rows", ChangeCategory.ADDED),
+            ChangeItem("Chakra Petch typeface bundled for home and settings headings", ChangeCategory.ADDED),
+            ChangeItem("Home redesign (v0.16): net worth hero, monthly spending ring, budget progress rings, redesigned quick actions", ChangeCategory.ADDED),
+            ChangeItem("Activity (transactions) redesigned — grouped sections, pill month switcher, combined income/spent/net stat row, search field, 52dp rows", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.16",
         name = "Sumvalo 0.16",
         publishedAt = "",

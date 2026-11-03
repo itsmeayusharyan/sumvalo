@@ -4,12 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Backup
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.PieChart
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Shield
 import com.acuranza.app.ui.nav.Routes
 
@@ -23,26 +23,24 @@ import com.acuranza.app.ui.nav.Routes
 
 /** One hub section; [id] is what persists. */
 enum class SettingsSectionKey(val id: String, val defaultTitle: String) {
-    APPEARANCE("appearance", "Appearance & personalization"),
-    FINANCIAL("financial", "Tools"),
-    PRIVACY("privacy", "Privacy & security"),
-    DATA("data", "Data management"),
-    NOTIFICATIONS("notifications", "Notifications"),
-    ABOUT("about", "About"),
+    MONEY("money", "Money"),
+    PREFERENCES("preferences", "Preferences"),
+    DATA_PRIVACY("data_privacy", "Data & privacy"),
+    MORE("more", "More"),
 }
 
 /** One hub shortcut; [id] is what persists and [section] is where it lives by default. */
 enum class SettingsEntryKey(val id: String, val section: SettingsSectionKey) {
-    ACCOUNTS("accounts", SettingsSectionKey.DATA),
-    FINANCIAL("financial", SettingsSectionKey.FINANCIAL),
-    APPEARANCE("appearance", SettingsSectionKey.APPEARANCE),
-    PRIVACY("privacy", SettingsSectionKey.PRIVACY),
-    DATA("data", SettingsSectionKey.DATA),
-    NOTIFICATIONS("notifications", SettingsSectionKey.NOTIFICATIONS),
-    ABOUT("about", SettingsSectionKey.ABOUT),
-    LENDING("lending", SettingsSectionKey.FINANCIAL),
-    LOANS("loans", SettingsSectionKey.FINANCIAL),
-    BUDGET("budget", SettingsSectionKey.FINANCIAL),
+    ACCOUNTS("accounts", SettingsSectionKey.MONEY),
+    BUDGET("budget", SettingsSectionKey.MONEY),
+    LOANS("loans", SettingsSectionKey.MONEY),
+    LENDING("lending", SettingsSectionKey.MONEY),
+    APPEARANCE("appearance", SettingsSectionKey.PREFERENCES),
+    NOTIFICATIONS("notifications", SettingsSectionKey.PREFERENCES),
+    DATA("data", SettingsSectionKey.DATA_PRIVACY),
+    PRIVACY("privacy", SettingsSectionKey.DATA_PRIVACY),
+    FINANCIAL("financial", SettingsSectionKey.MORE),
+    ABOUT("about", SettingsSectionKey.MORE),
 }
 
 /** Display data for one hub shortcut, shared by the hub and the Customize screen. */
@@ -55,7 +53,7 @@ internal data class SettingsEntryUi(
 
 internal val SettingsEntryDisplay: Map<SettingsEntryKey, SettingsEntryUi> = linkedMapOf(
     SettingsEntryKey.ACCOUNTS to SettingsEntryUi("Accounts & cards", "Accounts, imports and categories", Icons.Outlined.AccountBalance, Routes.SETTINGS_MANAGEMENT),
-    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Tools", "Recurring payments, reports", Icons.Outlined.Settings, Routes.SETTINGS_FINANCIAL),
+    SettingsEntryKey.FINANCIAL to SettingsEntryUi("Tools", "Recurring payments, reports", Icons.Outlined.Build, Routes.SETTINGS_FINANCIAL),
     SettingsEntryKey.LENDING to SettingsEntryUi("Lending", "Money between you and friends or family", Icons.Outlined.Handshake, Routes.DEBTS),
     SettingsEntryKey.LOANS to SettingsEntryUi("Loans & EMI", "What's left, prepayment savings, tax split", Icons.Outlined.AccountBalanceWallet, Routes.LOANS),
     SettingsEntryKey.BUDGET to SettingsEntryUi("Budgets & goals", "Budgets, savings goals and your salary plan", Icons.Outlined.PieChart, Routes.PLANNING),

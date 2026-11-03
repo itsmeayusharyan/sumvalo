@@ -11,10 +11,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SearchOff
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.Image
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -26,16 +42,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.data.tombstones
+import com.acuranza.app.R
 import com.acuranza.app.designsystem.components.DateHeader
 import com.acuranza.app.designsystem.components.EmptyState
+import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.FilterChipsRow
 import com.acuranza.app.designsystem.components.MonthSwitcher
 import com.acuranza.app.designsystem.components.StatChip
@@ -46,7 +75,6 @@ import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.TransactionItem
 import com.acuranza.app.repo.TxnFilter
 import com.acuranza.app.ui.common.Fmt
-import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalHideAmounts
 import com.acuranza.app.ui.common.acuranzaViewModel
 import com.acuranza.app.ui.common.rememberHaptic
@@ -246,6 +274,59 @@ fun TransactionsScreen(nav: NavController) {
     )
 }
 
+/** Chakra Petch — bundled under res/font (SIL OFL). Shared display face across home/settings/activity. */
+val Chakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+/** Chakra-flavoured text style. */
+private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
+/** One stat pill: label + compact amount in a type colour, inside a hairline-separated row. */
+@Composable
+private fun StatPill(label: String, paise: Long, color: Color, modifier: Modifier = Modifier, hidden: Boolean) {
+    Column {
+        Text(
+            label,
+            style = chakraText(FontWeight.Medium, 11, 16),
+            color = SumvaloTheme.colors.tertiaryText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        AmountText(
+            paise,
+            style = chakraText(FontWeight.SemiBold, 17, 22),
+            compact = true,
+            hidden = hidden,
+            color = if (paise < 0 && label == "Net") SumvaloTheme.colors.expense else color,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+/** Search field styled per the reference: 10px pill, bordered, focus ring. */
+@Composable
+private fun ActivitySearchField(query: String, onQueryChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text("Search merchant, note, category or #tag", style = MaterialTheme.typography.bodyMedium) },
+        leadingIcon = { Image(imageVector = Icons.Outlined.Search, contentDescription = null, modifier = Modifier) },
+        singleLine = true,
+        shape = RoundedCornerShape(10.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+            focusedContainerColor = SumvaloTheme.colors.cardSurface,
+            unfocusedBorderColor = SumvaloTheme.colors.hairline,
+            focusedBorderColor = SumvaloTheme.colors.accent,
+        ),
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+    )
+}
+
 /** Stateless Activity screen; used by the app and by screenshot tests. */
 @Composable
 fun TransactionsContent(
@@ -262,39 +343,62 @@ fun TransactionsContent(
     onFixUncategorised: () -> Unit = {},
 ) {
     val canGoNext = !state.period.endExclusive.isAfter(Time.today())
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+    Box(Modifier.fillMaxSize()) {
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 8.dp)) {
             item(key = "head") {
-                Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) {
-                    Text("Activity", style = SumvaloText.screenTitle)
-                    MonthSwitcher(
-                        label = Fmt.periodLabel(state.period),
-                        onPrevious = onPrevious,
-                        onNext = onNext,
-                        canGoNext = canGoNext,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                    )
-                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
-                        if (state.narrowed) {
+                Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp)) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Activity",
+                            style = chakraText(FontWeight.Bold, 20, 26),
+                            color = SumvaloTheme.colors.ink,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Row(
+                            Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(SumvaloTheme.colors.cardSurface)
+                                .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(10.dp))
+                                .padding(horizontal = 1.dp, vertical = 1.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            IconButton(onClick = onPrevious) {
+                                Image(
+                                    Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                                    contentDescription = "Previous period",
+                                    modifier = Modifier,
+                                )
+                            }
                             Text(
-                                (state.categoryName?.let { "$it · " } ?: "") + "totals for the transactions shown",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = SumvaloTheme.colors.subtleText,
-                                modifier = Modifier.padding(bottom = 6.dp),
+                                Fmt.periodLabel(state.period),
+                                style = chakraText(FontWeight.Medium, 13, 18),
+                                color = SumvaloTheme.colors.ink,
+                                modifier = Modifier.padding(horizontal = 8.dp),
                             )
-                        }
-                        Row(Modifier.fillMaxWidth()) {
-                            StatChip("Income", state.income, Modifier.weight(1f), type = TxnType.INCOME, hidden = hidden)
-                            StatChip("Spent", state.expense, Modifier.weight(1f), type = TxnType.EXPENSE, hidden = hidden)
-                            StatChip("Net", state.income - state.expense, Modifier.weight(1f), hidden = hidden)
+                            IconButton(onClick = { if (canGoNext) onNext() }) {
+                                Image(
+                                    Icons.AutoMirrored.Default.KeyboardArrowRight,
+                                    contentDescription = "Next period",
+                                    modifier = Modifier,
+                                )
+                            }
                         }
                     }
-                    SumvaloTextField(
-                        value = state.query,
-                        onValue = onQuery,
-                        label = "Search merchant, note, category or #tag",
-                        modifier = Modifier.padding(top = 12.dp),
-                    )
+                    Spacer(Modifier.height(14.dp))
+                    // Combined stat card: Income / Spent / Net with hairline separators.
+                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                        StatPill("Income", state.income, SumvaloTheme.colors.income, Modifier.weight(1f), hidden)
+                        Spacer(Modifier.width(8.dp))
+                        Box(Modifier.width(1.dp).fillMaxHeight().background(SumvaloTheme.colors.hairline))
+                        Spacer(Modifier.width(8.dp))
+                        StatPill("Spent", state.expense, SumvaloTheme.colors.expense, Modifier.weight(1f), hidden)
+                        Spacer(Modifier.width(8.dp))
+                        Box(Modifier.width(1.dp).fillMaxHeight().background(SumvaloTheme.colors.hairline))
+                        Spacer(Modifier.width(8.dp))
+                        StatPill("Net", state.income - state.expense, SumvaloTheme.colors.ink, Modifier.weight(1f), hidden)
+                    }
+                    Spacer(Modifier.height(14.dp))
+                    ActivitySearchField(state.query, onQuery)
                 }
             }
             item(key = "filters") {
@@ -303,12 +407,12 @@ fun TransactionsContent(
                     options = listOfNotNull(categoryChip) + FILTERS,
                     selected = state.filters + listOfNotNull(categoryChip),
                     onToggle = onToggleFilter,
-                    modifier = Modifier.padding(vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
             if (state.uncategorised > com.acuranza.app.ui.home.UNCATEGORISED_BANNER_MIN) {
                 item(key = "uncategorised") {
-                    UncategorisedBanner(state.uncategorised, onFixUncategorised, Modifier.padding(horizontal = 20.dp, vertical = 4.dp))
+                    UncategorisedBanner(state.uncategorised, onFixUncategorised, Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
                 }
             }
             if (state.loaded && state.groups.isEmpty()) {
@@ -321,13 +425,13 @@ fun TransactionsContent(
                             "Transactions for ${Fmt.month(state.period.label)} will show up here. Tap + to add one."
                         },
                         icon = if (state.query.isNotBlank()) Icons.Outlined.SearchOff else Icons.AutoMirrored.Outlined.ReceiptLong,
-                        modifier = Modifier.padding(top = 40.dp),
+                        modifier = Modifier.padding(start = 16.dp, top = 40.dp, end = 16.dp, bottom = 0.dp),
                     )
                 }
             }
             state.groups.forEach { g ->
                 item(key = "d" + g.date) {
-                    DateHeader(Fmt.dayLabel(g.date), Modifier.padding(horizontal = 20.dp), netPaise = g.net, hidden = hidden)
+                    DateHeader(Fmt.dayLabel(g.date), Modifier.padding(horizontal = 16.dp), netPaise = g.net, hidden = hidden)
                 }
                 items(g.items, key = { it.txn.id }) { t ->
                     SwipeActionsRow(

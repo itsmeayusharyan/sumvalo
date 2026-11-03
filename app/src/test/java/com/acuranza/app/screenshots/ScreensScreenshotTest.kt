@@ -357,8 +357,10 @@ class ScreensScreenshotTest {
                 }
             }
             com.acuranza.app.ui.settings.ProfileCard(name = null, avatarPath = null, onClick = {})
-            com.acuranza.app.ui.settings.SettingsHubLayout.visibleFlat(null).chunked(2).forEach { pair ->
-                com.acuranza.app.ui.settings.SettingsGridRow(pair, onNavigate = {})
+            com.acuranza.app.ui.settings.SettingsSectionKey.entries.forEach { section ->
+                val entries = com.acuranza.app.ui.settings.SettingsHubLayout.visibleFlat(null).filter { it.section == section }
+                if (entries.isEmpty()) return@forEach
+                com.acuranza.app.ui.settings.SettingsGroup(section.defaultTitle, entries) { }
             }
             Spacer(Modifier.height(24.dp))
         }

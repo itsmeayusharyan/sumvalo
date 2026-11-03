@@ -1,5 +1,10 @@
 package com.acuranza.app.ui.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,29 +15,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.border
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.TrendingUp
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.Widgets
-import androidx.compose.material.icons.outlined.Alarm
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Backup
+import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Handshake
 import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,9 +48,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.acuranza.app.R
 import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.theme.SumvaloText
@@ -58,7 +71,7 @@ import com.acuranza.app.ui.common.LocalSettings
 import com.acuranza.app.ui.nav.Routes
 
 /** One destination on the Settings hub, with the group it belongs to. */
-private data class SettingsEntry(
+internal data class SettingsEntry(
     val key: SettingsEntryKey,
     val group: String,
     val title: String,
@@ -75,14 +88,15 @@ private val SettingsEntries = SettingsEntryKey.entries.map { key ->
     SettingsEntry(key, key.section.defaultTitle, ui.title, ui.description, ui.icon, ui.route)
 }
 
-
 private fun entryOf(key: SettingsEntryKey): SettingsEntry = SettingsEntries.first { it.key == key }
 
 /**
- * The Settings hub (v1.13.14): a prominent header, a search field that filters every destination
- * by name and description, and the destinations grouped into labeled rounded containers. Search
- * shows a flat filtered list with a graceful empty state; with an empty query the groups render
- * in full. All colors come from the theme, so Dark, Light, System and AMOLED flow through.
+ * The Settings hub: header with title + subtitle, search field that filters every destination by
+ * name and description, a tappable profile tile, then the destinations grouped into labeled
+ * sections (Money / Preferences / Data & privacy / More). Search shows a flat filtered list with
+ * a graceful empty state; with an empty query the groups render in full. All colors come from the
+ * theme, so Dark, Light, System and AMOLED flow through. The saved hub layout (order, hidden
+ * shortcuts, title overrides) still governs what the landing page shows.
  */
 @Composable
 fun MoreScreen(nav: NavController) {
@@ -94,48 +108,40 @@ fun MoreScreen(nav: NavController) {
 
     LazyColumn(
         Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
     ) {
         item(key = "head") {
-            Row(Modifier.padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                SumvaloLogo(size = 44.dp)
-                Spacer(Modifier.width(14.dp))
-                Column(Modifier.weight(1f)) {
-                    Text("Settings", style = SumvaloText.screenTitle)
-                    Text("Your money, on your phone", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                }
-                androidx.compose.material3.IconButton(onClick = { nav.navigate(Routes.SETTINGS_EDIT) }) {
-                    androidx.compose.material3.Icon(Icons.Outlined.Tune, contentDescription = "Customize settings")
-                }
-            }
-        }
-        item(key = "search") {
-            OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
-                placeholder = { Text("Search settings", style = MaterialTheme.typography.bodyMedium) },
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText) },
-                trailingIcon = {
-                    if (query.isNotEmpty()) {
-                        IconButton(onClick = { query = "" }, modifier = Modifier.size(40.dp)) {
-                            Icon(Icons.Outlined.Close, contentDescription = "Clear search", tint = SumvaloTheme.colors.tertiaryText)
-                        }
+            Column(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                Row(Modifier.fillMaxWidth().padding(bottom = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            "Settings",
+                            style = TextStyle(fontFamily = Chakra, fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp),
+                            color = SumvaloTheme.colors.ink,
+                        )
+                        Text(
+                            "Your money, on your phone",
+                            style = chakraText(FontWeight.Medium, 13, 18),
+                            color = SumvaloTheme.colors.subtleText,
+                        )
                     }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
-                    focusedContainerColor = SumvaloTheme.colors.cardSurface,
-                    unfocusedBorderColor = SumvaloTheme.colors.hairline,
-                    focusedBorderColor = SumvaloTheme.colors.accent,
-                ),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
-            )
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = { nav.navigate(Routes.SETTINGS_EDIT) }) {
+                        Icon(
+                            Icons.Outlined.Tune,
+                            contentDescription = "Customize settings",
+                            tint = SumvaloTheme.colors.subtleText,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
+                }
+                SearchField(query, onQueryChange = { query = it })
+            }
         }
         item(key = "profile") {
             val s = LocalSettings.current
-            ProfileCard(name = s.profileName, avatarPath = s.profileAvatar) { nav.navigate(Routes.PROFILE) }
+            ProfileTile(name = s.profileName, avatarPath = s.profileAvatar) { nav.navigate(Routes.PROFILE) }
+            Spacer(Modifier.height(12.dp))
         }
         if (q.isNotEmpty() && hits.isEmpty()) {
             item(key = "empty") {
@@ -172,57 +178,183 @@ fun MoreScreen(nav: NavController) {
             // The saved hub layout: order, per-section shortcuts and (display-only) title
             // overrides. Hidden shortcuts are simply absent here — search still finds them,
             // so nothing becomes unreachable, and Customize settings re-shows them any time.
-            // No visible headings: one continuous two-column grid, alphabetical by title
-            // for default layouts; a user-customized order always wins over the default sort.
             val flat = SettingsHubLayout.visibleFlat(hubLayoutPref)
-            flat.chunked(2).forEachIndexed { rowIndex, pair ->
-                item(key = "row-$rowIndex") {
-                    StaggeredEntrance(rowIndex) {
-                        SettingsGridRow(pair, onNavigate = { nav.navigate(it) })
+            SettingsSectionKey.entries.forEach { section ->
+                val entries = flat.filter { it.section == section }
+                if (entries.isEmpty()) return@forEach
+                item(key = "group-${section.id}") {
+                    SettingsGroup(section.defaultTitle, entries) { key ->
+                        nav.navigate(SettingsEntryDisplay.getValue(key).route)
                     }
                 }
             }
         }
         item(key = "footer") {
-            Spacer(Modifier.height(24.dp))
-        }
-    }
-}
-
-/**
- * One grid row: equal-width tiles that stretch to equal heights (IntrinsicSize.Min), so large
- * text never misaligns a row. Tiles are icon + title only — descriptions and headings are gone
- * from the landing page; an odd shortcut keeps half width rather than stretching.
- * Stateless: the golden renders exactly this.
- */
-@Composable
-fun SettingsGridRow(pair: List<SettingsEntryKey>, onNavigate: (String) -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().height(IntrinsicSize.Min).padding(bottom = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        pair.forEach { key ->
-            val entry = entryOf(key)
             Column(
                 Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(SumvaloTheme.colors.cardSurface)
-                    .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(16.dp))
-                    .clickable { onNavigate(entry.route) }
-                    .padding(horizontal = 14.dp, vertical = 14.dp),
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(22.dp))
-                Spacer(Modifier.height(8.dp))
-                Text(entry.title, style = MaterialTheme.typography.titleSmall, color = SumvaloTheme.colors.ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    "Sumvalo · Your data stays on this device",
+                    style = chakraText(FontWeight.Medium, 12, 16),
+                    color = SumvaloTheme.colors.subtleText,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(12.dp))
             }
         }
-        if (pair.size == 1) Spacer(Modifier.weight(1f))
     }
 }
 
-/** A titled group of settings rows on a card. */
+/** The search field: leading glass icon, clear button when something is typed. */
+@Composable
+private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        placeholder = { Text("Search settings", style = MaterialTheme.typography.bodyMedium) },
+        leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText) },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }, modifier = Modifier.size(40.dp)) {
+                    Icon(Icons.Outlined.Close, contentDescription = "Clear search", tint = SumvaloTheme.colors.tertiaryText)
+                }
+            }
+        },
+        singleLine = true,
+        shape = RoundedCornerShape(10.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedContainerColor = SumvaloTheme.colors.cardSurface,
+            focusedContainerColor = SumvaloTheme.colors.cardSurface,
+            unfocusedBorderColor = SumvaloTheme.colors.hairline,
+            focusedBorderColor = SumvaloTheme.colors.accent,
+        ),
+        modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+    )
+}
+
+/** Tappable profile tile: avatar + name (or default prompt), edit affordance. */
+@Composable
+private fun ProfileTile(name: String?, avatarPath: String?, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(14.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(36.dp)
+                .clip(RoundedCornerShape(50))
+                .background(SumvaloTheme.colors.fill),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                Icons.Outlined.AccountBalanceWallet,
+                contentDescription = null,
+                tint = SumvaloTheme.colors.ink,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                name?.takeIf { it.isNotBlank() } ?: "Your profile",
+                style = chakraText(FontWeight.SemiBold, 15, 20),
+                color = SumvaloTheme.colors.ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                if (name.isNullOrBlank()) "Add your name and photo" else "Your profile",
+                style = chakraText(FontWeight.Medium, 13, 18),
+                color = SumvaloTheme.colors.subtleText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Spacer(Modifier.weight(1f))
+        IconButton(onClick = onClick) {
+            Icon(Icons.Outlined.Edit, contentDescription = "Edit profile", tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(20.dp))
+        }
+    }
+}
+
+/** One labeled group of hub rows (Money / Preferences / Data & privacy / More). */
+@Composable
+internal fun SettingsGroup(
+    label: String,
+    entries: List<SettingsEntryKey>,
+    onNavigate: (SettingsEntryKey) -> Unit,
+) {
+    Column(Modifier.padding(top = 20.dp)) {
+        Text(
+            label.uppercase(),
+            style = chakraText(FontWeight.SemiBold, 11, 14, letterSpacingSp = 0.12f),
+            color = SumvaloTheme.colors.subtleText,
+            modifier = Modifier.padding(horizontal = 2.dp),
+        )
+        Spacer(Modifier.height(10.dp))
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(SumvaloTheme.colors.cardSurface)
+                .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(14.dp)),
+        ) {
+            entries.forEachIndexed { index, key ->
+                val entry = entryOf(key)
+                if (index > 0) {
+                    V2Hairline(Modifier.padding(start = 56.dp))
+                }
+                SettingsRowV2(entry, onNavigate = { onNavigate(entry.key) })
+            }
+        }
+    }
+}
+
+/** One hub row: icon box + title + chevron, 52dp tall, full width. */
+@Composable
+internal fun SettingsRowV2(entry: SettingsEntry, onNavigate: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(role = Role.Button, onClick = onNavigate)
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(18.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Text(
+            entry.title,
+            style = chakraText(FontWeight.SemiBold, 14, 20),
+            color = SumvaloTheme.colors.ink,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
+        )
+        Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
+    }
+}
+
+/** A titled group of settings rows on a card. Kept for any other screens that use it. */
 @Composable
 fun Section(title: String, content: @Composable () -> Unit) {
     Column(Modifier.padding(top = 24.dp)) {
@@ -230,4 +362,21 @@ fun Section(title: String, content: @Composable () -> Unit) {
         Spacer(Modifier.height(8.dp))
         SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) { content() }
     }
+}
+
+/** Chakra-flavoured copy of a text style, so settings headings carry the new voice. */
+private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
+/** Chakra Petch — bundled under res/font (SIL OFL). */
+val Chakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+/** One-line horizontal hairline used between design rows. */
+@Composable
+private fun V2Hairline(modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outlineVariant))
 }
