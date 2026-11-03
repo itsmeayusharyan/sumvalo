@@ -1,0 +1,5 @@
+Sumvalo 0.18
+
+- Insights redesigned: segmented range selector, month score ring with narrative summary, bordered stat strip, six-month spending chart card
+- Insights grouped by severity into bordered containers with divided rows and inline action buttons
+- Tap a bar on the six-month chart to inspect that month's spending

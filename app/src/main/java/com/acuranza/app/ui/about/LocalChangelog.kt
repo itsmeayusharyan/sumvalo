@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.18",
+        name = "Sumvalo 0.18",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Insights redesigned — segmented range selector, month score ring with narrative summary, bordered stat strip, six-month spending chart card", ChangeCategory.ADDED),
+            ChangeItem("Insights grouped by severity into bordered containers with divided rows and inline action buttons", ChangeCategory.ADDED),
+            ChangeItem("Tap a bar on the six-month chart to inspect that month's spending", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.17",
         name = "Sumvalo 0.17",
         publishedAt = "",
