@@ -21,6 +21,21 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.16",
+        name = "Sumvalo 0.16",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Home redesigned: new header with SUMVALO wordmark, greeting and live date strip", ChangeCategory.ADDED),
+            ChangeItem("Net worth card rebuilt — 1M/6M/1Y/All ranges, movement since last month, assets vs liabilities split bar", ChangeCategory.ADDED),
+            ChangeItem("Monthly spending card with budget ring, spent/budget/remaining and payday footer", ChangeCategory.ADDED),
+            ChangeItem("Budget progress rings (new section) and redesigned quick actions, spending pace and upcoming bills", ChangeCategory.ADDED),
+            ChangeItem("Edit Home still controls every section — reorder and hide as before, with the new look", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.15",
         name = "Sumvalo 0.15",
         publishedAt = "",

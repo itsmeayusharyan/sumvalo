@@ -494,6 +494,7 @@ fun PrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     icon: ImageVector? = null,
+    trailingIcon: ImageVector? = null,
 ) {
     val shape = RoundedCornerShape(SumvaloTheme.spacing.cardRadius)
     val interaction = remember { MutableInteractionSource() }
@@ -518,6 +519,10 @@ fun PrimaryButton(
             style = MaterialTheme.typography.labelLarge,
             color = if (enabled) SumvaloTheme.colors.onInk else SumvaloTheme.colors.tertiaryText,
         )
+        if (trailingIcon != null) {
+            Spacer(Modifier.width(8.dp))
+            Icon(trailingIcon, contentDescription = null, tint = SumvaloTheme.colors.onInk, modifier = Modifier.size(20.dp))
+        }
     }
 }
 

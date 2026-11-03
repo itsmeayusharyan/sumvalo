@@ -18,7 +18,7 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 /** Selectable windows for the net worth trend chart. */
-enum class TrendRange(val days: Int?) { D1(1), W1(7), M1(30), Y1(365), ALL(null) }
+enum class TrendRange(val days: Int?) { D1(1), W1(7), M1(30), M6(182), Y1(365), ALL(null) }
 
 /** Everything the Home charts draw, computed off the main thread from transactions and history. */
 data class HomeCharts(

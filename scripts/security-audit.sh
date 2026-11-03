@@ -53,7 +53,9 @@ echo
 echo "== 3. manifest hygiene (merged manifest via apkanalyzer) =="
 APKANALYZER="${SDK}/cmdline-tools/latest/bin/apkanalyzer"
 MANIFEST=$("$APKANALYZER" manifest print "$APK")
-echo "$MANIFEST" | grep -E "package=|android:label=" | head -2
+# awk (not head) so the reader consumes grep's whole output — under pipefail an early
+# head exit would SIGPIPE grep and kill the whole audit (flaky exit 141).
+echo "$MANIFEST" | grep -E "package=|android:label=" | awk 'NR<=2'
 echo "$MANIFEST" | grep -q 'android:debuggable="true"' && fail "manifest is debuggable" || pass "not debuggable"
 echo "$MANIFEST" | grep -q 'android:allowBackup="false"' && pass "allowBackup=false" || fail "allowBackup is not false"
 echo "$MANIFEST" | grep -q 'android:dataExtractionRules' && pass "data extraction rules present" || echo "WARN: no dataExtractionRules"

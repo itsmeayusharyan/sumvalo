@@ -27,6 +27,7 @@ enum class HomeSection(val id: String, val label: String, val description: Strin
     STATS("stats", "This month", "Income, spending and savings so far"),
     PACE("pace", "Spending pace", "This month against your usual pace"),
     BILLS("bills", "Upcoming bills", "Card bills that are due"),
+    BUDGETS("budgets", "Budget progress", "Category budgets at a glance"),
     INSIGHT("insight", "Insight", "The most important finding right now"),
     SPEND("spend", "Where it went", "Category breakdown of this month's spending"),
     SIX("six", "Income vs spending", "Six months of income against spending"),
@@ -44,6 +45,7 @@ val HomeSection.icon: ImageVector
         HomeSection.STATS -> Icons.Outlined.Equalizer
         HomeSection.PACE -> Icons.Outlined.Speed
         HomeSection.BILLS -> Icons.Outlined.CreditCard
+        HomeSection.BUDGETS -> Icons.Outlined.PieChart
         HomeSection.INSIGHT -> Icons.Outlined.Bolt
         HomeSection.SPEND -> Icons.Outlined.PieChart
         HomeSection.SIX -> Icons.Outlined.BarChart

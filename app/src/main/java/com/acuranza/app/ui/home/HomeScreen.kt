@@ -159,6 +159,8 @@ data class HomeState(
     val safeToSpend: com.acuranza.app.repo.SafeToSpend.Result? = null,
     /** What the salary-plan sheet starts from. */
     val salaryPlan: SalaryPlanInfo = SalaryPlanInfo(),
+    /** Category budgets (with this period's spending) behind the budget-progress section. */
+    val budgets: List<com.acuranza.app.repo.BudgetStatus> = emptyList(),
     /** The dashboard sections to render, in the user's saved order (Settings → Appearance → Edit home). */
     val sections: List<HomeSection> = HomeLayout.DEFAULT,
 ) {
@@ -214,7 +216,7 @@ class HomeViewModel(private val c: AppContainer) : ViewModel() {
         .distinctUntilChanged()
         .flatMapLatest { from -> c.db.transactions().observeCountOnIgnored(from) }
 
-    private val counts = combine(uncategorised, ignoredSms) { other, ignored -> other to ignored }
+    private val counts = combine(uncategorised, ignoredSms, c.budgets.observeStatuses()) { other, ignored, budgets -> Triple(other, ignored, budgets) }
 
     private val safeToSpend = combine(
         combine(c.accounts.observeAccounts(), c.bills.observeUnpaid()) { a, b -> a to b },
@@ -271,12 +273,13 @@ class HomeViewModel(private val c: AppContainer) : ViewModel() {
 
     // kotlinx' named combine overloads stop at five flows, so the unread count is layered on top
     // of the base state instead of being a sixth source.
-    private val baseState: Flow<HomeState> = combine(money, lists, charts, counts, safeToSpend) { (nw, trend, s), l, ch, (other, ignored), safe ->
+    private val baseState: Flow<HomeState> = combine(money, lists, charts, counts, safeToSpend) { (nw, trend, s), l, ch, (other, ignored, budgets), safe ->
         HomeState(
             safeToSpend = safe.first,
             salaryPlan = safe.second,
             pendingAccounts = nw.pending.size,
             ignoredSms = ignored,
+            budgets = budgets,
             uncategorised = other,
             charts = ch,
             loading = false,
@@ -379,6 +382,7 @@ fun HomeScreen(nav: NavController, onHomeReTap: () -> Unit = {}) {
         onAddIncome = { nav.navigate(Routes.addTxn(TxnType.INCOME)) },
         onTransfer = { nav.navigate(Routes.addTxn(TxnType.TRANSFER)) },
         onReports = { nav.navigate(Routes.REPORTS) },
+        onPlanning = { nav.navigateToTab(Routes.PLANNING) },
         onLoadDemo = {
             loadingDemo = true
             scope.launch {
@@ -406,470 +410,6 @@ private fun InsightsBulbButton(onInsights: () -> Unit) {
     }
 }
 
-/**
- * The header's notification bell: opens the in-app notification center, with a badge showing the
- * number of unread items. No badge when everything is read.
- */
-@Composable
-private fun NotificationsBellButton(unread: Int, onOpen: () -> Unit) {
-    IconButton(onClick = onOpen) {
-        BadgedBox(
-            badge = {
-                if (unread > 0) {
-                    Badge(
-                        containerColor = SumvaloTheme.colors.accent,
-                        contentColor = SumvaloTheme.colors.onInk,
-                    ) {
-                        Text("$unread")
-                    }
-                }
-            },
-        ) {
-            Icon(
-                Icons.Outlined.Notifications,
-                contentDescription = if (unread > 0) "Notifications, $unread unread" else "Notifications",
-                tint = SumvaloTheme.colors.subtleText,
-            )
-        }
-    }
-}
-
-/** Stateless Home screen, rendered from [HomeState]; used by the app and by screenshot tests. */
-@Composable
-fun HomeContent(
-    state: HomeState,
-    hidden: Boolean,
-    onProfile: () -> Unit = {},
-    loadingDemo: Boolean = false,
-    onToggleHidden: () -> Unit = {},
-    onInsights: () -> Unit = {},
-    onReview: () -> Unit = {},
-    onBills: () -> Unit = {},
-    onNotifications: () -> Unit = {},
-    onActivity: () -> Unit = {},
-    onCategory: (String) -> Unit = {},
-    onTransaction: (Long) -> Unit = {},
-    onAccounts: () -> Unit = {},
-    onAccount: (Long) -> Unit = {},
-    onAddAccount: () -> Unit = {},
-    onLoadDemo: () -> Unit = {},
-    onPendingAccounts: () -> Unit = {},
-    onIgnoredSms: () -> Unit = {},
-    onDismissIgnoredSms: () -> Unit = {},
-    onUncategorised: () -> Unit = {},
-    onSafeToSpend: () -> Unit = {},
-    onAddExpense: () -> Unit = {},
-    onAddIncome: () -> Unit = {},
-    onTransfer: () -> Unit = {},
-    onReports: () -> Unit = {},
-    listState: androidx.compose.foundation.lazy.LazyListState = androidx.compose.foundation.lazy.rememberLazyListState(),
-) {
-    val pad = Modifier.padding(horizontal = 20.dp)
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = listState,
-        contentPadding = PaddingValues(bottom = 8.dp),
-    ) {
-        item(key = "header") {
-            Row(
-                Modifier.fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                com.acuranza.app.ui.settings.ProfileAvatar(
-                    path = state.profileAvatar,
-                    name = state.profileName,
-                    size = 40.dp,
-                    modifier = Modifier
-                        .clip(androidx.compose.foundation.shape.CircleShape)
-                        .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onProfile),
-                )
-                Spacer(Modifier.width(10.dp))
-                Column(Modifier.weight(1f)) {
-                    Text(Fmt.todayLong(), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                    // Two lines keeps "Good evening, <long name>" readable at any width or font
-                    // scale instead of hard-clipping; icons can never overlap it (weight(1f)).
-                    Text(
-                        Fmt.greeting() + (state.profileName?.takeIf { it.isNotBlank() }?.let { ", $it" } ?: ""),
-                        style = SumvaloText.screenTitle,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    // The one compact financial indicator: real Safe-to-spend data, shown only
-                    // while the user hasn't given it a home section of its own (no duplication),
-                    // and only when a plan actually exists. Opens the existing plan sheet.
-                    if (state.safeToSpend != null && state.sections.none { it == HomeSection.SAFE }) {
-                        val safe = state.safeToSpend
-                        Spacer(Modifier.height(4.dp))
-                        Row(
-                            Modifier
-                                .clip(RoundedCornerShape(SumvaloTheme.spacing.cardRadius))
-                                .background(SumvaloTheme.colors.accent.copy(alpha = 0.12f))
-                                .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onSafeToSpend)
-                                .padding(horizontal = 10.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                Icons.Outlined.Bolt,
-                                contentDescription = null,
-                                tint = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
-                                modifier = Modifier.size(14.dp),
-                            )
-                            Spacer(Modifier.width(5.dp))
-                            Text(
-                                if (safe.available < 0) "Overspent" else "Safe to spend",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            AmountText(
-                                paise = safe.available,
-                                style = MaterialTheme.typography.labelMedium,
-                                compact = true,
-                                hidden = hidden,
-                                color = if (safe.available < 0) SumvaloTheme.colors.expense else SumvaloTheme.colors.accent,
-                            )
-                            Spacer(Modifier.width(4.dp))
-                            Text(
-                                "· ${safe.days}d",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = SumvaloTheme.colors.subtleText,
-                            )
-                        }
-                    }
-                }
-                IconButton(onClick = onToggleHidden) {
-                    Icon(
-                        if (hidden) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
-                        contentDescription = if (hidden) "Show amounts" else "Hide amounts",
-                        tint = SumvaloTheme.colors.subtleText,
-                    )
-                }
-                NotificationsBellButton(unread = state.notificationsUnread, onOpen = onNotifications)
-            }
-        }
-
-        item(key = "hero") {
-            val nw = state.netWorth
-            GradientCard(pad.padding(top = 20.dp), contentPadding = PaddingValues(20.dp)) {
-                CompositionLocalProvider(LocalContentColor provides Color.White) {
-                    Text("Net worth", style = MaterialTheme.typography.bodyMedium, color = Color.White.copy(alpha = 0.72f))
-                    Spacer(Modifier.height(2.dp))
-                    Row(verticalAlignment = Alignment.Bottom, modifier = Modifier.fillMaxWidth()) {
-                        AmountText(
-                            paise = nw?.total ?: 0,
-                            style = AmountStyles.hero,
-                            color = Color.White,
-                            hidden = hidden,
-                            animate = true,
-                            modifier = Modifier.weight(1f),
-                        )
-                        if (state.trend.size >= 2) {
-                            Sparkline(
-                                values = state.trend,
-                                modifier = Modifier.padding(bottom = 8.dp).size(width = 72.dp, height = 28.dp),
-                                color = Color.White,
-                                fill = false,
-                            )
-                        }
-                    }
-                    if (nw != null) {
-                        Spacer(Modifier.height(14.dp))
-                        Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                            MiniFigure("Cash & bank", nw.liquid, hidden, onDark = true)
-                            MiniFigure(if (nw.loans > 0) "Dues & loans" else "Card dues", nw.cardDebt + nw.loans, hidden, onDark = true)
-                        }
-                    }
-                    Spacer(Modifier.height(16.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        HeroActionButton("Add expense", onAddExpense, Modifier.weight(1f), filled = true, icon = Icons.Outlined.Add)
-                        HeroActionButton("Add income", onAddIncome, Modifier.weight(1f), filled = false, icon = Icons.Outlined.Add)
-                    }
-                }
-            }
-        }
-
-        // Action banners and the first-run card sit directly under the balance card: they ask the
-        // user for something, so they never compete with charts for attention.
-        if (state.ignoredSms > 0) {
-item(key = "ignored-sms") {
-                com.acuranza.app.ui.accounts.IgnoredSmsBanner(state.ignoredSms, onIgnoredSms, onDismissIgnoredSms, pad.padding(top = 16.dp))
-            }
-        }
-        if (state.pendingAccounts > 0) {
-item(key = "pending-accounts") {
-                com.acuranza.app.ui.accounts.PendingAccountsBanner(state.pendingAccounts, onPendingAccounts, pad.padding(top = 16.dp))
-            }
-        }
-        if (state.unreviewed > 0) {
-item(key = "review") {
-                ReviewBanner(state.unreviewed, pad.padding(top = 16.dp), onReview, state.reviewFromSms, state.reviewFromEmail)
-            }
-        }
-        if (state.uncategorised > UNCATEGORISED_BANNER_MIN) {
-item(key = "uncategorised") {
-                com.acuranza.app.ui.transactions.UncategorisedBanner(state.uncategorised, onUncategorised, pad.padding(top = 12.dp))
-            }
-        }
-        if (state.isEmpty) {
-item(key = "empty") {
-                SumvaloCard(pad.padding(top = SumvaloTheme.spacing.section)) {
-                    EmptyState(
-                        title = "Set up Sumvalo",
-                        message = "Add your bank accounts, or scan your SMS inbox to pull in transactions automatically.",
-                        icon = Icons.Outlined.AccountBalance,
-                        actionLabel = "Add an account",
-                        onAction = onAddAccount,
-                    )
-                    Text(
-                        if (loadingDemo) "Loading sample data…" else "Explore with sample data",
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .clickable(enabled = !loadingDemo, onClick = onLoadDemo)
-                            .padding(12.dp),
-                        color = SumvaloTheme.colors.accent,
-                        style = MaterialTheme.typography.labelLarge,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-        }
-
-        // The dashboard below is the user's own layout (Settings → Appearance → Edit home):
-        // every section keeps its data conditions, order and visibility come from the saved layout,
-        // and animateItem() makes reordering and show/hide feel fluid instead of jumpy.
-        state.sections.forEach { section ->
-            when (section) {
-                HomeSection.QUICK -> item(key = "quick") {
-            Row(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                QuickAction("Transfer", Icons.Outlined.SwapHoriz, onTransfer, Modifier.weight(1f))
-                QuickAction("Bills", Icons.AutoMirrored.Outlined.ReceiptLong, onBills, Modifier.weight(1f))
-                QuickAction("Reports", Icons.Outlined.Assessment, onReports, Modifier.weight(1f))
-                QuickAction("Accounts", Icons.Outlined.AccountBalance, onAccounts, Modifier.weight(1f))
-            }
-        }
-                HomeSection.SAFE -> state.safeToSpend?.let { safe -> item(key = "safe") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SafeToSpendCard(safe, hidden, onSafeToSpend)
-                }
-            } }
-                HomeSection.STATS -> item(key = "stats") {
-            val s = state.summary
-            Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                SectionHeader("This month")
-                SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
-                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                        StatChip("Income", s?.income ?: 0, Modifier.weight(1f), type = TxnType.INCOME, hidden = hidden)
-                        VerticalHairline()
-                        StatChip("Spent", s?.expense ?: 0, Modifier.weight(1f).padding(start = 14.dp), type = TxnType.EXPENSE, hidden = hidden)
-                        VerticalHairline()
-                        StatChip("Saved", s?.savings ?: 0, Modifier.weight(1f).padding(start = 14.dp), hidden = hidden)
-                    }
-                    moneyInNote(s?.givenBack ?: 0, s?.received ?: 0, hidden)?.let {
-                        Spacer(Modifier.height(10.dp))
-                        Text(it, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                    }
-                }
-            }
-        }
-                HomeSection.PACE -> if (state.charts.hasPace) item(key = "pace") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Spending pace", actionLabel = "Details", onAction = onActivity)
-                    SumvaloCard {
-                        SpendPaceChart(
-                            current = state.charts.paceCurrent,
-                            previous = state.charts.pacePrevious,
-                            daysInMonth = state.charts.periodDays,
-                            projected = state.charts.projected,
-                            hidden = hidden,
-                        )
-                    }
-                }
-            }
-                HomeSection.BILLS -> if (state.bills.isNotEmpty()) item(key = "bills") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Upcoming bills", actionLabel = "See all", onAction = onBills)
-                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
-                        state.bills.take(3).forEachIndexed { i, b ->
-                            if (i > 0) ListHairline()
-                            BillListRow(b, hidden, onBills)
-                        }
-                    }
-                }
-            }
-                HomeSection.INSIGHT -> state.insights.firstOrNull()?.let { top -> item(key = "insight") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Insight", actionLabel = if (state.insights.size > 1) "All ${state.insights.size}" else null, onAction = onInsights)
-                    InsightCard(
-                        severity = top.severity.toUi(),
-                        title = top.title,
-                        message = top.message,
-                        compact = true,
-                        onClick = onInsights,
-                    )
-                }
-            } }
-                HomeSection.SPEND -> {
-                    val spend = state.summary?.byCategory.orEmpty()
-                    if (spend.isNotEmpty()) item(key = "spend") {
-                val slices = remember(spend) {
-                    spend.take(6).map { ChartSlice(it.category?.name ?: it.categoryKey, it.total, it.category.color()) }
-                }
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Where it went", actionLabel = "Details", onAction = onActivity)
-                    SumvaloCard {
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            DonutChart(
-                                slices = slices,
-                                size = 188.dp,
-                                thickness = 12.dp,
-                                centerLabel = "Spent",
-                                centerValue = state.summary?.expense,
-                                hidden = hidden,
-                            )
-                        }
-                        Spacer(Modifier.height(16.dp))
-                        spend.take(6).forEachIndexed { i, c ->
-                            if (i > 0) ListHairline(start = 18.dp)
-                            Column(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable { onCategory(c.categoryKey) }
-                                    .padding(vertical = 10.dp),
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(Modifier.size(8.dp).clip(CircleShape).background(c.category.color()))
-                                    Spacer(Modifier.width(10.dp))
-                                    Text(c.category?.name ?: c.categoryKey, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                    Text(Fmt.pct(c.share * 100, 0), style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.tertiaryText)
-                                    Spacer(Modifier.width(12.dp))
-                                    AmountText(c.total, style = AmountStyles.small, hidden = hidden, compact = true)
-                                    Icon(Icons.Outlined.ChevronRight, contentDescription = null, tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
-                                }
-                                Spacer(Modifier.height(8.dp))
-                                // Share of the month's spend, as in the reference breakdown.
-                                Box(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .height(4.dp)
-                                        .clip(CircleShape)
-                                        .background(SumvaloTheme.colors.fill),
-                                ) {
-                                    Box(
-                                        Modifier
-                                            .fillMaxWidth(c.share.coerceIn(0.0, 1.0).toFloat())
-                                            .height(4.dp)
-                                            .clip(CircleShape)
-                                            .background(SumvaloTheme.colors.accent),
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-                }
-                HomeSection.SIX -> if (state.charts.hasSixMonths) item(key = "six") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Income vs spending")
-                    SumvaloCard {
-                        BarChart(groups = state.charts.sixMonths, height = 170.dp, hidden = hidden)
-                        Spacer(Modifier.height(10.dp))
-                        Text("SAVINGS RATE", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText)
-                        Spacer(Modifier.height(4.dp))
-                        Row(Modifier.fillMaxWidth()) {
-                            state.charts.savingsRates.forEach { r ->
-                                Text(
-                                    r,
-                                    style = MaterialTheme.typography.labelMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = if (r.startsWith("-")) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-                HomeSection.HEAT -> if (state.charts.hasHeat) item(key = "heat") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Daily spending")
-                    SumvaloCard {
-                        SpendHeatmap(weeks = state.charts.heatWeeks, dayLabels = state.charts.heatLabels, hidden = hidden)
-                    }
-                }
-            }
-                HomeSection.NETWORTH -> if (state.charts.netWorth.size >= 2 || state.charts.todayHourly.size >= 2) item(key = "networth") {
-                var range by remember { mutableStateOf(TrendRange.M1) }
-                var selectedIdx by remember(range) { mutableStateOf<Int?>(null) }
-                val points = remember(state.charts.netWorth, state.charts.todayHourly, range) {
-                    state.charts.trendPoints(range)
-                }
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Net worth trend")
-                    SumvaloCard {
-                        AmountText(
-                            paise = points.getOrNull(selectedIdx ?: points.lastIndex)?.value
-                                ?: state.netWorth?.total ?: 0,
-                            style = AmountStyles.medium,
-                            compact = true,
-                            hidden = hidden,
-                        )
-                        Spacer(Modifier.height(10.dp))
-                        if (points.size >= 2) {
-                            TrendChart(points = points, height = 150.dp, hidden = hidden, onSelectionChanged = { selectedIdx = it })
-                        } else {
-                            Text("Not enough history for this range yet.", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                        }
-                        Spacer(Modifier.height(14.dp))
-                        RangeChips(listOf("1D", "1W", "1M", "1Y", "ALL"), range.ordinal, onSelect = { range = TrendRange.values()[it] })
-                    }
-                }
-            }
-                HomeSection.RECENT -> if (state.recent.isNotEmpty()) item(key = "recent") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Recent", actionLabel = "See all", onAction = onActivity)
-                    SumvaloCard(contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
-                        state.recent.forEachIndexed { i, t ->
-                            if (i > 0) ListHairline(start = 56.dp)
-                            TxnRow(t, hidden) { onTransaction(t.txn.id) }
-                        }
-                    }
-                }
-            }
-                HomeSection.ACCOUNTS -> if (state.accounts.isNotEmpty()) item(key = "accounts") {
-                Column(Modifier.animateItem().padding(horizontal = 20.dp).padding(top = SumvaloTheme.spacing.section)) {
-                    SectionHeader("Accounts", actionLabel = "Manage", onAction = onAccounts)
-                    SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
-                        state.accounts.forEachIndexed { i, a ->
-                            if (i > 0) ListHairline(start = 48.dp)
-                            AccountListRow(a, hidden) { onAccount(a.id) }
-                        }
-                    }
-                }
-            }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MiniFigure(label: String, value: Long, hidden: Boolean, onDark: Boolean = false) {
-    val labelColor = if (onDark) Color.White.copy(alpha = 0.72f) else SumvaloTheme.colors.subtleText
-    val valueColor = if (onDark) Color.White else SumvaloTheme.colors.ink
-    Column {
-        Text(label, style = MaterialTheme.typography.bodySmall, color = labelColor)
-        AmountText(value, style = AmountStyles.small, compact = true, hidden = hidden, color = valueColor)
-    }
-}
-
-@Composable
-private fun VerticalHairline() {
-    Box(Modifier.fillMaxHeight().width(1.dp).background(SumvaloTheme.colors.divider))
-}
-
 /** A 1dp divider for rows inside a card, optionally inset from the start. */
 @Composable
 fun ListHairline(start: androidx.compose.ui.unit.Dp = 0.dp) {
@@ -877,7 +417,7 @@ fun ListHairline(start: androidx.compose.ui.unit.Dp = 0.dp) {
 }
 
 @Composable
-private fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, fromSms: Int = 0, fromEmail: Int = 0) {
+internal fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, fromSms: Int = 0, fromEmail: Int = 0) {
     Row(
         modifier
             .fillMaxWidth()
@@ -910,40 +450,7 @@ private fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, fr
 }
 
 @Composable
-private fun BillListRow(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
-    val days = b.daysLeft
-    val urgent = days != null && days <= 3
-    val dueColor = when {
-        days != null && days < 0 -> SumvaloTheme.colors.alert
-        urgent -> SumvaloTheme.colors.warning
-        else -> SumvaloTheme.colors.subtleText
-    }
-    val bank = b.card?.bankEnum() ?: com.acuranza.app.model.Bank.OTHER
-    Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BankBadge(bank, size = 32.dp)
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(b.card?.label() ?: "Card", style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (urgent || (days != null && days < 0)) {
-                    Spacer(Modifier.width(6.dp))
-                    Pill(
-                        if (days != null && days < 0) "Overdue" else if (days == 0L) "Due today" else Fmt.relativeDays(days ?: 0),
-                        dueColor,
-                    )
-                }
-            }
-            Text(days?.let { Fmt.relativeDays(it) } ?: "No due date", style = MaterialTheme.typography.bodySmall, color = dueColor)
-        }
-        AmountText(b.bill.totalDue, style = AmountStyles.medium, hidden = hidden)
-    }
-}
-
-@Composable
-private fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
+internal fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
     Row(
         Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -959,13 +466,6 @@ private fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -
             )
         }
         AmountText(if (a.isCard) a.outstanding else a.balance, style = AmountStyles.medium, hidden = hidden)
-    }
-}
-
-@Composable
-fun BillMiniCard(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
-    SumvaloCard(Modifier.width(220.dp), onClick = onClick, contentPadding = PaddingValues(horizontal = 14.dp, vertical = 2.dp)) {
-        BillListRow(b, hidden, onClick)
     }
 }
 
@@ -1015,7 +515,7 @@ internal fun paydayNote(cycle: com.acuranza.app.finance.PayCycle, holidayNames: 
 }
 
 @Composable
-private fun SafeToSpendCard(safe: com.acuranza.app.repo.SafeToSpend.Result, hidden: Boolean, onClick: () -> Unit) {
+internal fun SafeToSpendCard(safe: com.acuranza.app.repo.SafeToSpend.Result, hidden: Boolean, onClick: () -> Unit) {
     val over = safe.available < 0
     val money = { p: Long -> if (hidden) "₹ ••••" else com.acuranza.app.model.Money.format(p, showPaise = false) }
     SumvaloCard(onClick = onClick) {
