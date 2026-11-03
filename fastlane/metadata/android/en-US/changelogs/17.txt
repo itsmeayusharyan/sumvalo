@@ -1,0 +1,6 @@
+Sumvalo 0.17
+
+- Settings hub redesigned: labeled groups (Money, Preferences, Data & privacy, More), profile tile, search, 52dp rows
+- Activity screen redesigned: grouped sections, pill month switcher, combined income/spent/net stat row, search field
+- Chakra Petch typeface bundled for home, settings and activity headings
+- Home redesign (0.16): net worth hero, monthly spending ring, budget progress rings, redesigned quick actions
