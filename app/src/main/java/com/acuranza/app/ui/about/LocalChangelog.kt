@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.20",
+        name = "Sumvalo 0.20",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Navigation replaced with the reference implementation — bordered rounded container, 20dp icons over Chakra Petch labels, the selected destination on a filled segment; the old elevated pill bar (shadow, 68dp, accent-tinted indicator) is gone", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.19",
         name = "Sumvalo 0.19",
         publishedAt = "",

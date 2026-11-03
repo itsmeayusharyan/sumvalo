@@ -1,0 +1,4 @@
+Sumvalo 0.20
+
+- Navigation replaced with the reference implementation: bordered rounded container, 20dp icons over Chakra Petch labels, the selected destination on a filled segment
+- The old elevated pill bar (drop shadow, 68dp height, accent-tinted indicator) is gone; docking and the customizable tabs still work

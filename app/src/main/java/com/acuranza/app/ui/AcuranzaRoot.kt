@@ -57,9 +57,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,7 +92,6 @@ import com.acuranza.app.data.prefs.Settings
 import com.acuranza.app.data.prefs.ThemeMode
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.designsystem.components.SumvaloLogo
-import com.acuranza.app.designsystem.components.glassSurface
 import com.acuranza.app.designsystem.components.LogoShape
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.pressScale
@@ -495,16 +491,15 @@ private fun BottomBar(nav: NavHostController, activeTab: String?, onHomeReTap: (
 }
 
 /**
- * A floating navigation pill: a rounded, elevated, translucent surface that hovers
- * above the gesture area with side margins, instead of a full-width bar. Destinations,
- * icons and order are unchanged. The selected destination gets a large rounded accent-tinted
- * background that springs in behind icon and label — the one expressive gesture on the bar —
- * everything else stays muted. Haptics fire only when the selection actually changes; every
- * animation collapses to instant under reduced motion; colors come from the theme only
- * (no hardcoded values), so Dark, Light, System and AMOLED palettes all flow through.
+ * The redesigned navigation from the Tailwind reference: a bordered rounded container that
+ * floats above the gesture area (12dp sides, 6dp top, 8dp bottom), each destination an
+ * equal-width segment with a 20dp icon over a Chakra Petch label. The selected segment is
+ * filled with the theme's fill token and its icon/label go ink; everything else stays muted.
+ * No shadow — the 1dp hairline border is the whole elevation. Haptics fire only when the
+ * selection actually changes; colors come from the theme only, so every palette flows through.
  *
- * When [floating] is false, the bar docks edge-to-edge against the bottom of the screen with
- * square corners and system navigation padding, instead of floating above the gesture area.
+ * When [floating] is false the same container docks edge-to-edge against the bottom of the
+ * screen (no side margins or outer gaps), keeping the reference structure intact.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -517,69 +512,55 @@ fun SumvaloBottomBar(
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
-    val pillShape = RoundedCornerShape(percent = 50)
-    // Reference treatment: a solid bordered container instead of glass — cardSurface with a
-    // hairline outline, the active destination on a filled rounded segment inside it.
-    val barShape = if (floating) pillShape else RoundedCornerShape(0.dp)
+    // The Tailwind reference, translated 1:1:
+    //   wrapper  px-3 pt-1.5 pb-2                                        → 12dp sides, 6dp top, 8dp bottom (+ gesture insets)
+    //   nav      rounded-3xl border-#2a2a2a bg-#171717 px-1.5 py-1.5     → 24dp radius, 1dp hairline, cardSurface, 6dp padding
+    //   item     rounded-2xl px-2 py-1.5 gap-0.5, icon 20px              → 16dp radius, 8dp/6dp padding, 2dp gap, 20dp icon
+    //   active   bg-#212121, label Chakra 11/700 #fafafa                 → fill segment, ink, Chakra Bold
+    //   inactive label Chakra 11/500 #8a8a8a                             → tertiaryText, Chakra Medium
     Box(
         Modifier
             .fillMaxWidth()
+            .navigationBarsPadding()
             .then(
                 if (floating) Modifier
-                    // Float above the gesture area: side margins + nav-bar inset + a breathing gap.
-                    .padding(horizontal = 16.dp)
-                    .navigationBarsPadding()
-                    .padding(top = 2.dp, bottom = 10.dp)
                     .windowInsetsPadding(WindowInsets.displayCutout)
-                    .shadow(
-                        elevation = 14.dp,
-                        shape = pillShape,
-                        ambientColor = colors.ink.copy(alpha = 0.14f),
-                        spotColor = colors.ink.copy(alpha = 0.18f),
-                    )
-                else Modifier
-                    // Docked: full width against the gesture area — content scrolls to its edge.
-                    .navigationBarsPadding()
-                    .background(colors.glass.copy(alpha = if (colors.isDark) 0.97f else 1f)),
-            )
-            .background(colors.cardSurface, barShape)
-            .then(if (floating) Modifier.border(1.dp, colors.hairline, pillShape) else Modifier)
-            .height(68.dp),
+                    .padding(horizontal = 12.dp)
+                    .padding(top = 6.dp, bottom = 8.dp)
+                else Modifier,
+            ),
     ) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
-                .fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically,
+                .clip(RoundedCornerShape(24.dp))
+                .background(colors.cardSurface)
+                .border(1.dp, colors.hairline, RoundedCornerShape(24.dp))
+                .padding(horizontal = 6.dp, vertical = 6.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             tabs.filter { it.visible }.forEach { tab ->
                 val resolvedIcon = com.acuranza.app.ui.nav.NavTabs.iconOf(tab.route, tab.iconId)
                 val selected = current == tab.route
-                val reduced = com.acuranza.app.designsystem.theme.LocalReducedMotion.current
-                val pill by animateFloatAsState(
-                    targetValue = if (selected) 1f else 0f,
-                    animationSpec = if (reduced) androidx.compose.animation.core.snap()
-                    else spring(stiffness = Spring.StiffnessMediumLow, dampingRatio = Spring.DampingRatioLowBouncy),
-                    label = "tab-pill",
+                val segmentColor by animateColorAsState(
+                    targetValue = if (selected) colors.fill else androidx.compose.ui.graphics.Color.Transparent,
+                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
+                    label = "tab-segment",
                 )
                 val iconTint by animateColorAsState(
                     targetValue = if (selected) colors.ink else colors.tertiaryText,
-                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(220),
+                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
                     label = "tab-icon",
                 )
                 val labelColor by animateColorAsState(
                     targetValue = if (selected) colors.ink else colors.tertiaryText,
-                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(220),
+                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
                     label = "tab-label",
                 )
                 val interaction = remember { MutableInteractionSource() }
-                Box(
+                Column(
                     Modifier
                         .weight(1f)
-                        .fillMaxHeight()
-                        .padding(vertical = 6.dp)
                         .pressScale(interaction, scaleDown = 0.97f)
                         .clickable(
                             interactionSource = interaction,
@@ -594,41 +575,30 @@ fun SumvaloBottomBar(
                         .semantics {
                             this.selected = selected
                             contentDescription = tab.label
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    // The filled segment is its own layer so the transition only ever
-                    // fades/scales the decoration — the icon and label stay visible in every state.
-                    Box(
-                        Modifier
-                            .matchParentSize()
-                            .graphicsLayer {
-                                alpha = pill
-                                scaleX = 0.72f + 0.28f * pill
-                                scaleY = 0.72f + 0.28f * pill
-                            }
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(colors.fill),
-                    )
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            resolvedIcon.icon,
-                            contentDescription = null,
-                            tint = iconTint,
-                            modifier = Modifier.size(22.dp),
-                        )
-                        if (showLabels) {
-                            Text(
-                                tab.label,
-                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
-                                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                                fontSize = 11.sp,
-                                color = labelColor,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(top = 3.dp),
-                            )
                         }
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(segmentColor)
+                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Icon(
+                        resolvedIcon.icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(20.dp),
+                    )
+                    if (showLabels) {
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            tab.label,
+                            style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
+                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                            fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            color = labelColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
                 }
             }
