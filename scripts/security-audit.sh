@@ -70,9 +70,10 @@ EXPORTED=$(echo "$MANIFEST" | grep -c 'android:exported="true"' || true)
 #   - WorkManager SystemJobService (BIND_JOB_SERVICE), DiagnosticsReceiver (DUMP)
 #   - ProfileInstaller ProfileInstallReceiver (DUMP)
 # The androidx components can only be invoked by the system or shell.
-UNGUARDED=$(echo "$MANIFEST" | python3 - <<'PY'
+printf '%s' "$MANIFEST" > "$TMPDIR/manifest.txt"
+UNGUARDED=$(python3 - "$TMPDIR/manifest.txt" <<'PY'
 import re, sys
-t = sys.stdin.read()
+t = open(sys.argv[1]).read()
 bad = []
 for m in re.finditer(r'<(activity|receiver|service|provider)\b', t):
     start = m.start(); end = t.index('>', start)
@@ -87,7 +88,7 @@ for m in re.finditer(r'<(activity|receiver|service|provider)\b', t):
             bad.append(n)
 print("\n".join(bad))
 PY
-)
+) || true
 [ -z "$UNGUARDED" ] || fail "exported components without a system permission (beyond launcher/widgets): $UNGUARDED"
 echo "exported components: $EXPORTED (launcher + widgets unguarded by design; SMS/tile/JobService/DUMP-guarded for the rest)"
 pass "no unexpected exported components"

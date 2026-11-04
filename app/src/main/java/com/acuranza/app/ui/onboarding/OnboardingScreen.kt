@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -31,8 +33,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Assessment
 import androidx.compose.material.icons.outlined.AutoAwesome
@@ -44,6 +52,7 @@ import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -61,6 +70,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
@@ -76,10 +86,10 @@ import com.acuranza.app.ui.common.label
 import com.acuranza.app.designsystem.theme.SumvaloText
 import kotlinx.coroutines.launch
 
-private const val STEPS = 4
+private const val STEPS = 5
 
 /** The one step that cannot be skipped: the notification permission is required before the app opens. */
-private const val NOTIFICATIONS_STEP = 1
+private const val NOTIFICATIONS_STEP = 2
 
 @Composable
 fun OnboardingScreen() {
@@ -99,11 +109,6 @@ fun OnboardingScreen() {
             .navigationBarsPadding()
             .imePadding(),
     ) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-            StepDots(step, STEPS, Modifier.weight(1f))
-            // The notification step is the gate: it is the only one without a Skip.
-            if (step in 1 until STEPS - 1 && step != NOTIFICATIONS_STEP) TextButton(onClick = { step++ }) { Text("Skip") }
-        }
         AnimatedContent(
             targetState = step,
             transitionSpec = {
@@ -116,24 +121,11 @@ fun OnboardingScreen() {
         ) { s ->
             when (s) {
                 0 -> Welcome { step = 1 }
-                1 -> NotificationsStep { step = 2 }
-                2 -> ImportStep { step = 3 }
+                1 -> FeaturesStep(onBack = { step = 0 }, onNext = { step = 2 })
+                2 -> NotificationsStep { step = 3 }
+                3 -> ImportStep { step = 4 }
                 else -> DoneStep(finish)
             }
-        }
-    }
-}
-
-@Composable
-private fun StepDots(step: Int, total: Int, modifier: Modifier) {
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        repeat(total) { i ->
-            val w by animateDpAsState(if (i == step) 22.dp else 8.dp, label = "dot")
-            val color by animateColorAsState(
-                if (i <= step) MaterialTheme.colorScheme.primary else SumvaloTheme.colors.divider,
-                label = "dotColor",
-            )
-            Box(Modifier.height(8.dp).width(w).clip(CircleShape).background(color))
         }
     }
 }
@@ -412,30 +404,8 @@ internal fun Welcome(onNext: () -> Unit) {
 
         Spacer(Modifier.height(24.dp))
 
-        // Progress dots + 01/05
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                repeat(5) { i ->
-                    Box(
-                        Modifier
-                            .size(if (i == 0) 36.dp else 6.dp, 3.dp)
-                            .clip(CircleShape)
-                            .background(if (i == 0) Color.White else Color(0xFF2A2A2A)),
-                    )
-                }
-            }
-            Spacer(Modifier.weight(1f))
-            Text(
-                "01 / 05",
-                style = chakraText(FontWeight.Bold, 12, 16, 0.12f),
-                color = Color(0xFF6B6B6B),
-            )
-        }
+        // Progress dots + page label
+        ProgressRow(0)
 
         Column(
             Modifier
@@ -611,6 +581,329 @@ private fun DoneStep(onFinish: () -> Unit) {
         Spacer(Modifier.weight(1f))
         PrimaryButton("Open Sumvalo", onClick = onFinish, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.height(16.dp))
+    }
+}
+
+/** Progress dots + page label, shared across onboarding steps. */
+@Composable
+private fun ProgressRow(activeIndex: Int) {
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            repeat(5) { i ->
+                Box(
+                    Modifier
+                        .size(if (i == activeIndex) 36.dp else 12.dp, 12.dp)
+                        .clip(if (i == activeIndex) RoundedCornerShape(50) else CircleShape)
+                        .background(if (i == activeIndex) Color.White else Color(0xFF2A2A2A)),
+                )
+            }
+        }
+        Spacer(Modifier.weight(1f))
+        Text(
+            "${activeIndex + 1} / 05",
+            style = chakraText(FontWeight.Bold, 12, 16, 1.44f),
+            color = Color(0xFF6B6B6B),
+        )
+    }
+}
+
+/** One bar in the hero bar chart: white top segment over a colored bottom segment. */
+@Composable
+private fun BarColumn(topColor: Color, topHeight: Dp, bottomColor: Color, bottomHeight: Dp) {
+    Box(Modifier.size(44.dp)) {
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Bottom,
+        ) {
+            Box(Modifier.width(44.dp).height(topHeight).clip(RoundedCornerShape(10.dp)).background(topColor))
+            Spacer(Modifier.height(4.dp))
+            Box(Modifier.width(44.dp).height(bottomHeight).clip(RoundedCornerShape(12.dp)).background(bottomColor))
+        }
+    }
+}
+
+/** Feature row: icon circle + title + description. */
+@Composable
+private fun FeatureRow(icon: ImageVector, iconBg: Color, iconTint: Color, title: String, text: String) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF1A1A1A)),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(48.dp).clip(RoundedCornerShape(14.dp)).background(iconBg),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(24.dp))
+        }
+        Spacer(Modifier.width(16.dp))
+        Column {
+            Text(title, style = chakraText(FontWeight.Bold, 16, 20), color = Color.White)
+            Spacer(Modifier.height(4.dp))
+            Text(text, style = chakraText(FontWeight.Normal, 14, 19), color = Color(0xFFA3A3A3))
+        }
+    }
+}
+
+/** Features screen (step 1 of 5): matches the Subframe reference design exactly. */
+@Composable
+internal fun FeaturesStep(onBack: () -> Unit, onNext: () -> Unit) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0E0E0E)),
+    ) {
+        // Hero card
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(320.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color(0xFF1F1F1F))
+                .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(32.dp)),
+        ) {
+            // Status bar row
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    "9:41",
+                    style = chakraText(FontWeight.Bold, 14, 18),
+                    color = Color.White,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatusIcon(Icons.Outlined.KeyboardArrowLeft)
+                    StatusIcon(Icons.Outlined.KeyboardArrowRight)
+                    StatusIcon(Icons.Outlined.KeyboardArrowUp)
+                }
+            }
+
+            // Header row: back button + Skip
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(9999.dp))
+                        .clickable(onClick = onNext)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Skip",
+                        style = chakraText(FontWeight.Bold, 15, 20),
+                        color = Color.White,
+                    )
+                }
+            }
+
+            // Hero decorative content
+            Box(Modifier.fillMaxSize()) {
+                // Big grey circle backdrop (top-right)
+                Box(
+                    Modifier
+                        .size(230.dp)
+                        .offset(x = 170.dp, y = (-20).dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF2A2A2A)),
+                )
+                // Rotated dark square (top-left)
+                Box(
+                    Modifier
+                        .size(36.dp)
+                        .offset(x = 34.dp, y = 12.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF0E0E0E))
+                        .graphicsLayer { rotationZ = 18f },
+                )
+                // White dot
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 104.dp, y = 30.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                )
+                // Hard offset shadow under target
+                Box(
+                    Modifier
+                        .size(164.dp)
+                        .offset(x = 186.dp, y = 22.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF0E0E0E)),
+                )
+                // Target concentric circles
+                Box(
+                    Modifier
+                        .size(164.dp)
+                        .offset(x = 186.dp, y = 8.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier.size(128.dp).clip(CircleShape).background(Color(0xFF0E0E0E)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(
+                            Modifier.size(92.dp).clip(CircleShape).background(Color.White),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Box(
+                                Modifier.size(58.dp).clip(CircleShape).background(Color(0xFF0E0E0E)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Box(
+                                    Modifier.size(22.dp).clip(CircleShape).background(Color.White)
+                                )
+                            }
+                        }
+                    }
+                }
+                // Bar chart (bottom-left)
+                Box(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 22.dp, bottom = 22.dp),
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        BarColumn(topColor = Color.White, topHeight = 24.dp, bottomColor = Color(0xFF3A3A3A), bottomHeight = 40.dp)
+                        BarColumn(topColor = Color.White, topHeight = 32.dp, bottomColor = Color(0xFF0E0E0E), bottomHeight = 64.dp)
+                        BarColumn(topColor = Color(0xFF0E0E0E), topHeight = 40.dp, bottomColor = Color.White, bottomHeight = 96.dp)
+                    }
+                }
+                // Shield with check mark (rotated -6deg)
+                Box(
+                    Modifier.offset(x = 148.dp, y = 96.dp).size(96.dp).graphicsLayer { rotationZ = -6f },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Filled.VerifiedUser,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(96.dp),
+                    )
+                    Icon(
+                        Icons.Outlined.Check,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(52.dp),
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Progress dots + page label
+        ProgressRow(1)
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                "Track, plan and stay in control.",
+                style = chakraText(FontWeight.Bold, 40, 40, -0.02f),
+                color = Color.White,
+            )
+            Spacer(Modifier.height(24.dp))
+
+            // Feature rows
+            Column(Modifier.fillMaxWidth()) {
+                FeatureRow(
+                    icon = Icons.Outlined.BarChart,
+                    iconBg = Color(0xFF2A2A2A),
+                    iconTint = Color.White,
+                    title = "Track everything",
+                    text = "Income, expenses and card dues in one place.",
+                )
+                Spacer(Modifier.height(8.dp))
+                FeatureRow(
+                    icon = Icons.Outlined.Adjust,
+                    iconBg = Color.White,
+                    iconTint = Color(0xFF0E0E0E),
+                    title = "Plan with confidence",
+                    text = "Budgets, savings goals and safe-to-spend pace.",
+                )
+                Spacer(Modifier.height(8.dp))
+                FeatureRow(
+                    icon = Icons.Outlined.VerifiedUser,
+                    iconBg = Color(0xFF2A2A2A),
+                    iconTint = Color.White,
+                    title = "Private by design",
+                    text = "No account, no cloud, no tracking. Your data stays on your device.",
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            // Continue button
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onNext)
+                    .padding(start = 20.dp, top = 24.dp, end = 20.dp, bottom = 32.dp),
+            ) {
+                Box(
+                    Modifier
+                        .height(64.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            "Continue",
+                            style = chakraText(FontWeight.Bold, 18, 22),
+                            color = Color(0xFF0E0E0E),
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Icon(
+                            Icons.Outlined.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color(0xFF0E0E0E),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
