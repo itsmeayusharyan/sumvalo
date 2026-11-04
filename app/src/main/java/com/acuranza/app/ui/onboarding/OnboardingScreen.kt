@@ -38,20 +38,18 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Adjust
-import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Assessment
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Autorenew
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Repeat
+import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -89,7 +87,7 @@ import kotlinx.coroutines.launch
 private const val STEPS = 5
 
 /** The one step that cannot be skipped: the notification permission is required before the app opens. */
-private const val NOTIFICATIONS_STEP = 2
+private const val NOTIFICATIONS_STEP = 3
 
 @Composable
 fun OnboardingScreen() {
@@ -122,8 +120,8 @@ fun OnboardingScreen() {
             when (s) {
                 0 -> Welcome { step = 1 }
                 1 -> FeaturesStep(onBack = { step = 0 }, onNext = { step = 2 })
-                2 -> NotificationsStep { step = 3 }
-                3 -> ImportStep { step = 4 }
+                2 -> HistoryStep(onBack = { step = 1 }, onNext = { step = 3 })
+                3 -> NotificationsStep { step = 4 }
                 else -> DoneStep(finish)
             }
         }
@@ -167,22 +165,6 @@ private fun StepPage(
             TextButton(onClick = onSecondary, modifier = Modifier.fillMaxWidth()) { Text(secondary) }
         }
         Spacer(Modifier.height(12.dp))
-    }
-}
-
-/** Value prop row with icon + title + description. */
-@Composable
-private fun ValueProp(icon: ImageVector, title: String, text: String) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            Modifier.size(44.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFF2A2A2A)),
-            contentAlignment = Alignment.Center,
-        ) { Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp)) }
-        Spacer(Modifier.width(14.dp))
-        Column {
-            Text(title, style = chakraText(FontWeight.Bold, 14, 18), color = Color.White)
-            Text(text, style = chakraText(FontWeight.Normal, 13, 18), color = Color(0xFFA3A3A3))
-        }
     }
 }
 
@@ -510,8 +492,8 @@ private fun FeatureCard(icon: ImageVector, label: String) {
 }
 
 @Composable
-private fun StatusIcon(icon: ImageVector) {
-    Icon(icon, contentDescription = null, tint = Color(0xFFA3A3A3), modifier = Modifier.size(18.dp))
+private fun StatusIcon(icon: ImageVector, tint: Color = Color(0xFFA3A3A3)) {
+    Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
 }
 
 /**
@@ -547,20 +529,347 @@ private fun NotificationsStep(onNext: () -> Unit) {
 }
 
 
+/** One selectable entry-method row on the History step. */
 @Composable
-private fun ImportStep(onNext: () -> Unit) {
-    StepPage(
-        title = "Your history",
-        subtitle = "Track transactions your way. Enable SMS transaction tracking to help detect bank " +
-            "transactions automatically, or import a bank statement CSV or add transactions manually. " +
-            "SMS access is optional and controlled by you.",
-        primary = "Continue",
-        onPrimary = onNext,
-        icon = Icons.Outlined.AutoAwesome,
+private fun HistoryOptionRow(
+    icon: ImageVector,
+    title: String,
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(if (selected) Color.White else Color(0xFF1A1A1A))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        ValueProp(Icons.Outlined.Edit, "Quick manual entry", "A calculator keypad with tags, splits and receipts attached.")
-        ValueProp(Icons.Outlined.Assessment, "Bank statement import", "CSV files from HDFC, ICICI, SBI, Axis, Kotak and more — from More › Import statement.")
-        ValueProp(Icons.Outlined.Autorenew, "Recurring on autopilot", "Rent, SIPs and subscriptions you schedule add themselves on their dates.")
+        Box(
+            Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(if (selected) Color(0xFF0E0E0E) else Color(0xFF262626)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                title,
+                style = chakraText(FontWeight.Bold, 16, 20),
+                color = if (selected) Color(0xFF0E0E0E) else Color.White,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text,
+                style = chakraText(if (selected) FontWeight.Medium else FontWeight.Normal, 13, 18),
+                color = if (selected) Color(0xFF0E0E0E) else Color(0xFFA3A3A3),
+            )
+        }
+        Spacer(Modifier.width(12.dp))
+        if (selected) {
+            Box(
+                Modifier.size(32.dp).clip(CircleShape).background(Color(0xFF0E0E0E)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Outlined.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+            }
+        } else {
+            Box(Modifier.size(32.dp).clip(CircleShape).border(3.dp, Color(0xFF3A3A3A), CircleShape))
+        }
+    }
+}
+
+/** One text bar inside the hero receipt card. */
+@Composable
+private fun ReceiptBar(width: Dp?, height: Dp) {
+    val modifier = if (width == null) Modifier.fillMaxWidth() else Modifier.size(width, height)
+    Box(modifier.clip(RoundedCornerShape(50)).background(Color(0xFF0E0E0E)))
+}
+
+/** History screen (step 2 of 5): matches the Subframe reference design exactly. */
+@Composable
+internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
+    var selected by rememberSaveable { mutableIntStateOf(0) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0E0E0E)),
+    ) {
+        // Hero card
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(256.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color(0xFF1F1F1F))
+                .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(32.dp)),
+        ) {
+            // Status bar row
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    "9:41",
+                    style = chakraText(FontWeight.Bold, 14, 18),
+                    color = Color.White,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatusIcon(Icons.Outlined.KeyboardArrowLeft, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowRight, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowUp, tint = Color.White)
+                }
+            }
+
+            // Header row: back button + Skip
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(9999.dp))
+                        .clickable(onClick = onNext)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Skip",
+                        style = chakraText(FontWeight.Bold, 15, 20),
+                        color = Color.White,
+                    )
+                }
+            }
+
+            // Hero decorative content
+            Box(Modifier.fillMaxSize()) {
+                // Big grey circle backdrop (right)
+                Box(
+                    Modifier
+                        .size(190.dp)
+                        .offset(x = 196.dp, y = 34.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF2A2A2A)),
+                )
+                // White dot (left)
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 30.dp, y = 118.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                )
+                // Rotated dark square (right edge)
+                Box(
+                    Modifier
+                        .size(32.dp)
+                        .offset(x = 322.dp, y = 104.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF0E0E0E))
+                        .graphicsLayer { rotationZ = 18f },
+                )
+                // Receipt card (rotated -6deg, hard shadow)
+                Box(
+                    Modifier
+                        .offset(x = 132.dp, y = 12.dp)
+                        .size(112.dp, 150.dp)
+                        .graphicsLayer { rotationZ = -6f },
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .offset(y = 10.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(Color(0xFF0E0E0E)),
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp, vertical = 20.dp),
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            ReceiptBar(width = 56.dp, height = 12.dp)
+                            ReceiptBar(width = null, height = 10.dp)
+                            ReceiptBar(width = 64.dp, height = 10.dp)
+                            ReceiptBar(width = null, height = 10.dp)
+                            ReceiptBar(width = 48.dp, height = 10.dp)
+                        }
+                    }
+                }
+                // ₹ speech-bubble tile (rotated 8deg)
+                Box(
+                    Modifier
+                        .offset(x = 40.dp, y = 22.dp)
+                        .size(88.dp, 66.dp)
+                        .graphicsLayer { rotationZ = 8f }
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(Color(0xFF0E0E0E)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "₹",
+                        style = chakraText(FontWeight.Bold, 38, 40),
+                        color = Color.White,
+                    )
+                }
+                // Speech-bubble tail (diamond)
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 58.dp, y = 78.dp)
+                        .graphicsLayer { rotationZ = 45f }
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color(0xFF0E0E0E)),
+                )
+                // Repeat-circle hard shadow
+                Box(
+                    Modifier
+                        .size(78.dp)
+                        .offset(x = 232.dp, y = 74.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF0E0E0E)),
+                )
+                // Repeat circle (white with icon)
+                Box(
+                    Modifier
+                        .size(78.dp)
+                        .offset(x = 232.dp, y = 66.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Outlined.Repeat,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(40.dp),
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Progress dots + page label
+        ProgressRow(2)
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        ) {
+            Text(
+                "Your history, your way.",
+                style = chakraText(FontWeight.Bold, 40, 40, -0.02f),
+                color = Color.White,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Track transactions, enable SMS tracking, import a bank statement or add entries manually — it's up to you.",
+                style = chakraText(FontWeight.Normal, 15, 21),
+                color = Color(0xFFA3A3A3),
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        // Entry-method options
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            HistoryOptionRow(
+                icon = Icons.Outlined.Edit,
+                title = "Quick manual entry",
+                text = "Tags, splits and receipts in seconds.",
+                selected = selected == 0,
+                onClick = { selected = 0 },
+            )
+            HistoryOptionRow(
+                icon = Icons.Outlined.Sms,
+                title = "SMS tracking",
+                text = "Auto-logs bank SMS, on-device.",
+                selected = selected == 1,
+                onClick = { selected = 1 },
+            )
+            HistoryOptionRow(
+                icon = Icons.Outlined.Description,
+                title = "Bank statement import",
+                text = "CSV from HDFC, ICICI, SBI and more.",
+                selected = selected == 2,
+                onClick = { selected = 2 },
+            )
+            HistoryOptionRow(
+                icon = Icons.Outlined.Repeat,
+                title = "Recurring on autopilot",
+                text = "Rent, SIPs and subscriptions.",
+                selected = selected == 3,
+                onClick = { selected = 3 },
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        // Continue button
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onNext)
+                .padding(start = 20.dp, top = 24.dp, end = 20.dp, bottom = 32.dp),
+        ) {
+            Box(
+                Modifier
+                    .height(64.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "Continue",
+                        style = chakraText(FontWeight.Bold, 18, 22),
+                        color = Color(0xFF0E0E0E),
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Icon(
+                        Icons.Outlined.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            }
+        }
     }
 }
 
