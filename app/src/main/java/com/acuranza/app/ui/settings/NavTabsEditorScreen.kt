@@ -63,13 +63,10 @@ fun NavTabsEditorScreen(nav: NavController) {
     var layout by remember { mutableStateOf(NavTabs.decodeLayout(s.navTabLayout)) }
     var labels by remember { mutableStateOf(NavTabs.decodeLabels(s.navTabLabels)) }
     var icons by remember { mutableStateOf(NavTabs.decodeIcons(s.navTabIcons)) }
-    var showLabels by remember { mutableStateOf(s.navShowLabels) }
-    var floating by remember { mutableStateOf(s.navFloatingBar) }
 
     val dirty = NavTabs.encodeLayout(layout) != (s.navTabLayout ?: NavTabs.encodeLayout(NavTabs.decodeLayout(null))) ||
         NavTabs.encodeLabels(labels) != (s.navTabLabels ?: "") ||
-        NavTabs.encodeIcons(icons) != (s.navTabIcons ?: "") ||
-        showLabels != s.navShowLabels || floating != s.navFloatingBar
+        NavTabs.encodeIcons(icons) != (s.navTabIcons ?: "")
     var editing by remember { mutableStateOf<String?>(null) }
     var confirmDiscard by remember { mutableStateOf(false) }
     var confirmReset by remember { mutableStateOf(false) }
@@ -81,8 +78,6 @@ fun NavTabsEditorScreen(nav: NavController) {
             c.settings.setNavTabLayout(NavTabs.encodeLayout(layout).takeIf { it != NavTabs.encodeLayout(NavTabs.decodeLayout(null)) })
             c.settings.setNavTabLabels(NavTabs.encodeLabels(labels).ifEmpty { null })
             c.settings.setNavTabIcons(NavTabs.encodeIcons(icons).ifEmpty { null })
-            c.settings.setNavShowLabels(showLabels)
-            c.settings.setNavFloatingBar(floating)
         }
     }
     val attemptLeave: () -> Unit = {
@@ -102,14 +97,10 @@ fun NavTabsEditorScreen(nav: NavController) {
             layout = layout,
             labels = labels,
             icons = icons,
-            showLabels = showLabels,
-            floating = floating,
             modifier = Modifier.padding(padding),
             onLayout = { layout = it },
             onLabel = { labels = it },
             onIcon = { icons = it },
-            onShowLabels = { showLabels = it },
-            onFloating = { floating = it },
             onEditTab = { editing = it },
             onResetClick = { confirmReset = true },
         )
@@ -146,8 +137,6 @@ fun NavTabsEditorScreen(nav: NavController) {
                 layout = NavTabs.decodeLayout(null)
                 labels = emptyMap()
                 icons = emptyMap()
-                showLabels = true
-                floating = true
             },
             onDismiss = { confirmReset = false },
         )
@@ -160,14 +149,10 @@ fun NavTabsEditorContent(
     layout: List<Pair<String, Boolean>>,
     labels: Map<String, String>,
     icons: Map<String, String>,
-    showLabels: Boolean,
-    floating: Boolean,
     modifier: Modifier = Modifier,
     onLayout: (List<Pair<String, Boolean>>) -> Unit = {},
     onLabel: (Map<String, String>) -> Unit = {},
     onIcon: (Map<String, String>) -> Unit = {},
-    onShowLabels: (Boolean) -> Unit = {},
-    onFloating: (Boolean) -> Unit = {},
     onEditTab: (String) -> Unit = {},
     onResetClick: () -> Unit = {},
 ) {
@@ -181,43 +166,14 @@ fun NavTabsEditorContent(
             SumvaloCard {
                 Column(Modifier.fillMaxWidth().padding(16.dp)) {
                     Text("Live preview", style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        if (floating) "Floating bar — content scrolls underneath" else "Docked bar — hugging the screen edge",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = SumvaloTheme.colors.subtleText,
-                    )
                     Spacer(Modifier.height(12.dp))
                     // The real bar, fed the working copy — exactly what Save will show.
                     com.acuranza.app.ui.SumvaloBottomBar(
                         current = layout.first { it.second }.first,
                         onTab = onEditTab,
                         tabs = NavTabs.resolve(layout, labels, icons),
-                        showLabels = showLabels,
-                        floating = floating,
                     )
                 }
-            }
-        }
-        item(key = "appearance") {
-            Text("APPEARANCE", style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.padding(start = 4.dp, top = 6.dp))
-            Spacer(Modifier.height(2.dp))
-            SumvaloCard(contentPadding = PaddingValues(0.dp)) {
-                SettingsToggle(
-                    "Labels under icons",
-                    "Hide them for an icons-only bar",
-                    showLabels,
-                    onShowLabels,
-                    null,
-                    divider = true,
-                )
-                SettingsToggle(
-                    "Floating bar",
-                    "The rounded pill that hovers above the gesture area",
-                    floating,
-                    onFloating,
-                    null,
-                    divider = false,
-                )
             }
         }
         item(key = "tabs-label") {

@@ -525,7 +525,7 @@ private fun QuickTile(t: QuickTileSpec, modifier: Modifier = Modifier) {
             Modifier
                 .size(32.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)),
+                .background(SumvaloTheme.colors.ink.copy(alpha = 0.08f)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(t.icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(18.dp))

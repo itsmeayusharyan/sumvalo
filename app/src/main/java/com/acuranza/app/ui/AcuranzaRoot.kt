@@ -385,7 +385,7 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
     val current = backStack?.destination?.route
     val landingTabPref = com.acuranza.app.ui.common.LocalSettings.current.landingTab
     val settings = com.acuranza.app.ui.common.LocalSettings.current
-    val floatingBar = settings.navFloatingBar
+    val floatingBar = true
     // The bar tucks away while the keyboard is up so text fields keep the space.
     val imeVisible = WindowInsets.isImeVisible
     // Track the active tab independently of the current route so the bottom bar
@@ -487,7 +487,7 @@ private fun BottomBar(nav: NavHostController, activeTab: String?, onHomeReTap: (
         com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
         com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
     )
-    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route, onHomeReTap) }, tabs = tabs, showLabels = s.navShowLabels, floating = s.navFloatingBar)
+    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route, onHomeReTap) }, tabs = tabs)
 }
 
 /**

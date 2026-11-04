@@ -529,8 +529,6 @@ class ScreensScreenshotTest {
                 layout = com.acuranza.app.ui.nav.NavTabs.decodeLayout("home,insights,!transactions,settings"),
                 labels = emptyMap(),
                 icons = emptyMap(),
-                showLabels = true,
-                floating = true,
             )
         }
     }

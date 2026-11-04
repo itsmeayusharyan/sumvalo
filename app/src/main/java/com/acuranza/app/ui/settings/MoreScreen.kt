@@ -178,12 +178,12 @@ fun MoreScreen(nav: NavController) {
             // The saved hub layout: order, per-section shortcuts and (display-only) title
             // overrides. Hidden shortcuts are simply absent here — search still finds them,
             // so nothing becomes unreachable, and Customize settings re-shows them any time.
-            val flat = SettingsHubLayout.visibleFlat(hubLayoutPref)
-            SettingsSectionKey.entries.forEach { section ->
-                val entries = flat.filter { it.section == section }
+            val layout = SettingsHubLayout.decodeWithHidden(hubLayoutPref)
+            layout.sections.forEach { section ->
+                val entries = section.entries
                 if (entries.isEmpty()) return@forEach
-                item(key = "group-${section.id}") {
-                    SettingsGroup(section.defaultTitle, entries) { key ->
+                item(key = "group-${section.key.id}") {
+                    SettingsGroup(section.title, entries) { key ->
                         nav.navigate(SettingsEntryDisplay.getValue(key).route)
                     }
                 }
@@ -336,7 +336,7 @@ internal fun SettingsRowV2(entry: SettingsEntry, onNavigate: () -> Unit) {
             Modifier
                 .size(32.dp)
                 .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)),
+                .background(SumvaloTheme.colors.ink.copy(alpha = 0.08f)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(entry.icon, contentDescription = null, tint = SumvaloTheme.colors.ink, modifier = Modifier.size(18.dp))
