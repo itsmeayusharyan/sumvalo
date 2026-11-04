@@ -21,6 +21,18 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.23",
+        name = "Sumvalo 0.23",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Navigation cleanup — removed 'Labels under icons' and 'Floating bar' toggles from Edit navigation tabs; redesigned bar kept intact", ChangeCategory.IMPROVED),
+            ChangeItem("Settings customization fixed — section reordering and renaming now persist and appear in the Settings hub; deletion still works", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.22",
         name = "Sumvalo 0.22",
         publishedAt = "",
