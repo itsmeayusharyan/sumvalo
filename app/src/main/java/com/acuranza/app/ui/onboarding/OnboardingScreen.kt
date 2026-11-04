@@ -1190,23 +1190,210 @@ internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
     }
 }
 
+/** Done screen (step 5 of 5): matches the Subframe reference design exactly. */
 @Composable
 private fun DoneStep(onFinish: () -> Unit) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.7f))
-        Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SumvaloTheme.colors.good, modifier = Modifier.size(84.dp))
-        Spacer(Modifier.height(16.dp))
-        Text("You're all set", style = SumvaloText.screenTitle)
-        Spacer(Modifier.height(8.dp))
-        Text(
-            "Add bank accounts and cards any time from Accounts, or jump straight in and add transactions as you go.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = SumvaloTheme.colors.subtleText,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.weight(1f))
-        PrimaryButton("Open Sumvalo", onClick = onFinish, modifier = Modifier.fillMaxWidth())
-        Spacer(Modifier.height(16.dp))
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0E0E0E)),
+    ) {
+        // Hero card
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(380.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color(0xFF1F1F1F))
+                .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(32.dp)),
+        ) {
+            // Header: back arrow only (no Skip on final step)
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    "9:41",
+                    style = chakraText(FontWeight.Bold, 14, 18),
+                    color = Color.White,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatusIcon(Icons.Outlined.KeyboardArrowLeft, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowRight, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowUp, tint = Color.White)
+                }
+            }
+
+            // Header row: back button
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable(onClick = onFinish),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+                // No Skip on final step — keep space balanced
+                Spacer(Modifier.width(48.dp))
+            }
+
+            // Hero decorative content
+            Box(Modifier.fillMaxSize()) {
+                // Large white check-mark circle (center-left)
+                Box(
+                    Modifier
+                        .size(184.dp)
+                        .offset(x = 91.dp, y = 30.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.Outlined.Check,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(112.dp),
+                    )
+                }
+                // Scattered small shapes
+                Box(Modifier.size(28.dp).offset(x = 36.dp, y = 30.dp).clip(RoundedCornerShape(8.dp)).background(Color(0xFF0E0E0E)).graphicsLayer { rotationZ = 18f })
+                Box(Modifier.size(20.dp).offset(x = 22.dp, y = 110.dp).clip(CircleShape).background(Color.White))
+                Box(Modifier.size(16.dp, 48.dp).offset(x = 30.dp, y = 200.dp).clip(RoundedCornerShape(50)).background(Color(0xFF6FBF8B)).graphicsLayer { rotationZ = -28f })
+                Box(Modifier.size(20.dp).offset(x = 90.dp, y = 240.dp).clip(RoundedCornerShape(4.dp)).background(Color(0xFF0E0E0E)).graphicsLayer { rotationZ = 40f })
+                Box(Modifier.size(24.dp).offset(x = 68.dp, y = 64.dp).graphicsLayer { rotationZ = -14f }) {
+                    Icon(Icons.Outlined.KeyboardArrowUp, contentDescription = null, tint = Color(0xFFF5F5F5), modifier = Modifier.size(14.dp))
+                }
+                Box(Modifier.size(12.dp).offset(x = 80.dp, y = 160.dp).clip(CircleShape).background(Color.White))
+                Box(Modifier.size(32.dp).offset(x = 296.dp, y = 22.dp).clip(RoundedCornerShape(9.dp)).background(Color(0xFF0E0E0E)).graphicsLayer { rotationZ = -16f })
+                Box(Modifier.size(24.dp).offset(x = 316.dp, y = 96.dp).clip(CircleShape).background(Color.White))
+                Box(Modifier.size(16.dp, 56.dp).offset(x = 256.dp, y = 64.dp).clip(RoundedCornerShape(50)).background(Color(0xFF6FBF8B)).graphicsLayer { rotationZ = 32f })
+                Box(Modifier.size(12.dp).offset(x = 180.dp, y = 0.dp).clip(CircleShape).background(Color(0xFF0E0E0E)))
+                Box(Modifier.size(28.dp, 40.dp).offset(x = 160.dp, y = 256.dp).clip(RoundedCornerShape(50)).background(Color(0xFF6FBF8B)).graphicsLayer { rotationZ = -8f })
+                Box(Modifier.size(16.dp).offset(x = 318.dp, y = 224.dp).clip(CircleShape).background(Color.White))
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Progress dots + page label
+        ProgressRow(4)
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        ) {
+            Text(
+                "You're all set.",
+                style = chakraText(FontWeight.Bold, 40, 40, -0.02f),
+                color = Color.White,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Add bank accounts and cards anytime from Accounts, or jump straight in and add transactions as you go.",
+                style = chakraText(FontWeight.Normal, 15, 21),
+                color = Color(0xFFA3A3A3),
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        // Three stat cards
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            StatCard(Icons.Outlined.Check, "Tracking", "Manual")
+            StatCard(Icons.Outlined.Check, "Alerts", "On")
+            StatCard(Icons.Outlined.Check, "Data", "On-device")
+        }
+
+        // Open Sumvalo button + Add an account first
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                Modifier.fillMaxWidth().clickable(onClick = onFinish),
+            ) {
+                Box(
+                    Modifier
+                        .height(64.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            "Open Sumvalo",
+                            style = chakraText(FontWeight.Bold, 18, 22),
+                            color = Color(0xFF0E0E0E),
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Icon(
+                            Icons.Outlined.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color(0xFF0E0E0E),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+            }
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Add an account first",
+                style = chakraText(FontWeight.Bold, 15, 20),
+                color = Color(0xFFA3A3A3),
+                textAlign = TextAlign.Center,
+            )
+        }
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+/** Stat card: green check circle + small cap label + large value. */
+@Composable
+private fun StatCard(icon: ImageVector, label: String, value: String) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp, vertical = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF1A1A1A)),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier.size(40.dp).clip(CircleShape).background(Color(0xFF6FBF8B)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(label, style = chakraText(FontWeight.Bold, 12, 16, 0.04f), color = Color(0xFFA3A3A3))
+            Text(value, style = chakraText(FontWeight.Bold, 16, 20), color = Color.White)
+        }
     }
 }
 
