@@ -2,13 +2,13 @@ package com.acuranza.app.ui.nav
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.QueryStats
+import androidx.compose.material.icons.automirrored.filled.ShowChart
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.automirrored.filled.ReceiptLong
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.QueryStats
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
+import androidx.compose.material.icons.automirrored.outlined.Assignment
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.acuranza.app.model.TxnType
 
@@ -99,8 +99,8 @@ data class Tab(val route: String, val label: String, val icon: ImageVector, val 
 
 val Tabs = listOf(
     Tab(Routes.HOME, "Home", Icons.Outlined.Home, Icons.Filled.Home),
-    Tab(Routes.INSIGHTS, "Insights", Icons.Outlined.QueryStats, Icons.Filled.QueryStats),
-    Tab(Routes.TRANSACTIONS, "Activity", Icons.AutoMirrored.Outlined.ReceiptLong, Icons.AutoMirrored.Filled.ReceiptLong),
+    Tab(Routes.INSIGHTS, "Insights", Icons.AutoMirrored.Outlined.ShowChart, Icons.AutoMirrored.Filled.ShowChart),
+    Tab(Routes.TRANSACTIONS, "Activity", Icons.AutoMirrored.Outlined.Assignment, Icons.AutoMirrored.Filled.Assignment),
     Tab(Routes.SETTINGS, "Settings", Icons.Outlined.Settings, Icons.Filled.Settings),
 )
 

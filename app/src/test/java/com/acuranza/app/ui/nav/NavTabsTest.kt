@@ -78,8 +78,8 @@ class NavTabsTest {
     @Test
     fun `the default icon is today's look`() {
         assertEquals("home", NavTabs.iconOf("home", null).id)
-        assertEquals("query_stats", NavTabs.iconOf("insights", "garbage").id)
-        assertEquals("receipt_long", NavTabs.iconOf("transactions", null).id)
+        assertEquals("line_chart", NavTabs.iconOf("insights", "garbage").id)
+        assertEquals("assignment", NavTabs.iconOf("transactions", null).id)
         assertEquals("settings", NavTabs.iconOf("settings", null).id)
     }
 }

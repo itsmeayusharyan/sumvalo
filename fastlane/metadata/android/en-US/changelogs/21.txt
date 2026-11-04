@@ -1,0 +1,3 @@
+Sumvalo 0.21
+
+- Navigation icons now match the reference: Insights is a line chart, Activity a clipboard with list lines (Home and Settings were already correct)

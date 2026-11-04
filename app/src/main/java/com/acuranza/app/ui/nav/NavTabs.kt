@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.Weekend
 import androidx.compose.material.icons.automirrored.outlined.Assignment
+import androidx.compose.material.icons.automirrored.outlined.ShowChart
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.Construction
 import androidx.compose.material.icons.outlined.Cottage
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.outlined.SpaceDashboard
 import androidx.compose.material.icons.filled.SpaceDashboard
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.ShowChart
 import androidx.compose.material.icons.automirrored.outlined.TrendingUp
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -61,6 +63,7 @@ object NavTabs {
             IconChoice("space_dashboard", "Dashboard", Icons.Outlined.SpaceDashboard, Icons.Filled.SpaceDashboard),
         ),
         Routes.INSIGHTS to listOf(
+            IconChoice("line_chart", "Line", Icons.AutoMirrored.Outlined.ShowChart, Icons.AutoMirrored.Filled.ShowChart),
             IconChoice("query_stats", "Chart", Icons.Outlined.QueryStats, Icons.Filled.QueryStats),
             IconChoice("bar_chart", "Bars", Icons.Outlined.BarChart, Icons.Filled.BarChart),
             IconChoice("pie_chart", "Pie", Icons.Outlined.PieChart, Icons.Filled.PieChart),
@@ -79,11 +82,11 @@ object NavTabs {
         ),
     )
 
-    /** The default icon id per tab (today's look). */
+    /** The default icon id per tab (the reference design's glyphs). */
     private val DEFAULT_ICON = mapOf(
         Routes.HOME to "home",
-        Routes.INSIGHTS to "query_stats",
-        Routes.TRANSACTIONS to "receipt_long",
+        Routes.INSIGHTS to "line_chart",
+        Routes.TRANSACTIONS to "assignment",
         Routes.SETTINGS to "settings",
     )
 

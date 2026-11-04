@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.21",
+        name = "Sumvalo 0.21",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Navigation icons now match the reference — Insights is a line chart, Activity a clipboard with list lines; Home and Settings were already correct", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.20",
         name = "Sumvalo 0.20",
         publishedAt = "",
