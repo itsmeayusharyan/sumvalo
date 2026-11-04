@@ -513,11 +513,49 @@ class ScreensScreenshotTest {
         }
     }
 
-    /** The redesigned first-launch welcome: logo, value proposition, three props, Get started. */
+    /** The redesigned first-launch welcome: hero gauge, benefit cards, Get started. */
     @Test
     fun onboarding_welcome() = paparazzi.snapshot {
         Frame(dark = true) {
             com.acuranza.app.ui.onboarding.Welcome(onNext = {})
+        }
+    }
+
+    /** Features step: target hero, three benefit rows, Continue. */
+    @Test
+    fun onboarding_features() = paparazzi.snapshot {
+        Frame(dark = true) {
+            com.acuranza.app.ui.onboarding.FeaturesStep(onBack = {}, onNext = {})
+        }
+    }
+
+    /** History step: receipt hero, entry-method options, Continue. */
+    @Test
+    fun onboarding_history() = paparazzi.snapshot {
+        Frame(dark = true) {
+            com.acuranza.app.ui.onboarding.HistoryStep(onBack = {}, onNext = {})
+        }
+    }
+
+    /** Notifications gate: bell hero, preference toggles, Allow + Maybe later. */
+    @Test
+    fun onboarding_notifications() = paparazzi.snapshot {
+        Frame(dark = true) {
+            com.acuranza.app.ui.onboarding.NotificationsScreen(
+                onBack = {},
+                onNext = {},
+                granted = false,
+                showDeniedHelp = false,
+                onAllowClick = {},
+            )
+        }
+    }
+
+    /** All-set step: check hero, three stat cards, Open Sumvalo. */
+    @Test
+    fun onboarding_done() = paparazzi.snapshot {
+        Frame(dark = true) {
+            com.acuranza.app.ui.onboarding.DoneStep(onBack = {}, onFinish = {})
         }
     }
 
