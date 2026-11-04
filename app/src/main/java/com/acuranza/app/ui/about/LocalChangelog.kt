@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.22",
+        name = "Sumvalo 0.22",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Release pipeline: security-audit.sh now fails loudly when jadx is missing instead of silently skipping the DEX scan (network code, trackers, secrets)", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.21",
         name = "Sumvalo 0.21",
         publishedAt = "",

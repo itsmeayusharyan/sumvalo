@@ -23,6 +23,7 @@ APK="${1:?usage: security-audit.sh <apk>}"
 SDK="${ANDROID_HOME:?set ANDROID_HOME}"
 BUILD_TOOLS=$(ls -d "$SDK"/build-tools/* | sort -V | tail -1)
 JADX="${JADX:-jadx}"   # jadx 1.5+ on PATH, or set JADX=/path/to/jadx/bin/jadx
+command -v "$JADX" >/dev/null 2>&1 || { echo "security-audit.sh: jadx not found at '$JADX' — set JADX=/path/to/jadx/bin/jadx" >&2; exit 1; }
 
 fail() { echo "FAIL: $*"; exit 1; }
 pass() { echo "PASS: $*"; }
