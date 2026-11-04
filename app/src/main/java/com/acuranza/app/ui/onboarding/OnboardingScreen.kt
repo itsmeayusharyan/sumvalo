@@ -39,15 +39,17 @@ import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Adjust
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.EventAvailable
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Sms
 import androidx.compose.material.icons.outlined.VerifiedUser
@@ -56,6 +58,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
@@ -121,52 +124,14 @@ fun OnboardingScreen() {
                 0 -> Welcome { step = 1 }
                 1 -> FeaturesStep(onBack = { step = 0 }, onNext = { step = 2 })
                 2 -> HistoryStep(onBack = { step = 1 }, onNext = { step = 3 })
-                3 -> NotificationsStep { step = 4 }
+                3 -> NotificationsStep(onBack = { step = 2 }, onNext = { step = 4 })
                 else -> DoneStep(finish)
             }
         }
     }
 }
 
-@Composable
-private fun StepPage(
-    title: String,
-    subtitle: String,
-    primary: String,
-    onPrimary: () -> Unit,
-    primaryEnabled: Boolean = true,
-    secondary: String? = null,
-    onSecondary: (() -> Unit)? = null,
-    icon: ImageVector? = null,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp)) {
-        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
-            if (icon != null) {
-                Box(
-                    Modifier
-                        .padding(top = 8.dp)
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(SumvaloTheme.colors.ink),
-                    contentAlignment = Alignment.Center,
-                ) { Icon(icon, contentDescription = null, tint = SumvaloTheme.colors.onInk) }
-                Spacer(Modifier.height(16.dp))
-            }
-            Text(title, style = SumvaloText.screenTitle)
-            Spacer(Modifier.height(6.dp))
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
-            Spacer(Modifier.height(20.dp))
-            content()
-            Spacer(Modifier.height(16.dp))
-        }
-        PrimaryButton(primary, onClick = onPrimary, enabled = primaryEnabled, modifier = Modifier.fillMaxWidth())
-        if (secondary != null && onSecondary != null) {
-            TextButton(onClick = onSecondary, modifier = Modifier.fillMaxWidth()) { Text(secondary) }
-        }
-        Spacer(Modifier.height(12.dp))
-    }
-}
+
 
 /** Chakra Petch — bundled under res/font (SIL OFL). */
 private val Chakra = FontFamily(
@@ -497,34 +462,386 @@ private fun StatusIcon(icon: ImageVector, tint: Color = Color(0xFFA3A3A3)) {
 }
 
 /**
- * The one mandatory step: notifications. The primary button asks for the permission until it is
- * granted; a denial shows the settings path instead of letting the user into the app.
+ * The permission step. The primary button asks for POST_NOTIFICATIONS until granted; Skip and
+ * "Maybe later" let the user proceed without it (notifications can be enabled later in Settings).
  */
 @Composable
-private fun NotificationsStep(onNext: () -> Unit) {
+private fun NotificationsStep(onBack: () -> Unit, onNext: () -> Unit) {
     val granted by rememberNotificationPermission()
     val request = rememberNotificationRequest()
+    var requested by rememberSaveable { mutableStateOf(false) }
+    val ask: () -> Unit = {
+        requested = true
+        request()
+    }
 
-    StepPage(
-        title = "Turn on notifications",
-        subtitle = "Sumvalo is offline, so notifications are how it reaches you: bill due dates, unusual spending, " +
-            "warranties ending and payments you scheduled — all composed on your phone.",
-        primary = if (granted) "Continue" else "Allow notifications",
-        onPrimary = { if (granted) onNext() else request() },
-        icon = Icons.Outlined.NotificationsActive,
+    var cardBills by rememberSaveable { mutableStateOf(true) }
+    var spendingAlerts by rememberSaveable { mutableStateOf(true) }
+    var planned by rememberSaveable { mutableStateOf(true) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0E0E0E)),
     ) {
-        NotificationReasons()
-        if (granted) {
-            Spacer(Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = SumvaloTheme.colors.good)
-                Spacer(Modifier.width(8.dp))
-                Text("Notifications are on", fontWeight = FontWeight.Medium)
+        // Hero card
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(270.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color(0xFF1F1F1F))
+                .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(32.dp)),
+        ) {
+            // Status bar row
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    "9:41",
+                    style = chakraText(FontWeight.Bold, 14, 18),
+                    color = Color.White,
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatusIcon(Icons.Outlined.KeyboardArrowLeft, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowRight, tint = Color.White)
+                    StatusIcon(Icons.Outlined.KeyboardArrowUp, tint = Color.White)
+                }
             }
-        } else {
-            Spacer(Modifier.height(12.dp))
-            NotificationDeniedHelp(Modifier.fillMaxWidth())
+
+            // Header row: back button + Skip
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(top = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        Icons.AutoMirrored.Default.KeyboardArrowLeft,
+                        contentDescription = null,
+                        tint = Color(0xFF0E0E0E),
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(9999.dp))
+                        .clickable(onClick = onNext)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Skip",
+                        style = chakraText(FontWeight.Bold, 15, 20),
+                        color = Color.White,
+                    )
+                }
+            }
+
+            // Hero decorative content
+            Box(Modifier.fillMaxSize()) {
+                // Grey circle backdrop
+                Box(
+                    Modifier
+                        .size(200.dp)
+                        .offset(x = 150.dp, y = 10.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF2A2A2A)),
+                )
+                // White dots
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 40.dp, y = 28.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                )
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 226.dp, y = 0.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                )
+                // Rotated dark square
+                Box(
+                    Modifier
+                        .size(32.dp)
+                        .offset(x = 100.dp, y = 40.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFF0E0E0E))
+                        .graphicsLayer { rotationZ = 18f },
+                )
+                // Rotated dark diamond
+                Box(
+                    Modifier
+                        .size(20.dp)
+                        .offset(x = 322.dp, y = 30.dp)
+                        .graphicsLayer { rotationZ = 45f }
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color(0xFF0E0E0E)),
+                )
+                // Bell body (white pill)
+                Box(
+                    Modifier
+                        .size(112.dp, 104.dp)
+                        .offset(x = 180.dp, y = 12.dp)
+                        .clip(RoundedCornerShape(56.dp))
+                        .background(Color.White),
+                )
+                // Bell rim hard shadow + bar
+                Box(
+                    Modifier
+                        .size(156.dp, 24.dp)
+                        .offset(x = 158.dp, y = 112.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(Color(0xFF0E0E0E)),
+                )
+                Box(
+                    Modifier
+                        .size(156.dp, 24.dp)
+                        .offset(x = 158.dp, y = 104.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(Color.White),
+                )
+                // Clapper
+                Box(
+                    Modifier
+                        .size(32.dp)
+                        .offset(x = 220.dp, y = 134.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF0E0E0E)),
+                )
+                // Red badge with count
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .offset(x = 262.dp, y = (-4).dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFD9776F))
+                        .border(4.dp, Color(0xFF1F1F1F), CircleShape),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "3",
+                        style = chakraText(FontWeight.Bold, 20, 22),
+                        color = Color.White,
+                    )
+                }
+                // Bill-due chip (rotated -7deg, hard shadow)
+                Box(
+                    Modifier
+                        .offset(x = 18.dp, y = 118.dp)
+                        .graphicsLayer { rotationZ = -7f },
+                ) {
+                    Box(
+                        Modifier
+                            .offset(y = 6.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0xFF3A3A3A)),
+                    ) {
+                        Row(
+                            Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0xFF0E0E0E))
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            Box(Modifier.size(10.dp).clip(CircleShape).background(Color(0xFFD9776F)))
+                            Text(
+                                "Bill due in 3 days",
+                                style = chakraText(FontWeight.Bold, 15, 18),
+                                color = Color.White,
+                            )
+                        }
+                    }
+                }
+            }
         }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Progress dots + page label
+        ProgressRow(3)
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+        ) {
+            Text(
+                "Turn on notifications.",
+                style = chakraText(FontWeight.Bold, 40, 40, -0.02f),
+                color = Color.White,
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Timely reminders for bills, unusual spending, warranties and scheduled payments.",
+                style = chakraText(FontWeight.Normal, 15, 21),
+                color = Color(0xFFA3A3A3),
+            )
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        // Notification preference toggles
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            NotifRow(
+                icon = Icons.Outlined.CalendarToday,
+                title = "Card bills",
+                text = "A reminder before each due date.",
+                on = cardBills,
+                onToggle = { cardBills = !cardBills },
+            )
+            NotifRow(
+                icon = Icons.Outlined.NotificationsNone,
+                title = "Spending alerts",
+                text = "Unusual spending or a budget running hot.",
+                on = spendingAlerts,
+                onToggle = { spendingAlerts = !spendingAlerts },
+            )
+            NotifRow(
+                icon = Icons.Outlined.EventAvailable,
+                title = "Things you planned",
+                text = "Subscriptions and scheduled payments.",
+                on = planned,
+                onToggle = { planned = !planned },
+            )
+        }
+
+        if (requested && !granted) {
+            Spacer(Modifier.height(12.dp))
+            NotificationDeniedHelp(Modifier.fillMaxWidth().padding(horizontal = 20.dp))
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        // Primary button + Maybe later
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Box(
+                Modifier.fillMaxWidth().clickable(onClick = { if (granted) onNext() else ask() }),
+            ) {
+                Box(
+                    Modifier
+                        .height(64.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 28.dp, end = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            if (granted) "Continue" else "Allow notifications",
+                            style = chakraText(FontWeight.Bold, 18, 22),
+                            color = Color(0xFF0E0E0E),
+                        )
+                        Box(
+                            Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF0E0E0E)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                if (granted) Icons.Outlined.KeyboardArrowRight else Icons.Outlined.NotificationsNone,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        }
+                    }
+                }
+            }
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(9999.dp))
+                    .clickable(onClick = onNext)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    "Maybe later",
+                    style = chakraText(FontWeight.Bold, 15, 20),
+                    color = Color(0xFFA3A3A3),
+                )
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+    }
+}
+
+/** Toggle switch matching the reference: light track, dark knob. */
+@Composable
+private fun NotifToggle(on: Boolean, onToggle: () -> Unit) {
+    Box(
+        Modifier
+            .size(52.dp, 30.dp)
+            .clip(RoundedCornerShape(50))
+            .background(if (on) Color(0xFFF5F5F5) else Color(0xFF3A3A3A))
+            .clickable(onClick = onToggle)
+            .padding(horizontal = 3.dp),
+        contentAlignment = if (on) Alignment.CenterEnd else Alignment.CenterStart,
+    ) {
+        Box(
+            Modifier
+                .size(24.dp)
+                .clip(CircleShape)
+                .background(if (on) Color(0xFF0E0E0E) else Color(0xFF8A8A8A)),
+        )
+    }
+}
+
+/** Notification preference row: icon + title + description + toggle. */
+@Composable
+private fun NotifRow(icon: ImageVector, title: String, text: String, on: Boolean, onToggle: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF1A1A1A))
+            .padding(horizontal = 14.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0xFF262626)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(title, style = chakraText(FontWeight.Bold, 16, 20), color = Color.White)
+            Spacer(Modifier.height(2.dp))
+            Text(text, style = chakraText(FontWeight.Normal, 13, 18), color = Color(0xFFA3A3A3))
+        }
+        Spacer(Modifier.width(12.dp))
+        NotifToggle(on, onToggle)
     }
 }
 
