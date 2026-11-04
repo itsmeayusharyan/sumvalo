@@ -10,6 +10,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,6 +39,9 @@ import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Autorenew
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material3.Icon
@@ -55,7 +60,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import com.acuranza.app.R
 import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.theme.SumvaloTheme
@@ -167,41 +178,370 @@ private fun StepPage(
     }
 }
 
-@Composable
-internal fun Welcome(onNext: () -> Unit) {
-    Column(Modifier.fillMaxSize().padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.weight(0.6f))
-        SumvaloLogo(size = 108.dp)
-        Spacer(Modifier.height(24.dp))
-        Text("Welcome to Sumvalo", style = SumvaloText.screenTitle, textAlign = TextAlign.Center)
-        Spacer(Modifier.height(8.dp))
-        Text(
-            "Track income, expenses, budgets and goals — privately, on your phone.",
-            style = MaterialTheme.typography.bodyLarge, color = SumvaloTheme.colors.subtleText, textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(28.dp))
-        ValueProp(Icons.Outlined.Assessment, "Track everything", "Income, expenses and card dues in one place, entered in seconds.")
-        ValueProp(Icons.Outlined.AccountBalanceWallet, "Plan with confidence", "Budgets, savings goals and safe-to-spend pace, computed on your phone.")
-        ValueProp(Icons.Outlined.Lock, "Private by design", "No account, no cloud, no tracking. Your money never leaves your device.")
-        Spacer(Modifier.weight(1f))
-        PrimaryButton("Get started", onClick = onNext, modifier = Modifier.fillMaxWidth())
-        Spacer(Modifier.height(16.dp))
-    }
-}
-
+/** Value prop row with icon + title + description. */
 @Composable
 private fun ValueProp(icon: ImageVector, title: String, text: String) {
     Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
         Box(
-            Modifier.size(44.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+            Modifier.size(44.dp).clip(RoundedCornerShape(16.dp)).background(Color(0xFF2A2A2A)),
             contentAlignment = Alignment.Center,
-        ) { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary) }
+        ) { Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp)) }
         Spacer(Modifier.width(14.dp))
         Column {
-            Text(title, fontWeight = FontWeight.SemiBold)
-            Text(text, style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
+            Text(title, style = chakraText(FontWeight.Bold, 14, 18), color = Color.White)
+            Text(text, style = chakraText(FontWeight.Normal, 13, 18), color = Color(0xFFA3A3A3))
         }
     }
+}
+
+/** Chakra Petch — bundled under res/font (SIL OFL). */
+private val Chakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int = size + 6, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
+/** Welcome screen (step 0 of 5): matches the Subframe reference design exactly. */
+@Composable
+internal fun Welcome(onNext: () -> Unit) {
+    val colors = SumvaloTheme.colors
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(colors.cardSurface),
+    ) {
+        // Header: logo + SUMVALO + Skip
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(colors.cardSurface)
+                    .border(1.dp, colors.hairline, RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center,
+            ) { SumvaloLogo(size = 28.dp) }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                "SUMVALO",
+                style = chakraText(FontWeight.Bold, 17, 22),
+                color = colors.ink,
+            )
+            Spacer(Modifier.weight(1f))
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .clickable(onClick = onNext)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    "Skip",
+                    style = chakraText(FontWeight.Bold, 15, 20),
+                    color = colors.ink,
+                )
+            }
+        }
+
+        // Hero card
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(430.dp)
+                .clip(RoundedCornerShape(32.dp))
+                .background(Color(0xFF1F1F1F))
+                .border(1.dp, colors.hairline, RoundedCornerShape(32.dp)),
+        ) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "9:41",
+                    style = chakraText(FontWeight.Bold, 14, 18),
+                    color = colors.ink,
+                )
+                Spacer(Modifier.weight(1f))
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    StatusIcon(Icons.Outlined.KeyboardArrowLeft)
+                    StatusIcon(Icons.Outlined.KeyboardArrowRight)
+                    StatusIcon(Icons.Outlined.KeyboardArrowUp)
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(colors.cardSurface),
+                    contentAlignment = Alignment.Center,
+                ) { SumvaloLogo(size = 28.dp) }
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    "SUMVALO",
+                    style = chakraText(FontWeight.Bold, 15, 20),
+                    color = colors.ink,
+                )
+                Spacer(Modifier.weight(1f))
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(9999.dp))
+                        .clickable(onClick = onNext)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        "Skip",
+                        style = chakraText(FontWeight.Bold, 15, 20),
+                        color = colors.ink,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            Box(
+                Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                ) {
+                    Box(
+                        Modifier
+                            .size(260.dp, 260.dp)
+                            .clip(RoundedCornerShape(9999.dp))
+                            .background(Color(0xFF2A2A2A))
+                            .padding(end = 40.dp),
+                    )
+                    Box(
+                        Modifier
+                            .size(10.dp, 20.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFF0E0E0E))
+                            .padding(top = 22.dp),
+                    )
+                    Box(
+                        Modifier
+                            .size(5.dp, 5.dp)
+                            .clip(CircleShape)
+                            .background(Color.White)
+                            .padding(top = 78.dp, end = 40.dp),
+                    )
+                    Box(
+                    Modifier
+                        .size(184.dp, 184.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                    ) {
+                        Box(
+                            Modifier
+                                .size(148.dp, 148.dp)
+                                .clip(CircleShape)
+                                .border(6.dp, Color(0xFF0E0E0E), CircleShape),
+                        ) {
+                            Text(
+                                "₹",
+                                style = chakraText(FontWeight.Bold, 92, 92),
+                                color = Color(0xFF0E0E0E),
+                            )
+                        }
+                    }
+                }
+
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter),
+                ) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                    Box(
+                        Modifier
+                            .size(12.dp, 20.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF3A3A3A)),
+                    )
+                    Box(
+                        Modifier
+                            .size(12.dp, 32.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF0E0E0E)),
+                    )
+                    Box(
+                        Modifier
+                            .size(12.dp, 44.dp)
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color.White),
+                    )
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(9999.dp))
+                            .background(colors.cardSurface)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("▲", style = chakraText(FontWeight.Bold, 14, 18), color = Color(0xFF6FBF8B))
+                            Text("2.4% this month", style = chakraText(FontWeight.Bold, 14, 18), color = Color(0xFF6FBF8B))
+                        }
+                    }
+                    }
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Progress dots + 01/05
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+                repeat(5) { i ->
+                    Box(
+                        Modifier
+                            .size(if (i == 0) 36.dp else 6.dp, 3.dp)
+                            .clip(CircleShape)
+                            .background(if (i == 0) Color.White else Color(0xFF2A2A2A)),
+                    )
+                }
+            }
+            Spacer(Modifier.weight(1f))
+            Text(
+                "01 / 05",
+                style = chakraText(FontWeight.Bold, 12, 16, 0.12f),
+                color = Color(0xFF6B6B6B),
+            )
+        }
+
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                "Take control of your money.",
+                style = chakraText(FontWeight.Bold, 44, 42, -0.02f),
+                color = Color.White,
+            )
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "Track income, expenses, budgets and goals — privately, on your phone.",
+                style = chakraText(FontWeight.Normal, 16, 23),
+                color = Color(0xFFA3A3A3),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(24.dp))
+
+            // Feature cards
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                FeatureCard(Icons.Outlined.Lock, "On-device")
+                FeatureCard(Icons.Outlined.Lock, "No account")
+                FeatureCard(Icons.Outlined.Lock, "No ads")
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // Get started button
+            Box(
+                Modifier.fillMaxWidth().clickable(onClick = onNext),
+            ) {
+                Box(
+                    Modifier
+                        .height(56.dp)
+                        .clip(CircleShape)
+                        .background(Color.White),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Get started",
+                            style = chakraText(FontWeight.Bold, 18, 22),
+                            color = Color(0xFF0E0E0E),
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Icon(
+                            Icons.Outlined.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = Color(0xFF0E0E0E),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
+            Text(
+                "Takes less than a minute",
+                style = chakraText(FontWeight.Medium, 13, 16),
+                color = Color(0xFF6B6B6B),
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FeatureCard(icon: ImageVector, label: String) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(110.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF1A1A1A))
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                Modifier
+                    .size(44.dp, 44.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF2A2A2A)),
+                contentAlignment = Alignment.Center,
+            ) { Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp)) }
+            Spacer(Modifier.width(12.dp))
+            Text(
+                label,
+                style = chakraText(FontWeight.Bold, 14, 18),
+                color = Color.White,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatusIcon(icon: ImageVector) {
+    Icon(icon, contentDescription = null, tint = Color(0xFFA3A3A3), modifier = Modifier.size(18.dp))
 }
 
 /**
@@ -273,3 +613,4 @@ private fun DoneStep(onFinish: () -> Unit) {
         Spacer(Modifier.height(16.dp))
     }
 }
+
