@@ -1,4 +1,5 @@
 Sumvalo 0.23
 
+- Onboarding redesigned — all five first-run screens (Welcome, Features, History, Notifications, All Set) rebuilt with the new dark hero design
 - Navigation cleanup — removed 'Labels under icons' and 'Floating bar' toggles from Edit navigation tabs; redesigned bar kept intact
 - Settings customization fixed — section reordering and renaming now persist and appear in the Settings hub; deletion still works

@@ -28,6 +28,7 @@ val LocalChangelog: List<ReleaseEntry> = listOf(
         htmlUrl = "",
     ).copy(
         providedChanges = listOf(
+            ChangeItem("Onboarding redesigned — all five first-run screens (Welcome, Features, History, Notifications, All Set) rebuilt with the new dark hero design", ChangeCategory.ADDED),
             ChangeItem("Navigation cleanup — removed 'Labels under icons' and 'Floating bar' toggles from Edit navigation tabs; redesigned bar kept intact", ChangeCategory.IMPROVED),
             ChangeItem("Settings customization fixed — section reordering and renaming now persist and appear in the Settings hub; deletion still works", ChangeCategory.FIXED),
         ),
