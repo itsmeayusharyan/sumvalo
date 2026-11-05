@@ -80,11 +80,20 @@ fun HomeContent(
         contentPadding = PaddingValues(bottom = 8.dp),
     ) {
         item(key = "header") {
-            HomeHeader(state, onNotifications, onProfile)
+            HomeHeader(state, onNotifications, onProfile, onSearch = onActivity)
         }
 
         item(key = "hero") {
             NetWorthHero(state, hidden, onToggleHidden)
+        }
+
+        // The reference's "Last 7 days" card sits directly under the balance card.
+        if (state.charts.paceCurrent.size >= 2) {
+            item(key = "weekly") {
+                Box(Modifier.animateItem()) {
+                    Last7DaysCard(state, hidden)
+                }
+            }
         }
 
         // Action banners and the first-run card sit directly under the balance card: they ask the
@@ -155,7 +164,7 @@ fun HomeContent(
             when (section) {
                 HomeSection.QUICK -> item(key = "quick") {
                     Box(Modifier.animateItem()) {
-                        QuickActionsGrid(state, onActivity, onBills, onPlanning, onAccounts, onTransfer, onReports)
+                        QuickActionsGrid(state, onActivity, onBills, onPlanning, onAccounts)
                     }
                 }
                 HomeSection.SAFE -> state.safeToSpend?.let { safe -> item(key = "safe") {

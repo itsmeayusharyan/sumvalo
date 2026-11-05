@@ -66,6 +66,7 @@ import com.acuranza.app.ui.bills.BillsContent
 import com.acuranza.app.ui.bills.BillsState
 import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.home.EditHomeContent
+import com.acuranza.app.ui.home.HomeCharts
 import com.acuranza.app.ui.home.HomeContent
 import com.acuranza.app.ui.home.HomeLayout
 import com.acuranza.app.ui.home.HomeState
@@ -125,6 +126,17 @@ class ScreensScreenshotTest {
         insights = FakeData.insights,
         recent = FakeData.recent,
         accounts = FakeData.accounts,
+        // Cumulative pace: two calmer weeks then a lighter one, so the weekly card and the
+        // status chips both have real shapes to render.
+        charts = run {
+            val daily = List(13) { 41_000L } + listOf(29_500L, 41_000L, 18_000L, 36_000L, 25_000L, 42_000L, 33_000L)
+            var acc = 0L
+            HomeCharts(
+                paceCurrent = daily.map { acc += it; acc },
+                pacePrevious = List(20) { i -> (i + 1) * 38_000L },
+                periodDays = 31,
+            )
+        },
     )
 
     /** Stress: dynamic text at the extremes — long titles, subtitles and values must stay
@@ -211,6 +223,31 @@ class ScreensScreenshotTest {
 
     @Test
     fun home_privacy() = paparazzi.snapshot { Frame(tab = Routes.HOME) { HomeContent(homeState(), hidden = true) } }
+
+    /** The dashboard tail (pace, bills, budgets) at natural height — it sits below the Frame's fold. */
+    @Test
+    fun home_tail() = paparazzi.snapshot {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalInspectionMode provides true) {
+                Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+                    com.acuranza.app.ui.home.PaceSectionV2(homeState(), hidden = false, onActivity = {})
+                    com.acuranza.app.ui.home.BillsSectionV2(homeState(), hidden = false, onBills = {})
+                    com.acuranza.app.ui.home.BudgetsSectionV2(
+                        homeState().copy(
+                            budgets = listOf(
+                                budget("food", 10_000, 5_300),
+                                budget("shopping", 12_000, 5_520),
+                                budget("transport", 6_000, 3_720),
+                                budget("bills", 6_000, 5_460),
+                            ),
+                        ),
+                        hidden = false,
+                        onPlanning = {},
+                    )
+                }
+            }
+        }
+    }
 
     @Test
     fun activity() = paparazzi.snapshot {

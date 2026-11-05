@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.24",
+        name = "Sumvalo 0.24",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Home redesigned to the new reference — greeting with date block, status chips, weekly spending card, 2×2 quick actions, refreshed cards", ChangeCategory.ADDED),
+            ChangeItem("Bottom navigation redesigned — active tab as a pill, icon-only destinations, centered add button; the corner add button is gone", ChangeCategory.IMPROVED),
+            ChangeItem("Edit home and Edit navigation tabs keep working exactly as before — sections and tabs stay reorderable and hideable", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.23",
         name = "Sumvalo 0.23",
         publishedAt = "",

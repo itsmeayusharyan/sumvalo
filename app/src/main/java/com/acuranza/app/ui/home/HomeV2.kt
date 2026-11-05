@@ -25,11 +25,15 @@ import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Assessment
-import androidx.compose.material.icons.outlined.ChevronLeft
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.CompareArrows
+import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.PieChart
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.SwapHoriz
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
@@ -47,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -81,8 +86,6 @@ import com.acuranza.app.ui.common.label
 import com.acuranza.app.ui.common.rememberHaptic
 import com.acuranza.app.ui.settings.ProfileAvatar
 import com.acuranza.app.util.Time
-import java.time.DayOfWeek
-import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -115,30 +118,38 @@ private fun V2Hairline(modifier: Modifier = Modifier) {
 /* ---------------------------------- Header ---------------------------------- */
 
 /**
- * The redesigned header: logo tile + SUMVALO wordmark on the left, a pill with the notification
- * bell (unread badge) and the profile avatar on the right. The hide-amounts eye lives on the
- * net-worth card, as in the reference design.
+ * The redesigned header: gradient-ringed logo tile + SUMVALO wordmark on the left, a pill with
+ * search, the notification bell (unread badge) and the profile avatar on the right; below it the
+ * two-line greeting with the date block, then the status chips (week change, bills due, payday).
  */
 @Composable
 internal fun HomeHeader(
     state: HomeState,
     onNotifications: () -> Unit,
     onProfile: () -> Unit,
+    onSearch: () -> Unit,
 ) {
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            // Gradient ring around the logo tile, as in the reference (F5F5F5 → 2A2A2A → 8A8A8A).
             Box(
                 Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(SumvaloTheme.colors.cardSurface)
-                    .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(12.dp)),
+                    .border(
+                        1.dp,
+                        Brush.linearGradient(
+                            listOf(SumvaloTheme.colors.ink, SumvaloTheme.colors.hairline, SumvaloTheme.colors.tertiaryText),
+                        ),
+                        RoundedCornerShape(12.dp),
+                    )
+                    .background(SumvaloTheme.colors.cardSurface),
                 contentAlignment = Alignment.Center,
-            ) { SumvaloLogo(size = 30.dp) }
+            ) { SumvaloLogo(size = 28.dp) }
             Spacer(Modifier.width(12.dp))
             Text(
                 "SUMVALO",
-                style = chakraText(FontWeight.Bold, 17, 22, 3f),
+                style = chakraText(FontWeight.Bold, 18, 24, 3.2f),
                 color = SumvaloTheme.colors.ink,
             )
             Spacer(Modifier.weight(1f))
@@ -147,19 +158,32 @@ internal fun HomeHeader(
                     .clip(RoundedCornerShape(50))
                     .background(SumvaloTheme.colors.cardSurface)
                     .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(50))
-                    .padding(horizontal = 6.dp, vertical = 5.dp),
+                    .padding(horizontal = 6.dp, vertical = 6.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                // Search lives in Activity; the icon hands straight over to it.
+                Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
+                    Icon(
+                        Icons.Outlined.Search,
+                        contentDescription = "Search",
+                        tint = SumvaloTheme.colors.subtleText,
+                        modifier = Modifier
+                            .size(26.dp)
+                            .clip(CircleShape)
+                            .clickable(role = Role.Button, onClick = onSearch)
+                            .padding(2.dp),
+                    )
+                }
                 Box(Modifier.size(32.dp), contentAlignment = Alignment.Center) {
                     Icon(
                         Icons.Outlined.Notifications,
                         contentDescription = if (state.notificationsUnread > 0) "Notifications, ${state.notificationsUnread} unread" else "Notifications",
                         tint = SumvaloTheme.colors.subtleText,
                         modifier = Modifier
-                            .size(22.dp)
+                            .size(26.dp)
                             .clip(CircleShape)
                             .clickable(role = Role.Button, onClick = onNotifications)
-                            .padding(1.dp),
+                            .padding(2.dp),
                     )
                     if (state.notificationsUnread > 0) {
                         Box(
@@ -167,6 +191,7 @@ internal fun HomeHeader(
                                 .align(Alignment.TopEnd)
                                 .clip(RoundedCornerShape(50))
                                 .background(SumvaloTheme.colors.ink)
+                                .border(2.dp, SumvaloTheme.colors.cardSurface, RoundedCornerShape(50))
                                 .padding(horizontal = 4.dp, vertical = 1.dp),
                         ) {
                             Text(
@@ -183,139 +208,132 @@ internal fun HomeHeader(
                 ProfileAvatar(
                     path = state.profileAvatar,
                     name = state.profileName,
-                    size = 28.dp,
+                    size = 32.dp,
                     modifier = Modifier
                         .clip(CircleShape)
                         .clickable(role = Role.Button, onClick = onProfile),
                 )
             }
         }
-        Spacer(Modifier.height(18.dp))
-        Text(
-            Fmt.greeting() + (state.profileName?.takeIf { it.isNotBlank() }?.let { ", $it" } ?: ""),
-            style = chakraText(FontWeight.Bold, 20, 26),
-            color = SumvaloTheme.colors.ink,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.height(12.dp))
-        DateStrip()
+        Spacer(Modifier.height(20.dp))
+        GreetingBlock(state)
+        StatusChips(state)
     }
 }
 
-/** The date card: big day number, month/weekday, then the current week with today marked. */
+/** Two-line greeting on the left; the reference's date block (weekday / big day / month) right. */
 @Composable
-private fun DateStrip() {
+private fun GreetingBlock(state: HomeState) {
     val today = Time.today()
-    // The strip is a real date navigator: the days are tappable and the arrows step a week in
-    // either direction; LocalDate arithmetic carries month and year boundaries for free.
-    var selectedEpochDay by rememberSaveable { mutableStateOf(today.toEpochDay()) }
-    val selected = java.time.LocalDate.ofEpochDay(selectedEpochDay)
-    val monday = selected.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .clip(cardShape)
-            .background(SumvaloTheme.colors.cardSurface)
-            .border(1.dp, SumvaloTheme.colors.hairline, cardShape)
-            .padding(horizontal = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            "%02d".format(selected.dayOfMonth),
-            style = chakraText(FontWeight.Bold, 34, 38, -0.5f),
-            color = SumvaloTheme.colors.ink,
-        )
-        Spacer(Modifier.width(8.dp))
-        Column {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+        Column(Modifier.weight(1f)) {
             Text(
-                selected.month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
-                style = chakraText(FontWeight.SemiBold, 10, 12, 1f),
+                Fmt.greeting() + ",",
+                style = chakraText(FontWeight.Bold, 34, 34, -0.7f),
                 color = SumvaloTheme.colors.tertiaryText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                selected.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
-                style = chakraText(FontWeight.SemiBold, 10, 12, 1f),
-                color = SumvaloTheme.colors.tertiaryText,
-            )
-        }
-        if (selected != today) {
-            Spacer(Modifier.width(8.dp))
-            Text(
-                "Today",
-                style = chakraText(FontWeight.SemiBold, 10, 12, 0.5f),
-                color = SumvaloTheme.colors.accent,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { selectedEpochDay = today.toEpochDay() }
-                    .padding(horizontal = 6.dp, vertical = 4.dp),
-            )
-        }
-        Spacer(Modifier.width(14.dp))
-        Box(Modifier.width(1.dp).height(34.dp).background(SumvaloTheme.colors.hairline))
-        Spacer(Modifier.weight(1f))
-        Icon(
-            Icons.Outlined.ChevronLeft,
-            contentDescription = "Previous week",
-            tint = SumvaloTheme.colors.tertiaryText,
-            modifier = Modifier
-                .size(22.dp)
-                .clip(CircleShape)
-                .clickable(role = Role.Button) { selectedEpochDay = selected.minusDays(7).toEpochDay() }
-                .padding(2.dp),
-        )
-        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-            (0 until 7).forEach { i ->
-                val d = monday.plusDays(i.toLong())
-                val isSelected = d == selected
-                val isToday = d == today
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(role = Role.Button) { selectedEpochDay = d.toEpochDay() }
-                        .padding(vertical = 2.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        d.dayOfWeek.getDisplayName(java.time.format.TextStyle.NARROW, Locale.ENGLISH),
-                        style = chakraText(if (isSelected || isToday) FontWeight.Bold else FontWeight.Medium, 10, 12),
-                        color = if (isSelected || isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText,
-                    )
-                    Text(
-                        "${d.dayOfMonth}",
-                        style = chakraText(if (isSelected || isToday) FontWeight.Bold else FontWeight.Medium, 13, 18),
-                        color = if (isSelected || isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.subtleText,
-                    )
-                    Box(
-                        Modifier
-                            .padding(top = 2.dp)
-                            .size(width = 12.dp, height = 2.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(
-                                when {
-                                    isSelected -> SumvaloTheme.colors.accent
-                                    isToday -> SumvaloTheme.colors.ink
-                                    else -> Color.Transparent
-                                },
-                            ),
-                    )
-                }
+            state.profileName?.takeIf { it.isNotBlank() }?.let { name ->
+                Text(
+                    "$name.",
+                    style = chakraText(FontWeight.Bold, 34, 34, -0.7f),
+                    color = SumvaloTheme.colors.ink,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
         }
-        Icon(
-            Icons.Outlined.ChevronRight,
-            contentDescription = "Next week",
-            tint = SumvaloTheme.colors.tertiaryText,
-            modifier = Modifier
-                .size(22.dp)
-                .clip(CircleShape)
-                .clickable(role = Role.Button) { selectedEpochDay = selected.plusDays(7).toEpochDay() }
-                .padding(2.dp),
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.width(1.dp).height(60.dp).background(SumvaloTheme.colors.hairline))
+            Spacer(Modifier.width(12.dp))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    today.dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
+                    style = chakraText(FontWeight.SemiBold, 10, 12, 1.4f),
+                    color = SumvaloTheme.colors.tertiaryText,
+                )
+                Text(
+                    "%02d".format(today.dayOfMonth),
+                    style = chakraText(FontWeight.Bold, 30, 32, -0.7f),
+                    color = SumvaloTheme.colors.ink,
+                )
+                Text(
+                    today.month.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH).uppercase(Locale.ENGLISH),
+                    style = chakraText(FontWeight.SemiBold, 10, 12, 1.4f),
+                    color = SumvaloTheme.colors.tertiaryText,
+                )
+            }
+        }
     }
 }
+
+/** The pill row under the greeting: week-over-week spending, bills due, next payday. */
+@Composable
+private fun StatusChips(state: HomeState) {
+    val wow = remember(state.charts) { weekOverWeekPct(state.charts) }
+    val paydayDays = state.safeToSpend?.days
+    if (wow == null && state.billsDue == 0 && paydayDays == null) return
+    Row(
+        Modifier.fillMaxWidth().padding(top = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        wow?.let { pct ->
+            val down = pct <= 0
+            StatusChip(
+                icon = if (down) Icons.Outlined.KeyboardArrowDown else Icons.Outlined.KeyboardArrowUp,
+                text = "%.0f%% vs last week".format(abs(pct)),
+                color = if (down) SumvaloTheme.colors.income else SumvaloTheme.colors.alert,
+            )
+        }
+        if (state.billsDue > 0) {
+            StatusChip(
+                icon = Icons.Outlined.CalendarToday,
+                text = "${state.billsDue} bill${if (state.billsDue == 1) "" else "s"} due",
+                color = SumvaloTheme.colors.alert,
+            )
+        }
+        paydayDays?.let { days ->
+            StatusChip(
+                icon = Icons.Outlined.CreditCard,
+                text = "Payday in ${days}d",
+                color = SumvaloTheme.colors.subtleText,
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatusChip(icon: ImageVector, text: String, color: Color) {
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .background(SumvaloTheme.colors.cardSurface)
+            .border(1.dp, SumvaloTheme.colors.hairline, RoundedCornerShape(50))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(12.dp))
+        Text(text, style = chakraText(FontWeight.SemiBold, 12, 16), color = color, maxLines = 1)
+    }
+}
+
+/** Spending change over the last 7 days vs the 7 before them, in percent; null when the month is too young to compare. */
+private fun weekOverWeekPct(charts: HomeCharts): Double? {
+    val cur = charts.paceCurrent
+    // paceCurrent is cumulative per day, so a week's spend is the jump across its 7 days.
+    if (cur.size < 15) return null
+    val thisWeek = cur[cur.size - 1] - cur[cur.size - 8]
+    val prevWeek = cur[cur.size - 8] - cur[cur.size - 15]
+    if (prevWeek <= 0) return null
+    return (thisWeek - prevWeek) * 100.0 / prevWeek
+}
+
+/** Per-day spend derived from the cumulative pace series (day 1 keeps its own total). */
+internal fun dailyPace(cumulative: List<Long>): List<Long> =
+    cumulative.mapIndexed { i, c -> c - if (i == 0) 0L else cumulative[i - 1] }
 
 /**
  * The hero's four-way range selector: all options inside one bordered pill container, the active
@@ -329,7 +347,7 @@ private fun HeroRangeSelector(labels: List<String>, selectedIndex: Int, onSelect
         Modifier
             .clip(RoundedCornerShape(10.dp))
             .border(1.dp, colors.hairline, RoundedCornerShape(10.dp))
-            .background(colors.cardSurface)
+            .background(MaterialTheme.colorScheme.background)
             .padding(2.dp),
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -450,7 +468,7 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
                 Box(Modifier.width(1.dp).fillMaxHeight().background(SumvaloTheme.colors.hairline))
                 Column(Modifier.weight(1f).padding(start = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(Modifier.size(8.dp).clip(CircleShape).background(SumvaloTheme.colors.expense))
+                        Box(Modifier.size(8.dp).clip(CircleShape).background(SumvaloTheme.colors.alert))
                         Spacer(Modifier.width(6.dp))
                         Text("Liabilities", style = chakraText(FontWeight.Medium, 12, 16), color = SumvaloTheme.colors.tertiaryText)
                     }
@@ -467,7 +485,76 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
                     .background(SumvaloTheme.colors.fill),
             ) {
                 Box(Modifier.fillMaxWidth(share.coerceIn(0.02f, 0.98f)).fillMaxHeight().background(SumvaloTheme.colors.income))
-                Box(Modifier.weight(1f).fillMaxHeight().background(SumvaloTheme.colors.expense))
+                Box(Modifier.weight(1f).fillMaxHeight().background(SumvaloTheme.colors.alert))
+            }
+        }
+    }
+}
+
+/* ------------------------------- Last 7 days --------------------------------- */
+
+/**
+ * The reference's "Last 7 days" card: the week's total with the change vs the previous week and
+ * seven mini bars with today highlighted, sitting right under the net-worth card.
+ */
+@Composable
+internal fun Last7DaysCard(state: HomeState, hidden: Boolean) {
+    val charts = state.charts
+    val days = remember(charts) { dailyPace(charts.paceCurrent).takeLast(7) }
+    if (days.size < 2) return
+    val total = days.sum()
+    val wow = remember(charts) { weekOverWeekPct(charts) }
+    val maxVal = days.max().coerceAtLeast(1)
+    val today = Time.today()
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp)) {
+        SumvaloCard(shape = cardShape, contentPadding = PaddingValues(16.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                Column {
+                    Text(
+                        "LAST 7 DAYS",
+                        style = chakraText(FontWeight.Medium, 11, 14, 0.9f),
+                        color = SumvaloTheme.colors.tertiaryText,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    AmountText(total, style = chakraText(FontWeight.Bold, 18, 22), hidden = hidden)
+                }
+                Spacer(Modifier.weight(1f))
+                wow?.let { pct ->
+                    val down = pct <= 0
+                    Text(
+                        (if (down) "▼ " else "▲ ") + "%.0f%%".format(abs(pct)) + " vs prev week",
+                        style = chakraText(FontWeight.Medium, 12, 16),
+                        color = if (down) SumvaloTheme.colors.income else SumvaloTheme.colors.alert,
+                    )
+                }
+            }
+            Spacer(Modifier.height(14.dp))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
+                days.forEachIndexed { i, v ->
+                    val isToday = i == days.lastIndex
+                    Column(
+                        Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Box(Modifier.fillMaxWidth().height(40.dp), contentAlignment = Alignment.BottomCenter) {
+                            val barHeight = (40.0 * v / maxVal).dp.coerceIn(4.dp, 40.dp)
+                            Box(
+                                Modifier
+                                    .width(20.dp)
+                                    .height(barHeight)
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(if (isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.fill),
+                            )
+                        }
+                        Text(
+                            if (isToday) "Today" else "${today.minusDays((days.size - 1 - i).toLong()).dayOfMonth}",
+                            style = chakraText(if (isToday) FontWeight.Bold else FontWeight.Medium, 11, 14),
+                            color = if (isToday) SumvaloTheme.colors.ink else SumvaloTheme.colors.tertiaryText,
+                            maxLines = 1,
+                        )
+                    }
+                }
             }
         }
     }
@@ -477,7 +564,7 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
 
 private class QuickTileSpec(val title: String, val subtitle: String, val icon: ImageVector, val onClick: () -> Unit)
 
-/** The 2×3 quick-action grid: the reference's four tiles plus Transfer and Reports. */
+/** The 2×2 quick-action grid: Transactions, Bills, Budgets, Accounts. */
 @Composable
 internal fun QuickActionsGrid(
     state: HomeState,
@@ -485,8 +572,6 @@ internal fun QuickActionsGrid(
     onBills: () -> Unit,
     onPlanning: () -> Unit,
     onAccounts: () -> Unit,
-    onTransfer: () -> Unit,
-    onReports: () -> Unit,
 ) {
     val budgetCount = state.budgets.count { !it.isOverall }
     val tiles = listOf(
@@ -494,8 +579,6 @@ internal fun QuickActionsGrid(
         QuickTileSpec("Bills", if (state.billsDue > 0) "${state.billsDue} due soon" else "Nothing due", Icons.AutoMirrored.Outlined.ReceiptLong, onBills),
         QuickTileSpec("Budgets", if (budgetCount > 0) "$budgetCount active" else "Not set", Icons.Outlined.PieChart, onPlanning),
         QuickTileSpec("Accounts", "${state.accounts.size} linked", Icons.Outlined.AccountBalance, onAccounts),
-        QuickTileSpec("Transfer", "Between accounts", Icons.Outlined.CompareArrows, onTransfer),
-        QuickTileSpec("Reports", "Monthly & yearly PDFs", Icons.Outlined.Assessment, onReports),
     )
     Column(
         Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 12.dp),
@@ -619,6 +702,15 @@ internal fun MonthlySpendingCard(state: HomeState, hidden: Boolean, onSetTarget:
             Spacer(Modifier.height(12.dp))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 val safe = state.safeToSpend
+                if (safe != null) {
+                    Icon(
+                        Icons.Outlined.CalendarToday,
+                        contentDescription = null,
+                        tint = SumvaloTheme.colors.tertiaryText,
+                        modifier = Modifier.size(14.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
+                }
                 Text(
                     safe?.let { "Payday in ${it.days}d · ${Fmt.date(it.payday)}" } ?: "Set your payday in the plan",
                     style = chakraText(FontWeight.Medium, 12, 16),
@@ -660,7 +752,7 @@ private fun SpendRing(
     val progress = fraction.coerceIn(0.0, 1.0).toFloat()
     val arcColor = when {
         ringColor != Color.Unspecified -> ringColor
-        fraction >= 0.85 -> colors.expense
+        fraction >= 0.85 -> colors.alert
         else -> colors.ink
     }
     Box(modifier.size(size), contentAlignment = Alignment.Center) {
@@ -695,7 +787,7 @@ private fun SpendRing(
                 Text(
                     "${(fraction * 100).roundToInt()}%",
                     style = chakraText(FontWeight.Bold, if (size >= 80.dp) 20 else 12, if (size >= 80.dp) 24 else 16),
-                    color = if (fraction >= 0.85) colors.expense else colors.ink,
+                    color = if (fraction >= 0.85) colors.alert else colors.ink,
                 )
                 if (size >= 80.dp) {
                     Text("used", style = chakraText(FontWeight.Medium, 11, 14), color = colors.tertiaryText)
@@ -717,7 +809,14 @@ internal fun PaceSectionV2(state: HomeState, hidden: Boolean, onActivity: () -> 
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 20.dp)) {
         SectionHeader("Spending pace", actionLabel = "See all", onAction = onActivity)
         Spacer(Modifier.height(10.dp))
-        SumvaloCard(shape = cardShape, contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp)) {
+        // Borderless face, per the reference — the section header carries the structure.
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .background(SumvaloTheme.colors.cardSurface)
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 12.dp),
+        ) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -763,14 +862,14 @@ internal fun BillsSectionV2(state: HomeState, hidden: Boolean, onBills: () -> Un
                     V2Hairline()
                     Spacer(Modifier.height(6.dp))
                 }
-                BillRowV2(b, hidden, onBills)
+                BillRowV2(b, hidden, leading = i == 0, onClick = onBills)
             }
         }
     }
 }
 
 @Composable
-private fun BillRowV2(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
+private fun BillRowV2(b: BillItem, hidden: Boolean, leading: Boolean, onClick: () -> Unit) {
     val due = b.dueDate
     val overdue = b.isOverdue
     Row(
@@ -780,11 +879,19 @@ private fun BillRowV2(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
             .padding(vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Reference treatment: the nearest bill gets the bright tile, the rest recede; an
+        // overdue bill keeps its red tint as the functional signal.
         Column(
             Modifier
                 .size(44.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(if (overdue) SumvaloTheme.colors.alertTint else SumvaloTheme.colors.fill)
+                .background(
+                    when {
+                        overdue -> SumvaloTheme.colors.alertTint
+                        leading -> SumvaloTheme.colors.hairline
+                        else -> SumvaloTheme.colors.fill
+                    },
+                )
                 .padding(vertical = 5.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -792,12 +899,12 @@ private fun BillRowV2(b: BillItem, hidden: Boolean, onClick: () -> Unit) {
             Text(
                 due?.let { "%02d".format(it.dayOfMonth) } ?: "–",
                 style = chakraText(FontWeight.Bold, 17, 20),
-                color = if (overdue) SumvaloTheme.colors.expense else SumvaloTheme.colors.ink,
+                color = if (overdue) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
             )
             Text(
                 due?.month?.getDisplayName(java.time.format.TextStyle.SHORT, Locale.ENGLISH)?.uppercase(Locale.ENGLISH) ?: "",
                 style = chakraText(FontWeight.Medium, 9, 11),
-                color = SumvaloTheme.colors.subtleText,
+                color = if (leading || overdue) SumvaloTheme.colors.subtleText else SumvaloTheme.colors.tertiaryText,
             )
         }
         Spacer(Modifier.width(12.dp))
@@ -829,35 +936,40 @@ internal fun BudgetsSectionV2(state: HomeState, hidden: Boolean, onPlanning: () 
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 20.dp)) {
         SectionHeader("Budget progress", actionLabel = "See all", onAction = onPlanning)
         Spacer(Modifier.height(10.dp))
-        SumvaloCard(shape = cardShape, contentPadding = PaddingValues(horizontal = 8.dp, vertical = 16.dp)) {
-            Row(Modifier.fillMaxWidth()) {
-                list.forEachIndexed { i, b ->
-                    if (i > 0) Spacer(Modifier.width(4.dp))
-                    val pct = if (b.limit > 0) b.spent.toDouble() / b.limit else 0.0
-                    val hot = pct >= 0.85
-                    Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
-                        SpendRing(fraction = pct, size = 48.dp, stroke = 4.dp, modifier = Modifier.size(48.dp))
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            b.category?.name ?: "Budget",
-                            style = chakraText(FontWeight.SemiBold, 12, 16),
-                            color = SumvaloTheme.colors.ink,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            textAlign = TextAlign.Center,
+        // Borderless face, per the reference.
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .background(SumvaloTheme.colors.cardSurface)
+                .padding(horizontal = 8.dp, vertical = 16.dp),
+        ) {
+            list.forEachIndexed { i, b ->
+                if (i > 0) Spacer(Modifier.width(4.dp))
+                val pct = if (b.limit > 0) b.spent.toDouble() / b.limit else 0.0
+                val hot = pct >= 0.85
+                Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+                    SpendRing(fraction = pct, size = 48.dp, stroke = 4.dp, modifier = Modifier.size(48.dp))
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        b.category?.name ?: "Budget",
+                        style = chakraText(FontWeight.SemiBold, 12, 16),
+                        color = SumvaloTheme.colors.ink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AmountText(
+                            b.spent,
+                            style = chakraText(FontWeight.SemiBold, 11, 14),
+                            compact = true,
+                            hidden = hidden,
+                            color = if (hot) SumvaloTheme.colors.alert else SumvaloTheme.colors.ink,
                         )
-                        Spacer(Modifier.height(2.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            AmountText(
-                                b.spent,
-                                style = chakraText(FontWeight.SemiBold, 11, 14),
-                                compact = true,
-                                hidden = hidden,
-                                color = if (hot) SumvaloTheme.colors.expense else SumvaloTheme.colors.ink,
-                            )
-                            Text(" / ", style = chakraText(FontWeight.Medium, 11, 14), color = SumvaloTheme.colors.tertiaryText)
-                            AmountText(b.limit, style = chakraText(FontWeight.Medium, 11, 14), compact = true, hidden = hidden, color = SumvaloTheme.colors.subtleText)
-                        }
+                        Text(" / ", style = chakraText(FontWeight.Medium, 11, 14), color = SumvaloTheme.colors.tertiaryText)
+                        AmountText(b.limit, style = chakraText(FontWeight.Medium, 11, 14), compact = true, hidden = hidden, color = SumvaloTheme.colors.subtleText)
                     }
                 }
             }

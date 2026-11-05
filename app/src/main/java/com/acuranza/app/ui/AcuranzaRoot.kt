@@ -378,14 +378,11 @@ private fun LockScreen(onUnlocked: () -> Unit) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
-    val fabEnter = motionTween<Float>(Motion.FAST)
-    val fabExit = motionTween<Float>(Motion.INSTANT)
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val current = backStack?.destination?.route
     val landingTabPref = com.acuranza.app.ui.common.LocalSettings.current.landingTab
     val settings = com.acuranza.app.ui.common.LocalSettings.current
-    val floatingBar = true
     // The bar tucks away while the keyboard is up so text fields keep the space.
     val imeVisible = WindowInsets.isImeVisible
     // Track the active tab independently of the current route so the bottom bar
@@ -456,23 +453,9 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
                 BottomBar(nav, activeTab, onHomeReTap)
             }
         },
-        floatingActionButton = {
-            AnimatedVisibility(
-                activeTab == Routes.HOME || activeTab == Routes.TRANSACTIONS,
-                enter = fadeIn(fabEnter),
-                exit = fadeOut(fabExit),
-            ) {
-                AddFab { nav.navigate(Routes.addTxn()) }
-            }
-        },
-        floatingActionButtonPosition = androidx.compose.material3.FabPosition.End,
     ) { padding ->
-        // When the bar is attached (docked), reserve space for it so content doesn't
-        // hide underneath. When floating, the bar overlays content and no extra padding
-        // is needed — Scaffold already positions the bottomBar above the content area.
-        val bottomExtra = if (showBar && !floatingBar) 56.dp else 0.dp
         Box(
-            Modifier.padding(bottom = padding.calculateBottomPadding() + bottomExtra)
+            Modifier.padding(bottom = padding.calculateBottomPadding())
         ) {
             SumvaloNavHost(nav, onHomeReTap)
         }
@@ -487,19 +470,22 @@ private fun BottomBar(nav: NavHostController, activeTab: String?, onHomeReTap: (
         com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
         com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
     )
-    SumvaloBottomBar(activeTab, onTab = { route -> nav.navigateToTab(route, onHomeReTap) }, tabs = tabs)
+    SumvaloBottomBar(
+        activeTab,
+        onTab = { route -> nav.navigateToTab(route, onHomeReTap) },
+        tabs = tabs,
+        onAdd = { nav.navigate(Routes.addTxn()) },
+    )
 }
 
 /**
- * The redesigned navigation from the Tailwind reference: a bordered rounded container that
- * floats above the gesture area (12dp sides, 6dp top, 8dp bottom), each destination an
- * equal-width segment with a 20dp icon over a Chakra Petch label. The selected segment is
- * filled with the theme's fill token and its icon/label go ink; everything else stays muted.
- * No shadow — the 1dp hairline border is the whole elevation. Haptics fire only when the
- * selection actually changes; colors come from the theme only, so every palette flows through.
- *
- * When [floating] is false the same container docks edge-to-edge against the bottom of the
- * screen (no side margins or outer gaps), keeping the reference structure intact.
+ * The redesigned navigation from the Tailwind reference: a full-width docked strip under a top
+ * hairline. The active destination is a light pill with its icon and Chakra label; every other
+ * destination is an icon-only circle. A bordered add button sits mid-row (after half the visible
+ * tabs — with the default four that is exactly the reference's Home · Stats · (+) · Activity ·
+ * Settings arrangement) and opens the new-transaction form. Tab order, visibility, labels and
+ * icons still come from the NavTabs customization, so the editor keeps working unchanged.
+ * Haptics fire only when the selection actually changes; colors come from the theme only.
  */
 @Composable
 fun SumvaloBottomBar(
@@ -508,96 +494,103 @@ fun SumvaloBottomBar(
     tabs: List<com.acuranza.app.ui.nav.NavTabs.ResolvedTab> =
         com.acuranza.app.ui.nav.NavTabs.resolve(com.acuranza.app.ui.nav.NavTabs.decodeLayout(null), emptyMap(), emptyMap()),
     showLabels: Boolean = true,
-    floating: Boolean = true,
+    onAdd: () -> Unit = {},
 ) {
     val colors = SumvaloThemeObject.colors
     val haptic = com.acuranza.app.ui.common.rememberHaptic()
-    // The Tailwind reference, translated 1:1:
-    //   wrapper  px-3 pt-1.5 pb-2                                        → 12dp sides, 6dp top, 8dp bottom (+ gesture insets)
-    //   nav      rounded-3xl border-#2a2a2a bg-#171717 px-1.5 py-1.5     → 24dp radius, 1dp hairline, cardSurface, 6dp padding
-    //   item     rounded-2xl px-2 py-1.5 gap-0.5, icon 20px              → 16dp radius, 8dp/6dp padding, 2dp gap, 20dp icon
-    //   active   bg-#212121, label Chakra 11/700 #fafafa                 → fill segment, ink, Chakra Bold
-    //   inactive label Chakra 11/500 #8a8a8a                             → tertiaryText, Chakra Medium
-    Box(
+    val visible = tabs.filter { it.visible }
+    val plusAfter = visible.size / 2
+    Column(
         Modifier
             .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.background)
             .navigationBarsPadding()
-            .then(
-                if (floating) Modifier
-                    .windowInsetsPadding(WindowInsets.displayCutout)
-                    .padding(horizontal = 12.dp)
-                    .padding(top = 6.dp, bottom = 8.dp)
-                else Modifier,
-            ),
+            .windowInsetsPadding(WindowInsets.displayCutout),
     ) {
+        Box(Modifier.fillMaxWidth().height(1.dp).background(colors.divider))
         Row(
             Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(24.dp))
-                .background(colors.cardSurface)
-                .border(1.dp, colors.hairline, RoundedCornerShape(24.dp))
-                .padding(horizontal = 6.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            tabs.filter { it.visible }.forEach { tab ->
+            visible.forEachIndexed { index, tab ->
+                if (index == plusAfter) AddTabButton(onAdd)
                 val resolvedIcon = com.acuranza.app.ui.nav.NavTabs.iconOf(tab.route, tab.iconId)
                 val selected = current == tab.route
-                val segmentColor by animateColorAsState(
-                    targetValue = if (selected) colors.fill else androidx.compose.ui.graphics.Color.Transparent,
-                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
-                    label = "tab-segment",
-                )
                 val iconTint by animateColorAsState(
-                    targetValue = if (selected) colors.ink else colors.tertiaryText,
+                    targetValue = if (selected) colors.onInk else colors.tertiaryText,
                     animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
                     label = "tab-icon",
                 )
-                val labelColor by animateColorAsState(
-                    targetValue = if (selected) colors.ink else colors.tertiaryText,
-                    animationSpec = com.acuranza.app.designsystem.theme.motionTween(180),
-                    label = "tab-label",
-                )
                 val interaction = remember { MutableInteractionSource() }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .pressScale(interaction, scaleDown = 0.97f)
-                        .clickable(
-                            interactionSource = interaction,
-                            indication = null,
-                            role = androidx.compose.ui.semantics.Role.Tab,
-                        ) {
-                            if (!selected) {
+                if (selected) {
+                    // Active destination: the light pill with icon + label.
+                    Row(
+                        Modifier
+                            .pressScale(interaction, scaleDown = 0.97f)
+                            .clip(RoundedCornerShape(50))
+                            .background(colors.ink)
+                            .clickable(
+                                interactionSource = interaction,
+                                indication = null,
+                                role = androidx.compose.ui.semantics.Role.Tab,
+                            ) { }
+                            .semantics {
+                                this.selected = true
+                                contentDescription = tab.label
+                            }
+                            .padding(start = 16.dp, end = 20.dp)
+                            .height(44.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Icon(
+                            resolvedIcon.icon,
+                            contentDescription = null,
+                            tint = colors.onInk,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        if (showLabels) {
+                            Text(
+                                tab.label,
+                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.sp,
+                                lineHeight = 16.sp,
+                                color = colors.onInk,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                } else {
+                    // Inactive destinations: icon-only circles.
+                    Box(
+                        Modifier
+                            .pressScale(interaction, scaleDown = 0.94f)
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .clickable(
+                                interactionSource = interaction,
+                                indication = null,
+                                role = androidx.compose.ui.semantics.Role.Tab,
+                            ) {
                                 haptic.tick()
                                 onTab(tab.route)
                             }
-                        }
-                        .semantics {
-                            this.selected = selected
-                            contentDescription = tab.label
-                        }
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(segmentColor)
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Icon(
-                        resolvedIcon.icon,
-                        contentDescription = null,
-                        tint = iconTint,
-                        modifier = Modifier.size(20.dp),
-                    )
-                    if (showLabels) {
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            tab.label,
-                            style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            fontSize = 11.sp,
-                            lineHeight = 14.sp,
-                            color = labelColor,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
+                            .semantics {
+                                this.selected = false
+                                contentDescription = tab.label
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            resolvedIcon.icon,
+                            contentDescription = null,
+                            tint = iconTint,
+                            modifier = Modifier.size(22.dp),
                         )
                     }
                 }
@@ -606,20 +599,28 @@ fun SumvaloBottomBar(
     }
 }
 
-/** The corner add button, shown above the bar on Home and Transactions. */
+/** The bordered mid-row add button from the reference: card face, hairline ring, ink plus. */
 @Composable
-private fun AddFab(onClick: () -> Unit) {
-    val shape = RoundedCornerShape(16.dp)
+private fun AddTabButton(onAdd: () -> Unit) {
+    val colors = SumvaloThemeObject.colors
+    val interaction = remember { MutableInteractionSource() }
     Box(
         Modifier
-            .size(56.dp)
-            .clip(shape)
-            .background(SumvaloThemeObject.colors.ink)
-            .clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick)
+            .pressScale(interaction, scaleDown = 0.94f)
+            .size(44.dp)
+            .clip(CircleShape)
+            .background(colors.cardSurface)
+            .border(1.dp, colors.hairline, CircleShape)
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = androidx.compose.ui.semantics.Role.Button,
+                onClick = onAdd,
+            )
             .semantics { contentDescription = "Add transaction" },
         contentAlignment = Alignment.Center,
     ) {
-        Icon(Icons.Outlined.Add, contentDescription = null, tint = SumvaloThemeObject.colors.onInk, modifier = Modifier.size(24.dp))
+        Icon(Icons.Outlined.Add, contentDescription = null, tint = colors.ink, modifier = Modifier.size(22.dp))
     }
 }
 

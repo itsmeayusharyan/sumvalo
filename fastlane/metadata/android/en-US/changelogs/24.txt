@@ -1,0 +1,5 @@
+Sumvalo 0.24
+
+- Home redesigned to the new reference — greeting with date block, status chips, weekly spending card, 2×2 quick actions, refreshed cards
+- Bottom navigation redesigned — active tab as a pill, icon-only destinations, centered add button; the corner add button is gone
+- Edit home and Edit navigation tabs keep working exactly as before — sections and tabs stay reorderable and hideable
