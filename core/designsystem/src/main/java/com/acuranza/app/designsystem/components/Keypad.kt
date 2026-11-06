@@ -81,8 +81,10 @@ class KeypadExpression(initial: String = "") {
     /** True when the expression contains an operator (so "=" would change it). */
     val hasOperator: Boolean get() = text.any { it in OPS } && text.last() !in OPS
 
-    /** The current value in paise, evaluating any pending operators; null if empty or invalid. */
-    fun valuePaise(): Paise? = evaluate()?.movePointRight(2)?.setScale(0, RoundingMode.HALF_UP)?.toLong()
+    /** The current value in paise, evaluating any pending operators; null if empty, invalid, or
+     *  beyond the plausible amount bound (a chained × expression could otherwise wrap Long). */
+    fun valuePaise(): Paise? = evaluate()?.movePointRight(2)?.setScale(0, RoundingMode.HALF_UP)
+        ?.takeIf { it.abs() <= BigDecimal(Money.MAX_PAISE) }?.toLong()
 
     private fun evaluate(): BigDecimal? {
         val t = text.trimEnd { it in OPS }

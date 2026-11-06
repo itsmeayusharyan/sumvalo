@@ -1,5 +1,6 @@
 package com.acuranza.app.repo
 
+import androidx.room.withTransaction
 import com.acuranza.app.data.AccountEntity
 import com.acuranza.app.data.BudgetEntity
 import com.acuranza.app.data.CardBillEntity
@@ -61,8 +62,8 @@ class BillRepository(private val db: SumvaloDatabase, private val transactions: 
      * Marks a bill paid. With [fromAccountId], records the payment as a transfer from that bank account to the
      * card ([amount] defaults to the total due), so both balances update.
      */
-    suspend fun markPaid(billId: Long, fromAccountId: Long? = null, amount: Paise? = null, at: Long = System.currentTimeMillis()) {
-        val bill = db.bills().byId(billId) ?: return
+    suspend fun markPaid(billId: Long, fromAccountId: Long? = null, amount: Paise? = null, at: Long = System.currentTimeMillis()) = db.withTransaction {
+        val bill = db.bills().byId(billId) ?: return@withTransaction
         if (fromAccountId != null) {
             transactions.addTransfer(fromAccountId, bill.accountId, amount ?: bill.totalDue, at, note = "Card bill payment")
         }
@@ -294,10 +295,10 @@ class GoalRepository(
 
     suspend fun upsert(goal: GoalEntity): Long = db.goals().upsert(goal)
 
-    /** Adds (or with a negative amount, withdraws) savings towards a goal. */
+    /** Adds (or with a negative amount, withdraws) savings towards a goal. Atomic in SQL so two
+     *  quick contributions can never lose one to a read-modify-write race. */
     suspend fun contribute(goalId: Long, amount: Paise) {
-        val goal = db.goals().all().firstOrNull { it.id == goalId } ?: return
-        db.goals().upsert(goal.copy(saved = (goal.saved + amount).coerceAtLeast(0)))
+        db.goals().addSaved(goalId, amount)
     }
 
     suspend fun delete(goal: GoalEntity) = db.goals().delete(goal)

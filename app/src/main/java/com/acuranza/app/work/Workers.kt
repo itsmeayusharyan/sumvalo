@@ -27,9 +27,12 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
         val settings = c.settings.current()
         val today = Time.today()
 
-        runCatching { c.recurring.recordDue(today) }
-        runCatching { c.loans.recordDueEmis(today) }
-        runCatching { c.netWorth.snapshot(today) }
+        // Money-affecting steps report failure so the worker retries instead of silently skipping
+        // recurring payments, EMI entries and net-worth snapshots (each step stays isolated).
+        var moneyStepFailed = false
+        runCatching { c.recurring.recordDue(today) }.onFailure { moneyStepFailed = true }
+        runCatching { c.loans.recordDueEmis(today) }.onFailure { moneyStepFailed = true }
+        runCatching { c.netWorth.snapshot(today) }.onFailure { moneyStepFailed = true }
         runCatching {
             val auto = c.featurePrefs.current().autoBackup
             if (com.acuranza.app.security.AutoBackup.isDue(auto, System.currentTimeMillis())) {
@@ -79,7 +82,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
                 }
             }
         }
-        return Result.success()
+        return if (moneyStepFailed) Result.retry() else Result.success()
     }
 
     companion object {

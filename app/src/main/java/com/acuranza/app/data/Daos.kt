@@ -373,6 +373,10 @@ interface GoalDao {
     @Query("SELECT * FROM goals")
     suspend fun all(): List<GoalEntity>
 
+    /** Atomic contribution so two quick writes can never lose one (read-modify-write would). */
+    @Query("UPDATE goals SET saved = MAX(0, saved + :amount) WHERE id = :goalId")
+    suspend fun addSaved(goalId: Long, amount: Long)
+
     @Upsert
     suspend fun upsert(goal: GoalEntity): Long
 

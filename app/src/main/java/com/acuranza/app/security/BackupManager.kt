@@ -43,6 +43,11 @@ data class BackupMeta(val format: Int, val exportedAt: Long?, val repairVersion:
  */
 class BackupManager(private val context: Context, private val db: SumvaloDatabase, private val files: AttachmentStore) {
 
+    /** Restore files are small JSON; anything near this bound is not a Sumvalo backup. */
+    private companion object {
+        const val MAX_RESTORE_BYTES = 64L * 1024 * 1024
+    }
+
     suspend fun export(uri: Uri, password: CharArray, repairVersion: Int? = null): BackupStats = withContext(Dispatchers.IO) {
         val (bytes, stats) = encrypted(password, repairVersion)
         context.contentResolver.openOutputStream(uri, "wt")?.use { it.write(bytes) } ?: error("Can't write the backup file")
@@ -64,7 +69,18 @@ class BackupManager(private val context: Context, private val db: SumvaloDatabas
      * SMS arriving mid-restore can't leave the database empty or half-restored.
      */
     suspend fun restore(uri: Uri, password: CharArray): RestoreResult = withContext(Dispatchers.IO) {
-        val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() } ?: error("Can't read the backup file")
+        val bytes = context.contentResolver.openInputStream(uri)?.use { stream ->
+            // Bound the read before allocating: a mis-picked huge file must not OOM the app mid-restore.
+            val size = context.contentResolver.query(uri, arrayOf(android.provider.OpenableColumns.SIZE), null, null, null)
+                ?.use { c -> if (c.moveToFirst() && !c.isNull(0)) c.getLong(0) else -1L } ?: -1L
+            if (size in 0 until MAX_RESTORE_BYTES) {
+                stream.readBytes()
+            } else {
+                val capped = stream.readNBytes(MAX_RESTORE_BYTES.toInt() + 1)
+                check(capped.size <= MAX_RESTORE_BYTES) { "That backup file is too large" }
+                capped
+            }
+        } ?: error("Can't read the backup file")
         val json = BackupCrypto.decrypt(bytes, password).toString(Charsets.UTF_8)
         val data = BackupJson.decode(json)
         val meta = BackupJson.meta(json)
@@ -145,6 +161,16 @@ data class BackupData(
 
 /** JSON form of [BackupData]; nullable fields are omitted when null. */
 object BackupJson {
+    /** A double from an untrusted backup file, coerced into [min, max]; NaN/absent → [default].
+     *  Restored values must meet the same bounds the UI enforces (a NaN rate once made a goal
+     *  plan report "on track" with zero required saving). */
+    private fun org.json.JSONObject.safeDouble(key: String, default: Double, min: Double, max: Double): Double {
+        if (!has(key) || isNull(key)) return default
+        val v = optDouble(key, default)
+        return if (v.isNaN()) default else v.coerceIn(min, max)
+    }
+
+
     /**
      * 1: original format. 2: adds goal loans, per-account savings interest settings, deleted-import fingerprints
      * and the data-repair version. 3: adds tags, split parts, budget rollover, money lent and borrowed, recurring
@@ -285,11 +311,12 @@ object BackupJson {
             },
             goals = list(o, "goals") { g ->
                 GoalEntity(
-                    id = g.getLong("id"), name = g.getString("name"), target = g.getLong("target"), saved = g.getLong("saved"),
+                    id = g.getLong("id"), name = g.getString("name"),
+                    target = g.getLong("target").coerceAtLeast(0), saved = g.getLong("saved").coerceAtLeast(0),
                     deadline = g.getLong("deadline"), icon = g.optString("icon", "flag"),
-                    expectedReturnPct = g.optDouble("expectedReturnPct", 7.0), createdAt = g.optLong("createdAt"),
-                    loanAmount = g.optLong("loanAmount", 0), loanRatePct = g.optDouble("loanRatePct", 9.0),
-                    loanTenureMonths = g.optInt("loanTenureMonths", 36),
+                    expectedReturnPct = g.safeDouble("expectedReturnPct", 7.0, 0.0, 30.0), createdAt = g.optLong("createdAt"),
+                    loanAmount = g.optLong("loanAmount", 0).coerceAtLeast(0), loanRatePct = g.safeDouble("loanRatePct", 9.0, 0.0, 100.0),
+                    loanTenureMonths = g.optInt("loanTenureMonths", 36).coerceIn(1, 600),
                 )
             },
             rules = list(o, "rules") { r -> MerchantRuleEntity(r.getLong("id"), r.getString("merchant"), r.getString("categoryKey")) },
@@ -322,8 +349,9 @@ object BackupJson {
             loans = list(o, "loans") { x ->
                 LoanEntity(
                     id = x.getLong("id"), name = x.getString("name"), lender = x.optString("lender", ""), kind = x.optString("kind", "OTHER"),
-                    principal = x.getLong("principal"), ratePct = x.getDouble("ratePct"), tenureMonths = x.getInt("tenureMonths"),
-                    firstEmiDay = x.getLong("firstEmiDay"), emi = x.long("emi"), prepaymentsJson = x.optString("prepaymentsJson", "[]"),
+                    principal = x.getLong("principal").coerceAtLeast(0), ratePct = x.safeDouble("ratePct", 9.0, 0.0, 100.0),
+                    tenureMonths = x.getInt("tenureMonths").coerceIn(1, 600),
+                    firstEmiDay = x.getLong("firstEmiDay"), emi = (x.long("emi") ?: 0).coerceAtLeast(0), prepaymentsJson = x.optString("prepaymentsJson", "[]"),
                     selfOccupied = x.optBoolean("selfOccupied", true), archived = x.optBoolean("archived"), createdAt = x.optLong("createdAt"),
                 )
             },

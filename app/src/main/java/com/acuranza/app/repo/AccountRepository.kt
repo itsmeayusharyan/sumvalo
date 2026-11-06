@@ -178,7 +178,7 @@ class AccountRepository(
      * "Ignore": hides a pending account (for example someone else's account mentioned in an SMS). It stays out
      * of balances and lists, and its transactions stop counting as income or spending.
      */
-    suspend fun ignorePending(id: Long) {
+    suspend fun ignorePending(id: Long) = db.withTransaction {
         txns.excludeAccountFromStats(id)
         archive(id)
     }

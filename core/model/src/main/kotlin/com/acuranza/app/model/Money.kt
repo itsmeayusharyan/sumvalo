@@ -13,11 +13,18 @@ object Money {
 
     private val currency = Regex("(?i)(rs\\.?|inr|₹)")
 
+    /** Plausibility bound for parsed amounts: 1e15 paise = ₹10 lakh crore. Anything larger is a
+     *  crafted or mistyped input; parsing it would silently wrap Long (CWE-190). */
+    const val MAX_PAISE: Paise = 1_000_000_000_000_000L
+
     /** Parses amounts as they appear in Indian bank messages: "1,23,456.70", "Rs.500", "INR 2,000". */
     fun parse(text: String): Paise? {
         val cleaned = text.replace(currency, "").replace(",", "").trim()
         val value = cleaned.toBigDecimalOrNull() ?: return null
-        return value.movePointRight(2).setScale(0, RoundingMode.HALF_UP).toLong()
+        val paise = value.movePointRight(2).setScale(0, RoundingMode.HALF_UP)
+        // Absurd amounts (crafted SMS, wild keypad chains) must not wrap Long; callers treat null as unparseable.
+        if (paise.abs() > BigDecimal(MAX_PAISE)) return null
+        return paise.toLong()
     }
 
     fun toRupees(paise: Paise): Double = paise / 100.0

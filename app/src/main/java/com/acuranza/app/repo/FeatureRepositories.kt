@@ -39,11 +39,9 @@ class DebtRepository(private val db: SumvaloDatabase) {
 
     suspend fun delete(debt: DebtEntity) = db.debts().delete(debt)
 
-    /** Records a repayment; the debt closes once it is fully repaid. */
+    /** Records a repayment; the debt closes once it is fully repaid. Atomic in SQL (see DebtDao). */
     suspend fun repay(id: Long, amount: Paise) {
-        val d = db.debts().byId(id) ?: return
-        val repaid = (d.repaid + amount).coerceIn(0, d.amount)
-        db.debts().upsert(d.copy(repaid = repaid, closed = repaid >= d.amount))
+        db.debts().applyRepayment(id, amount)
     }
 
     companion object {

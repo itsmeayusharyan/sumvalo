@@ -108,11 +108,13 @@ class AddTransactionViewModel(private val c: AppContainer) : ViewModel() {
         } else if (existing == null) {
             c.transactions.add(draft)
         } else {
+            // An edited row is user-reviewed: apply the draft's tags and clear the suspicious flag
+            // (a suspicious import the user corrected must start counting in stats again).
             c.transactions.update(
                 existing.copy(
                     accountId = draft.accountId, toAccountId = null, type = draft.type, amount = draft.amount,
                     categoryKey = draft.categoryKey, merchant = draft.merchant, note = draft.note,
-                    timestamp = draft.timestamp, reviewed = true,
+                    timestamp = draft.timestamp, reviewed = true, tags = draft.tags, suspicious = false,
                     excludeFromStats = draft.categoryKey == SmsMapping.TRANSFER_CATEGORY,
                 ),
             )

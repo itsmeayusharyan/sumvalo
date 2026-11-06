@@ -335,7 +335,8 @@ private fun RecurringRow(
 }
 
 private fun monthlyOf(r: RecurringRuleEntity): Long = when (cadenceOf(r.cadence)) {
-    Recurring.Cadence.WEEKLY -> r.amount * 52 / 12
+    // Weekly matches the engine's Double math (finance.Recurring) so screen and engine agree.
+    Recurring.Cadence.WEEKLY -> (r.amount * 52.0 / 12).toLong()
     Recurring.Cadence.MONTHLY -> r.amount
     Recurring.Cadence.QUARTERLY -> r.amount / 3
     Recurring.Cadence.YEARLY -> r.amount / 12

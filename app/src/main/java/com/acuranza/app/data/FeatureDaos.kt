@@ -48,6 +48,14 @@ interface DebtDao {
     @Query("SELECT * FROM debts WHERE id = :id")
     suspend fun byId(id: Long): DebtEntity?
 
+    /** Atomic repayment: clamped to [0, amount], closed recomputed in SQL (read-modify-write would
+     *  let two quick taps record one repayment of two). */
+    @Query(
+        "UPDATE debts SET repaid = MIN(amount, MAX(0, repaid + :x)), " +
+            "closed = MIN(amount, MAX(0, repaid + :x)) >= amount WHERE id = :id",
+    )
+    suspend fun applyRepayment(id: Long, x: Long)
+
     @Upsert
     suspend fun upsert(debt: DebtEntity): Long
 

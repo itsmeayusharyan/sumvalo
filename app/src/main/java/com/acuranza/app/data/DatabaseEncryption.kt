@@ -97,6 +97,8 @@ object DatabaseEncryption {
             plain.rawExecSQL("SELECT sqlcipher_export('enc')")
             plain.rawExecSQL("PRAGMA enc.user_version = $version")
             for ((t, n) in counts) {
+                // Table names reach a rawQuery; only the app's own identifier shape is ever allowed.
+                check(Regex("[A-Za-z_][A-Za-z0-9_]*").matches(t)) { "Unexpected table name: $t" }
                 check(countRows(plain, "enc.\"$t\"") == n) { "Row count mismatch in $t" }
             }
             plain.rawExecSQL("DETACH DATABASE enc")
