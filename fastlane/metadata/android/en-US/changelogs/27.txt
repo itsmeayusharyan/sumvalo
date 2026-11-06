@@ -1,0 +1,3 @@
+Sumvalo 0.27
+
+- Categories redesigned to the new reference — search, a Spending/Income toggle with counts, count-pilled section headers with "+ Add", and one bordered card per section

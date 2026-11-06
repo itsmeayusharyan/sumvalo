@@ -3,6 +3,8 @@ package com.acuranza.app.ui.settings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,15 +16,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,23 +41,32 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.CategoryIcons
 import com.acuranza.app.designsystem.components.PrimaryButton
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.model.TxnType
@@ -69,6 +83,10 @@ private val CategorySwatches = listOf(
     0xFF9775FA, 0xFFF06595, 0xFFFF6B6B, 0xFF20C997, 0xFF3BC9DB, 0xFFCC5DE8,
     0xFF51CF66, 0xFFF59F00, 0xFF2F9E44, 0xFFADB5BD,
 )
+
+/** Chakra-flavoured text style, matching the home/activity voice. */
+private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = com.acuranza.app.ui.home.Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 /**
  * Categories management: add, rename, restyle and delete income and expense categories. Deleting a
@@ -179,38 +197,64 @@ fun CategoriesContent(
     editSheet: @Composable () -> Unit = {},
     deleteFlow: @Composable () -> Unit = {},
 ) {
+    val colors = SumvaloTheme.colors
+    var query by rememberSaveable { mutableStateOf("") }
+    var tab by rememberSaveable { mutableIntStateOf(0) }
+    val type = if (tab == 0) TxnType.EXPENSE else TxnType.INCOME
+    val title = if (tab == 0) "Spending" else "Income"
+    val rows = cats.filter { it.type == type && it.name.contains(query.trim(), ignoreCase = true) }
+
     SumvaloScreen(
         title = "Categories",
         subtitle = "Your spending and income categories",
         onBack = onBack,
         snackbar = snackbar,
     ) { padding ->
-        LazyColumn(
-            Modifier.fillMaxWidth().padding(padding),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 40.dp),
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 40.dp),
         ) {
-            listOf(TxnType.EXPENSE to "Spending", TxnType.INCOME to "Income").forEach { (type, title) ->
-                val rows = cats.filter { it.type == type }
-                item(key = "head-$title") {
-                    Row(
-                        Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(title.uppercase(), style = SumvaloText.sectionLabel, color = SumvaloTheme.colors.subtleText, modifier = Modifier.weight(1f))
-                        Text(
-                            "Add category",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = SumvaloTheme.colors.accent,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable { onAdd(type) }
-                                .padding(horizontal = 8.dp, vertical = 6.dp),
-                        )
+            CategorySearchField(query, onQueryChange = { query = it })
+            Spacer(Modifier.height(10.dp))
+            TypeToggle(
+                spendingCount = cats.count { it.type == TxnType.EXPENSE },
+                incomeCount = cats.count { it.type == TxnType.INCOME },
+                selected = tab,
+                onSelect = { tab = it },
+            )
+            Spacer(Modifier.height(20.dp))
+            SectionHeader(
+                title = title,
+                count = rows.size,
+                onAdd = { onAdd(type) },
+            )
+            Spacer(Modifier.height(10.dp))
+            if (rows.isEmpty()) {
+                Text(
+                    if (query.isBlank()) "No categories here yet" else "No categories match “${query.trim()}”",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.subtleText,
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 12.dp),
+                )
+            } else {
+                // One bordered card per section, rows hairline-separated inside it.
+                SumvaloCard(contentPadding = PaddingValues(0.dp)) {
+                    rows.forEachIndexed { i, cat ->
+                        CategoryRowFlat(cat) { onEdit(cat) }
+                        if (i < rows.lastIndex) {
+                            Box(
+                                Modifier
+                                    .padding(start = 60.dp, end = 12.dp)
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(colors.divider),
+                            )
+                        }
                     }
-                }
-                items(rows.size, key = { rows[it].key }) { i ->
-                    val cat = rows[i]
-                    CategoryRow(cat) { onEdit(cat) }
                 }
             }
         }
@@ -219,23 +263,167 @@ fun CategoriesContent(
     }
 }
 
+/** The reference's search field: 44dp, card face, hairline border, focus ring. */
 @Composable
-private fun CategoryRow(cat: CategoryEntity, onClick: () -> Unit) {
+private fun CategorySearchField(query: String, onQueryChange: (String) -> Unit) {
+    val colors = SumvaloTheme.colors
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val shape = RoundedCornerShape(10.dp)
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .height(44.dp)
+            .clip(shape)
+            .background(colors.cardSurface)
+            .border(1.dp, if (focused) colors.tertiaryText else colors.hairline, shape)
+            .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CategoryIcon(cat.icon, cat.color(), size = 38.dp)
-        Spacer(Modifier.width(14.dp))
-        Text(cat.name, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        if (!CategoryRules.isDeletable(cat)) {
-            Text("Built-in", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.tertiaryText)
-            Spacer(Modifier.width(12.dp))
+        Icon(Icons.Outlined.Search, contentDescription = null, tint = colors.tertiaryText, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(10.dp))
+        BasicTextField(
+            value = query,
+            onValueChange = onQueryChange,
+            singleLine = true,
+            textStyle = chakraText(FontWeight.Normal, 15, 20).copy(color = colors.ink),
+            cursorBrush = SolidColor(colors.ink),
+            interactionSource = interaction,
+            modifier = Modifier.weight(1f),
+            decorationBox = { inner ->
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
+                    if (query.isEmpty()) {
+                        Text(
+                            "Search categories",
+                            style = chakraText(FontWeight.Normal, 15, 20),
+                            color = colors.tertiaryText,
+                            maxLines = 1,
+                        )
+                    }
+                    inner()
+                }
+            },
+        )
+    }
+}
+
+/** Spending / Income segmented control with count badges, active side on the ink pill. */
+@Composable
+private fun TypeToggle(spendingCount: Int, incomeCount: Int, selected: Int, onSelect: (Int) -> Unit) {
+    val colors = SumvaloTheme.colors
+    val options = remember { listOf("Spending", "Income") }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, colors.hairline, RoundedCornerShape(12.dp))
+            .background(colors.cardSurface)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        options.forEachIndexed { i, label ->
+            val active = i == selected
+            val count = if (i == 0) spendingCount else incomeCount
+            Row(
+                Modifier
+                    .weight(1f)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (active) colors.ink else Color.Transparent)
+                    .clickable(role = Role.Button) { if (!active) onSelect(i) },
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    label,
+                    style = chakraText(if (active) FontWeight.Bold else FontWeight.Medium, 14, 18),
+                    color = if (active) colors.onInk else colors.tertiaryText,
+                )
+                Text(
+                    "$count",
+                    style = chakraText(FontWeight.SemiBold, 11, 14),
+                    color = colors.subtleText,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(colors.fill)
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                )
+            }
         }
-        Icon(Icons.Outlined.Edit, contentDescription = "Edit ${cat.name}", tint = SumvaloTheme.colors.tertiaryText, modifier = Modifier.size(16.dp))
+    }
+}
+
+/** Section header: tracking-caps label + count pill on the left, "+ Add" on the right. */
+@Composable
+private fun SectionHeader(title: String, count: Int, onAdd: () -> Unit) {
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                title.uppercase(),
+                style = chakraText(FontWeight.Bold, 12, 16, 1.2f),
+                color = colors.subtleText,
+            )
+            Text(
+                "$count",
+                style = chakraText(FontWeight.SemiBold, 11, 14),
+                color = colors.subtleText,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(colors.fill)
+                    .padding(horizontal = 8.dp, vertical = 2.dp),
+            )
+        }
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .clickable(role = Role.Button, onClick = onAdd)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(Icons.Outlined.Add, contentDescription = null, tint = colors.ink, modifier = Modifier.size(14.dp))
+            Text("Add", style = chakraText(FontWeight.Bold, 14, 18), color = colors.ink)
+        }
+    }
+}
+
+/** One category row inside its section card: icon tile, name, chevron. */
+@Composable
+private fun CategoryRowFlat(cat: CategoryEntity, onClick: () -> Unit) {
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(start = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CategoryIcon(cat.icon, cat.color(), size = 36.dp)
+        Row(
+            Modifier
+                .weight(1f)
+                .padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                cat.name,
+                style = chakraText(FontWeight.SemiBold, 15, 20),
+                color = colors.ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = "Edit ${cat.name}",
+                tint = colors.tertiaryText,
+                modifier = Modifier.size(14.dp),
+            )
+        }
     }
 }
 
