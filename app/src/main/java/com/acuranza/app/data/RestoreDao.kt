@@ -33,6 +33,8 @@ interface RestoreDao {
     @Query("DELETE FROM split_groups") suspend fun clearSplitGroups()
     @Query("DELETE FROM purchase_attachments") suspend fun clearPurchaseAttachments()
     @Query("DELETE FROM purchase_records") suspend fun clearPurchaseRecords()
+    @Query("DELETE FROM sms_imports") suspend fun clearSmsImports()
+    @Query("DELETE FROM sms_import_batches") suspend fun clearSmsBatches()
 
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertAccounts(items: List<AccountEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertCategories(items: List<CategoryEntity>)
@@ -55,6 +57,8 @@ interface RestoreDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertSplitSettlements(items: List<SplitSettlementEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertPurchaseRecords(items: List<PurchaseRecordEntity>)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertPurchaseAttachments(items: List<PurchaseAttachmentEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertSmsBatches(items: List<SmsImportBatchEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertSmsImports(items: List<SmsImportEntity>)
 
     @Query("SELECT * FROM accounts") suspend fun accounts(): List<AccountEntity>
     @Query("SELECT * FROM categories") suspend fun categories(): List<CategoryEntity>
@@ -77,4 +81,6 @@ interface RestoreDao {
     @Query("SELECT * FROM split_settlements") suspend fun splitSettlements(): List<SplitSettlementEntity>
     @Query("SELECT * FROM purchase_records") suspend fun purchaseRecords(): List<PurchaseRecordEntity>
     @Query("SELECT * FROM purchase_attachments") suspend fun purchaseAttachments(): List<PurchaseAttachmentEntity>
+    @Query("SELECT * FROM sms_import_batches") suspend fun smsBatches(): List<SmsImportBatchEntity>
+    @Query("SELECT * FROM sms_imports") suspend fun smsImports(): List<SmsImportEntity>
 }

@@ -80,7 +80,19 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
             { v ->
                 val activity = context as? FragmentActivity
                 if (!v) {
-                    scope.launch { c.settings.setBiometricLock(false) }
+                    // Turning the lock OFF is exactly what brief physical access would do — require the
+                    // same proof turning it ON needs. Rescue path: without biometrics AND without a PIN
+                    // the lock can never be satisfied, so it must stay possible to switch off.
+                    val rescue = !canLock && realPrefs.pinSet != true
+                    if (rescue || activity == null) {
+                        scope.launch { c.settings.setBiometricLock(false) }
+                    } else {
+                        scope.launch {
+                            if (BiometricGate.authenticate(activity, title = "Turn off app lock") == UnlockResult.Success) {
+                                c.settings.setBiometricLock(false)
+                            }
+                        }
+                    }
                 } else if (activity != null) {
                     scope.launch {
                         if (BiometricGate.authenticate(activity, title = "Turn on app lock") == UnlockResult.Success) {
@@ -98,13 +110,24 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
             "Block screenshots",
             "Hide Sumvalo in the recents preview and block screenshots",
             s.blockScreenshots,
-            { v -> scope.launch { c.settings.setBlockScreenshots(v) } },
+            { v ->
+                // Dropping screenshot protection while the lock is on is a security downgrade: re-auth.
+                if (!v && s.biometricLockEnabled) {
+                    val activity = context as? FragmentActivity
+                    if (activity == null) scope.launch { c.settings.setBlockScreenshots(false) }
+                    else scope.launch {
+                        if (BiometricGate.authenticate(activity, title = "Turn off screenshot blocking") == UnlockResult.Success) {
+                            c.settings.setBlockScreenshots(false)
+                        }
+                    }
+                } else scope.launch { c.settings.setBlockScreenshots(v) }
+            },
             Icons.Outlined.ScreenLockPortrait,
         )
         val encrypted = DatabaseEncryption.status == DatabaseEncryption.Status.ENCRYPTED
         SettingsRow(
             "Database encryption",
-            if (encrypted) "AES-256 (SQLCipher), key kept in the phone's secure hardware keystore" else "Sumvalo will encrypt it on the next launch",
+            if (encrypted) "AES-256 (SQLCipher), key kept in the phone's secure hardware keystore" else "Not encrypted yet · Sumvalo retries on the next launch",
             Icons.Outlined.Lock,
             trailing = {
                 Pill(if (encrypted) "On" else "Pending", if (encrypted) SumvaloTheme.colors.good else SumvaloTheme.colors.warning)
@@ -118,7 +141,23 @@ fun PrivacySecuritySection(onMessage: (String) -> Unit) {
                 else -> "On · used when app lock is on"
             },
             Icons.Outlined.Password,
-        ) { pinDialog = if (prefs.pinSet) PinAction.MANAGE else PinAction.SET }
+        ) {
+            // A first app PIN while the lock is on is exactly what an attacker with brief access would
+            // install (their own PIN, kept after the session ends) — prove it's the owner first.
+            if (prefs.pinSet) {
+                pinDialog = PinAction.MANAGE
+            } else if (!s.biometricLockEnabled) {
+                pinDialog = PinAction.SET
+            } else {
+                val activity = context as? FragmentActivity
+                if (activity == null) pinDialog = PinAction.SET
+                else scope.launch {
+                    if (BiometricGate.authenticate(activity, title = "Set an app PIN") == UnlockResult.Success) {
+                        pinDialog = PinAction.SET
+                    }
+                }
+            }
+        }
         val decoyReady = prefs.pinSet && s.biometricLockEnabled
         SettingsRow(
             "Decoy PIN",

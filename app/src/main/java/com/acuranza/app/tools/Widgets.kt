@@ -9,6 +9,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.widget.RemoteViews
 import com.acuranza.app.SumvaloApp
+import com.acuranza.app.security.DecoySession
 import com.acuranza.app.R
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.di.AppContainer
@@ -119,11 +120,12 @@ object WidgetUpdater {
     @OptIn(FlowPreview::class)
     fun start(app: SumvaloApp) {
         app.appScope.launch {
-            combine(
-                app.container.db.transactions().observeChanges(),
-                app.container.settings.settings,
+            val c = app.acquireContainer() ?: return@launch
+        combine(
+                c.db.transactions().observeChanges(),
+                c.settings.settings,
                 ToolsSettings.get(app).prefs,
-                app.container.featurePrefs.settings,
+                c.featurePrefs.settings,
             ) { _, _, _, _ -> Unit }
                 .debounce(1_500)
                 .collect { runCatching { updateAll(app) } }
@@ -132,7 +134,7 @@ object WidgetUpdater {
 
     suspend fun updateAll(context: Context) {
         val manager = AppWidgetManager.getInstance(context)
-        val c = (context.applicationContext as SumvaloApp).container
+        val c = WidgetUpdater.resolveContainer(context)
         MonthWidgetProvider::class.java.let {
             val ids = manager.getAppWidgetIds(ComponentName(context, it)); if (ids.isNotEmpty()) updateMonth(context, manager, ids, c)
         }
@@ -143,6 +145,13 @@ object WidgetUpdater {
             val ids = manager.getAppWidgetIds(ComponentName(context, it)); if (ids.isNotEmpty()) updateCategoryDonut(context, manager, ids, c)
         }
     }
+
+    /**
+     * The container the widgets display: the decoy profile while a decoy session is active, so the
+     * launcher never shows real balances over a fake in-app profile.
+     */
+    internal fun resolveContainer(context: Context): AppContainer =
+        DecoySession.container ?: (context.applicationContext as SumvaloApp).container
 
     /**
      * The "This month" widget, Groww-style: muted label, headline net-savings figure with a rate
@@ -230,7 +239,7 @@ class MonthWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateMonth(context, manager, ids, (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateMonth(context, manager, ids, WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }
@@ -242,7 +251,7 @@ class MonthWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateMonth(context, manager, intArrayOf(id), (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateMonth(context, manager, intArrayOf(id), WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }
@@ -256,7 +265,7 @@ class SavingsGoalWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateSavingsGoal(context, manager, ids, (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateSavingsGoal(context, manager, ids, WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }
@@ -267,7 +276,7 @@ class SavingsGoalWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateSavingsGoal(context, manager, intArrayOf(id), (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateSavingsGoal(context, manager, intArrayOf(id), WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }
@@ -281,7 +290,7 @@ class CategoryDonutWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateCategoryDonut(context, manager, ids, (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateCategoryDonut(context, manager, ids, WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }
@@ -292,7 +301,7 @@ class CategoryDonutWidgetProvider : AppWidgetProvider() {
         val pending = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                runCatching { WidgetUpdater.updateCategoryDonut(context, manager, intArrayOf(id), (context.applicationContext as SumvaloApp).container) }
+                runCatching { WidgetUpdater.updateCategoryDonut(context, manager, intArrayOf(id), WidgetUpdater.resolveContainer(context)) }
             } finally {
                 pending.finish()
             }

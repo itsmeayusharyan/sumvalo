@@ -30,7 +30,14 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         // Only a fresh launch opens the notification's screen; recreation after rotation must not open it again.
         if (savedInstanceState == null) pendingRoute.value = takeRoute(intent)
-        val container = (application as SumvaloApp).container
+        val acquired = (application as SumvaloApp).acquireContainer()
+        if (acquired == null) {
+            // Fail closed: the database can't be opened securely, so nothing loads (and nothing is
+            // written unprotected). The preserved data file is untouched.
+            setContent { com.acuranza.app.ui.DatabaseUnavailableNotice((application as SumvaloApp).dbError) }
+            return
+        }
+        val container = acquired
 
         // Block screenshots and the recent-apps preview while the user wants their finances hidden.
         lifecycleScope.launch {

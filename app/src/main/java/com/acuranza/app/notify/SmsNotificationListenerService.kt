@@ -44,12 +44,15 @@ class SmsNotificationListenerService : NotificationListenerService() {
         kotlinx.coroutines.runBlocking {
             runCatching {
                 when (val outcome = container.smsImports.addPending(text, sbn.postTime)) {
-                    is com.acuranza.app.repo.SmsImportRepository.PendingOutcome.Added ->
+                    is com.acuranza.app.repo.SmsImportRepository.PendingOutcome.Added -> {
+                        // Privacy mode must hold here too: no amount or merchant in the shade.
+                        val hide = runCatching { container.settings.current().hideAmounts }.getOrDefault(false)
                         Notifications(this@SmsNotificationListenerService).detectedTransaction(
                             outcome.id.toInt(),
-                            alertTitle(outcome.type, outcome.amount),
-                            alertText(outcome.amount, outcome.type, outcome.merchant, outcome.bank),
+                            if (hide) "New bank activity" else alertTitle(outcome.type, outcome.amount),
+                            if (hide) "Open Sumvalo to review it" else alertText(outcome.amount, outcome.type, outcome.merchant, outcome.bank),
                         )
+                    }
                     else -> Unit
                 }
             }

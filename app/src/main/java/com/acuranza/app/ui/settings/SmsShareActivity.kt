@@ -20,9 +20,17 @@ class SmsShareActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val text = intent?.takeIf { it.action == Intent.ACTION_SEND }?.getStringExtra(Intent.EXTRA_TEXT)?.trim()
-        val container = (applicationContext as SumvaloApp).container
+        // Guard rails: no processing behind the device keyguard (a planted message would surface later
+        // as a pending candidate), and a small per-process rate limit so an app cannot flood the
+        // review queue with forged candidates.
+        val locked = (getSystemService(android.app.KeyguardManager::class.java))?.isKeyguardLocked == true
+        val container = (applicationContext as? SumvaloApp)?.acquireContainer()
+        val now = android.os.SystemClock.elapsedRealtime()
         when {
+            !accepting(text, now) -> if (text != null) toast("Too many shares — open Sumvalo and try again")
             text.isNullOrBlank() -> toast("Nothing to add")
+            locked -> toast("Unlock Sumvalo first, then share again")
+            container == null -> toast("Sumvalo can't open right now")
             container.decoy -> toast("Not available in this profile")
             else -> {
                 // Share targets must not touch storage on the main thread; the read+parse is
@@ -49,4 +57,20 @@ class SmsShareActivity : Activity() {
     }
 
     private fun toast(message: String) = Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+
+    companion object {
+        /** Sliding-window cap on shares accepted per process (10 minutes); resets with the process. */
+        private const val MAX_SHARES_PER_WINDOW = 8
+        private const val WINDOW_MS = 10L * 60 * 1000
+        private val acceptedAt = java.util.ArrayDeque<Long>()
+
+        /** True when [now] is inside the rate window and a slot is free. */
+        private fun accepting(text: String?, now: Long): Boolean {
+            if (text == null) return true
+            while (acceptedAt.isNotEmpty() && now - acceptedAt.peekFirst() > WINDOW_MS) acceptedAt.pollFirst()
+            if (acceptedAt.size >= MAX_SHARES_PER_WINDOW) return false
+            acceptedAt.addLast(now)
+            return true
+        }
+    }
 }

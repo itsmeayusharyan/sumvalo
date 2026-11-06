@@ -14,6 +14,16 @@ import com.acuranza.app.data.BudgetEntity
 import com.acuranza.app.data.CardBillEntity
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.DeletedFingerprintEntity
+import com.acuranza.app.data.PurchaseAttachmentEntity
+import com.acuranza.app.data.PurchaseRecordEntity
+import com.acuranza.app.data.SmsImportBatchEntity
+import com.acuranza.app.data.SmsImportEntity
+import com.acuranza.app.data.SplitExpenseEntity
+import com.acuranza.app.data.SplitGroupEntity
+import com.acuranza.app.data.SplitGroupParticipantEntity
+import com.acuranza.app.data.SplitSettlementEntity
+import com.acuranza.app.data.SplitShareEntity
+import com.acuranza.app.sms.SmsConfidence
 import com.acuranza.app.data.GoalEntity
 import com.acuranza.app.data.SumvaloDatabase
 import com.acuranza.app.data.MerchantRuleEntity
@@ -87,6 +97,10 @@ class BackupManager(private val context: Context, private val db: SumvaloDatabas
         withContext(NonCancellable) {
             db.withTransaction {
                 val r = db.restore()
+                r.clearSmsImports(); r.clearSmsBatches()
+                r.clearSplitSettlements(); r.clearSplitShares(); r.clearSplitExpenses()
+                r.clearSplitGroupParticipants(); r.clearSplitGroups()
+                r.clearPurchaseAttachments(); r.clearPurchaseRecords()
                 r.clearAttachments(); r.clearSplits(); r.clearRecurring(); r.clearDebts(); r.clearLoans()
                 r.clearTransactions(); r.clearBills()
                 r.clearAccounts(); r.clearCategories(); r.clearBudgets()
@@ -105,6 +119,15 @@ class BackupManager(private val context: Context, private val db: SumvaloDatabas
                 r.insertRecurring(data.recurring)
                 r.insertLoans(data.loans)
                 r.insertAttachments(data.attachments)
+                r.insertSplitGroups(data.splitGroups)
+                r.insertSplitGroupParticipants(data.splitParticipants)
+                r.insertSplitExpenses(data.splitExpenses)
+                r.insertSplitShares(data.splitShares)
+                r.insertSplitSettlements(data.splitSettlements)
+                r.insertPurchaseRecords(data.purchaseRecords)
+                r.insertPurchaseAttachments(data.purchaseAttachments)
+                r.insertSmsBatches(data.smsBatches)
+                r.insertSmsImports(data.smsImports)
             }
             // Files follow the committed rows: the old ones go, the backup's are written back encrypted.
             files.deleteAll()
@@ -134,6 +157,15 @@ class BackupManager(private val context: Context, private val db: SumvaloDatabas
             recurring = r.recurring(),
             loans = r.loans(),
             attachments = r.attachments(),
+            splitGroups = r.splitGroups(),
+            splitParticipants = r.splitGroupParticipants(),
+            splitExpenses = r.splitExpenses(),
+            splitShares = r.splitShares(),
+            splitSettlements = r.splitSettlements(),
+            purchaseRecords = r.purchaseRecords(),
+            purchaseAttachments = r.purchaseAttachments(),
+            smsBatches = r.smsBatches(),
+            smsImports = r.smsImports(),
         ).let { d -> d.copy(attachmentFiles = d.attachments.mapNotNull { a -> runCatching { a.fileName to files.read(a.fileName) }.getOrNull() }.toMap()) }
     }
 
@@ -157,6 +189,18 @@ data class BackupData(
     val attachments: List<AttachmentEntity> = emptyList(),
     /** Decrypted receipt files by [AttachmentEntity.fileName]. */
     val attachmentFiles: Map<String, ByteArray> = emptyMap(),
+    // Format 4: the v13/v14 feature tables. Older backups simply omit them (they restore as empty,
+    // which matches what those backups contain). Purchase-attachment FILES are not included — the
+    // rows are, and on the same device their files are still in place.
+    val splitGroups: List<SplitGroupEntity> = emptyList(),
+    val splitParticipants: List<SplitGroupParticipantEntity> = emptyList(),
+    val splitExpenses: List<SplitExpenseEntity> = emptyList(),
+    val splitShares: List<SplitShareEntity> = emptyList(),
+    val splitSettlements: List<SplitSettlementEntity> = emptyList(),
+    val purchaseRecords: List<PurchaseRecordEntity> = emptyList(),
+    val purchaseAttachments: List<PurchaseAttachmentEntity> = emptyList(),
+    val smsBatches: List<SmsImportBatchEntity> = emptyList(),
+    val smsImports: List<SmsImportEntity> = emptyList(),
 )
 
 /** JSON form of [BackupData]; nullable fields are omitted when null. */
@@ -174,9 +218,11 @@ object BackupJson {
     /**
      * 1: original format. 2: adds goal loans, per-account savings interest settings, deleted-import fingerprints
      * and the data-repair version. 3: adds tags, split parts, budget rollover, money lent and borrowed, recurring
-     * rules, loans and receipts (with their files). Older files still restore; missing fields take the migrations' defaults.
+     * rules, loans and receipts (with their files). 4: adds the v13/v14 tables (split groups with participants,
+     * expenses, shares and settlements, purchase records with attachment rows, and SMS import batches/imports) —
+     * restores of older files still work; those tables restore empty. Missing fields take the migrations' defaults.
      */
-    const val FORMAT_VERSION = 3
+    const val FORMAT_VERSION = 4
 
     fun meta(json: String): BackupMeta {
         val o = JSONObject(json)
@@ -260,6 +306,46 @@ object BackupJson {
         })
         .put("attachmentFiles", JSONObject().apply {
             d.attachmentFiles.forEach { (name, bytes) -> put(name, java.util.Base64.getEncoder().encodeToString(bytes)) }
+        })
+        .put("splitGroups", arr(d.splitGroups) { g ->
+            JSONObject().put("id", g.id).put("name", g.name).put("archived", g.archived).put("createdAt", g.createdAt)
+        })
+        .put("splitParticipants", arr(d.splitParticipants) { p ->
+            JSONObject().put("id", p.id).put("groupId", p.groupId).put("name", p.name).put("createdAt", p.createdAt)
+        })
+        .put("splitExpenses", arr(d.splitExpenses) { e ->
+            JSONObject().put("id", e.id).put("groupId", e.groupId).put("description", e.description).put("amount", e.amount)
+                .put("date", e.date).put("payerId", e.payerId).putOpt("categoryKey", e.categoryKey).putOpt("note", e.note)
+                .putOpt("linkedTransactionId", e.linkedTransactionId).put("createdAt", e.createdAt)
+        })
+        .put("splitShares", arr(d.splitShares) { s ->
+            JSONObject().put("id", s.id).put("expenseId", s.expenseId).put("participantId", s.participantId).put("share", s.share)
+        })
+        .put("splitSettlements", arr(d.splitSettlements) { s ->
+            JSONObject().put("id", s.id).put("groupId", s.groupId).put("fromId", s.fromId).put("toId", s.toId)
+                .put("amount", s.amount).put("date", s.date).putOpt("note", s.note).put("reversed", s.reversed).put("createdAt", s.createdAt)
+        })
+        .put("purchaseRecords", arr(d.purchaseRecords) { r ->
+            JSONObject().put("id", r.id).put("itemName", r.itemName).putOpt("merchant", r.merchant).put("purchaseDate", r.purchaseDate)
+                .putOpt("amount", r.amount).putOpt("category", r.category).putOpt("notes", r.notes).put("tags", r.tags)
+                .putOpt("warrantyStart", r.warrantyStart).putOpt("warrantyUntil", r.warrantyUntil).putOpt("returnUntil", r.returnUntil)
+                .putOpt("invoiceNo", r.invoiceNo).putOpt("serialNo", r.serialNo).putOpt("linkedTransactionId", r.linkedTransactionId)
+                .put("remindersEnabled", r.remindersEnabled).put("createdAt", r.createdAt)
+        })
+        .put("purchaseAttachments", arr(d.purchaseAttachments) { a ->
+            JSONObject().put("id", a.id).put("purchaseId", a.purchaseId).put("fileName", a.fileName)
+                .put("mimeType", a.mimeType).put("sizeBytes", a.sizeBytes).putOpt("label", a.label).put("createdAt", a.createdAt)
+        })
+        .put("smsBatches", arr(d.smsBatches) { b ->
+            JSONObject().put("id", b.id).put("importedAt", b.importedAt).put("txnCount", b.txnCount)
+                .put("label", b.label).put("undone", b.undone)
+        })
+        .put("smsImports", arr(d.smsImports) { m ->
+            JSONObject().put("id", m.id).put("batchId", m.batchId).putOpt("transactionId", m.transactionId)
+                .put("fingerprint", m.fingerprint).put("sender", m.sender).put("bank", m.bank)
+                .putOpt("accountLast4", m.accountLast4).put("type", m.type.name).put("amount", m.amount)
+                .putOpt("merchant", m.merchant).put("timestamp", m.timestamp).put("channel", m.channel.name)
+                .put("confidence", m.confidence.name).putOpt("suggestedCategory", m.suggestedCategory)
         })
         .toString()
 
@@ -353,6 +439,62 @@ object BackupJson {
                     tenureMonths = x.getInt("tenureMonths").coerceIn(1, 600),
                     firstEmiDay = x.getLong("firstEmiDay"), emi = (x.long("emi") ?: 0).coerceAtLeast(0), prepaymentsJson = x.optString("prepaymentsJson", "[]"),
                     selfOccupied = x.optBoolean("selfOccupied", true), archived = x.optBoolean("archived"), createdAt = x.optLong("createdAt"),
+                )
+            },
+            splitGroups = list(o, "splitGroups") { g ->
+                SplitGroupEntity(id = g.getLong("id"), name = g.getString("name"), archived = g.optBoolean("archived"), createdAt = g.optLong("createdAt"))
+            },
+            splitParticipants = list(o, "splitParticipants") { p ->
+                SplitGroupParticipantEntity(id = p.getLong("id"), groupId = p.getLong("groupId"), name = p.getString("name"), createdAt = p.optLong("createdAt"))
+            },
+            splitExpenses = list(o, "splitExpenses") { e ->
+                SplitExpenseEntity(
+                    id = e.getLong("id"), groupId = e.getLong("groupId"), description = e.getString("description"),
+                    amount = e.getLong("amount"), date = e.getLong("date"), payerId = e.getLong("payerId"),
+                    categoryKey = e.str("categoryKey"), note = e.str("note"), linkedTransactionId = e.long("linkedTransactionId"),
+                    createdAt = e.optLong("createdAt"),
+                )
+            },
+            splitShares = list(o, "splitShares") { s ->
+                SplitShareEntity(id = s.getLong("id"), expenseId = s.getLong("expenseId"), participantId = s.getLong("participantId"), share = s.getLong("share"))
+            },
+            splitSettlements = list(o, "splitSettlements") { s ->
+                SplitSettlementEntity(
+                    id = s.getLong("id"), groupId = s.getLong("groupId"), fromId = s.getLong("fromId"), toId = s.getLong("toId"),
+                    amount = s.getLong("amount"), date = s.getLong("date"), note = s.str("note"),
+                    reversed = s.optBoolean("reversed"), createdAt = s.optLong("createdAt"),
+                )
+            },
+            purchaseRecords = list(o, "purchaseRecords") { r ->
+                PurchaseRecordEntity(
+                    id = r.getLong("id"), itemName = r.getString("itemName"), merchant = r.str("merchant"),
+                    purchaseDate = r.getLong("purchaseDate"), amount = r.long("amount"), category = r.str("category"),
+                    notes = r.str("notes"), tags = r.optString("tags", ""),
+                    warrantyStart = r.long("warrantyStart"), warrantyUntil = r.long("warrantyUntil"), returnUntil = r.long("returnUntil"),
+                    invoiceNo = r.str("invoiceNo"), serialNo = r.str("serialNo"), linkedTransactionId = r.long("linkedTransactionId"),
+                    remindersEnabled = r.optBoolean("remindersEnabled", true), createdAt = r.optLong("createdAt"),
+                )
+            },
+            purchaseAttachments = list(o, "purchaseAttachments") { a ->
+                PurchaseAttachmentEntity(
+                    id = a.getLong("id"), purchaseId = a.getLong("purchaseId"), fileName = a.getString("fileName"),
+                    mimeType = a.getString("mimeType"), sizeBytes = a.getLong("sizeBytes"), label = a.str("label"),
+                    createdAt = a.optLong("createdAt"),
+                )
+            },
+            smsBatches = list(o, "smsBatches") { b ->
+                SmsImportBatchEntity(
+                    id = b.getLong("id"), importedAt = b.getLong("importedAt"), txnCount = b.getInt("txnCount"),
+                    label = b.getString("label"), undone = b.optBoolean("undone"),
+                )
+            },
+            smsImports = list(o, "smsImports") { m ->
+                SmsImportEntity(
+                    id = m.getLong("id"), batchId = m.getLong("batchId"), transactionId = m.long("transactionId"),
+                    fingerprint = m.getString("fingerprint"), sender = m.getString("sender"), bank = m.getString("bank"),
+                    accountLast4 = m.str("accountLast4"), type = TxnType.valueOf(m.getString("type")), amount = m.getLong("amount"),
+                    merchant = m.str("merchant"), timestamp = m.getLong("timestamp"), channel = TxnChannel.valueOf(m.getString("channel")),
+                    confidence = SmsConfidence.valueOf(m.getString("confidence")), suggestedCategory = m.str("suggestedCategory"),
                 )
             },
             attachments = list(o, "attachments") { x ->

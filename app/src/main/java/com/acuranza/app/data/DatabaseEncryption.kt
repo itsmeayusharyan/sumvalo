@@ -68,16 +68,21 @@ object DatabaseEncryption {
 
     /**
      * The key can't be read (e.g. the Keystore was reset): an encrypted database can never be opened again.
-     * Move it aside instead of crashing on every launch; a plaintext database is left alone.
+     * Move it aside — WITH its WAL/SHM side files, which hold the most recent un-checkpointed writes —
+     * instead of crashing on every launch; a plaintext database is left alone. Returns true when an
+     * encrypted database was actually quarantined.
      */
-    fun quarantineUnreadable(context: Context) {
+    fun quarantineUnreadable(context: Context): Boolean {
         val db = context.getDatabasePath(NAME)
         if (FileHeader.kindOf(db) == FileHeader.Kind.ENCRYPTED) {
-            val aside = File(db.path + ".unreadable-" + System.currentTimeMillis())
-            db.renameTo(aside)
-            for (suffix in SIDE_FILES) File(db.path + suffix).delete()
+            val stamp = ".unreadable-" + System.currentTimeMillis()
+            db.renameTo(File(db.path + stamp))
+            for (suffix in SIDE_FILES) File(db.path + suffix).renameTo(File(db.path + suffix + stamp))
+            status = Status.PLAINTEXT_FALLBACK
+            return true
         }
         status = Status.PLAINTEXT_FALLBACK
+        return false
     }
 
     private fun migrate(db: File, tmp: File, backup: File, passphrase: ByteArray): Boolean {

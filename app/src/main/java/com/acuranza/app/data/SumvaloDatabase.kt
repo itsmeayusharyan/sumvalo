@@ -266,14 +266,26 @@ abstract class SumvaloDatabase : RoomDatabase() {
 
         /**
          * Opens the database encrypted with SQLCipher (key in the Android Keystore). An existing plaintext
-         * database is converted once; if that can't be done, the plaintext one keeps working and the
-         * conversion is retried on the next launch.
+         * database is converted once; if that conversion fails the plaintext one keeps working and the
+         * conversion is retried on the next launch. When the Keystore key itself is gone, [create] throws
+         * [DatabaseUnavailableException] instead of silently storing new financial data unencrypted —
+         * the quarantined file (and its WAL/SHM) is preserved for as long as the key might come back.
          */
         fun create(context: Context): SumvaloDatabase {
             val builder = Room.databaseBuilder(context, SumvaloDatabase::class.java, DatabaseEncryption.NAME)
                 .addMigrations(*ALL_MIGRATIONS)
             val passphrase = runCatching { com.acuranza.app.security.DatabaseKey.passphrase(context) }.getOrNull()
-            if (passphrase == null) DatabaseEncryption.quarantineUnreadable(context)
+            if (passphrase == null) {
+                val hadEncryptedDb = DatabaseEncryption.quarantineUnreadable(context)
+                val hasAnyDb = context.getDatabasePath(DatabaseEncryption.NAME).exists()
+                if (hadEncryptedDb || !hasAnyDb) {
+                    // No key and nothing to fall back to: never open a cleartext database for financial data.
+                    throw DatabaseUnavailableException(
+                        "Your encrypted data couldn't be unlocked because Android's secure storage was reset. " +
+                            "The data file was preserved untouched and nothing was stored unprotected.",
+                    )
+                }
+            }
             if (passphrase != null && runCatching { DatabaseEncryption.prepare(context, passphrase) }.getOrDefault(false)) {
                 builder.openHelperFactory(net.zetetic.database.sqlcipher.SupportOpenHelperFactory(passphrase))
             }
@@ -281,3 +293,7 @@ abstract class SumvaloDatabase : RoomDatabase() {
         }
     }
 }
+
+/** The database cannot be opened securely (e.g. the Keystore key was reset); the app shows a blocking
+ *  notice instead of silently storing new financial data unencrypted. */
+class DatabaseUnavailableException(message: String) : RuntimeException(message)

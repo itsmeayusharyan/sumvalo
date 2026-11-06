@@ -64,7 +64,9 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
                 changed.filter { "p-${it.key}-${it.lastDate}" in fresh }.take(MAX_INSIGHT_NOTIFICATIONS).forEach { s ->
                     val text = if (settings.hideAmounts) "Open Sumvalo to see the details."
                     else "${Money.format(s.previousAmount ?: 0, showPaise = false)} → ${Money.format(s.lastAmount, showPaise = false)}. Still worth it?"
-                    c.notifications.reminder(s.key.hashCode() and 0xFFFF, "${s.merchant} costs ${Math.round(s.priceChangePct ?: 0.0)}% more", text)
+                    val title = if (settings.hideAmounts) "A subscription costs more"
+                    else "${s.merchant} costs ${Math.round(s.priceChangePct ?: 0.0)}% more"
+                    c.notifications.reminder(s.key.hashCode() and 0xFFFF, title, text)
                 }
             }
         }
