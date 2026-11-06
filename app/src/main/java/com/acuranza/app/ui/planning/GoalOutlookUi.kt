@@ -4,6 +4,8 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,33 +57,37 @@ fun GoalOutlookSection(o: GoalOutlook, deadline: LocalDate, hidden: Boolean, onI
     val r = o.result
     val pct = (r.probability * 100).roundToInt()
     val confidence = (GoalSimulation.CONFIDENCE * 100).roundToInt()
-    val color = SumvaloTheme.colors.accent
     fun money(p: Long) = if (hidden) "₹ ••••" else Money.format(p, showPaise = false)
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(top = 6.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(SumvaloTheme.colors.cardSurface)
-            .clickable { expanded = !expanded }
-            .padding(horizontal = 14.dp, vertical = 10.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "$confidence% sure",
-                color = color,
-                fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.background(color.copy(alpha = 0.12f), RoundedCornerShape(8.dp)).padding(horizontal = 8.dp, vertical = 3.dp),
-            )
-            Spacer(Modifier.width(8.dp))
+    Column(Modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(SumvaloTheme.colors.cardSurfaceHigh)
+                    .padding(horizontal = 8.dp, vertical = 3.dp),
+            ) {
+                Text("$confidence% sure", style = planText(FontWeight.SemiBold, 11, 14), color = SumvaloTheme.colors.ink)
+            }
             Text(
                 "at ${money(r.monthlyForConfidence)}/month by ${monthYear.format(deadline)}",
-                style = MaterialTheme.typography.bodySmall,
+                style = planText(FontWeight.Medium, 12, 16),
                 color = SumvaloTheme.colors.subtleText,
                 modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
             )
-            Icon(if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, contentDescription = if (expanded) "Hide outlook" else "Show outlook", tint = SumvaloTheme.colors.subtleText)
+            Icon(
+                if (expanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
+                contentDescription = if (expanded) "Hide outlook" else "Show outlook",
+                tint = SumvaloTheme.colors.subtleText,
+                modifier = Modifier.size(14.dp),
+            )
         }
         AnimatedVisibility(expanded) {
             Column(Modifier.padding(top = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {

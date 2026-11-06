@@ -1,0 +1,3 @@
+Sumvalo 0.30
+
+- Goals tab redesigned to the new reference — goal cards with a donut progress ring, compact saved-of-target amounts, a green save-plan line, the confidence outlook row with projected monthly and date, and an Add savings button

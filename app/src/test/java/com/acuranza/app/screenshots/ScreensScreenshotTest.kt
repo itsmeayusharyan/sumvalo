@@ -57,6 +57,7 @@ import com.acuranza.app.finance.Budgets
 import com.acuranza.app.finance.Goals
 import com.acuranza.app.model.TxnType
 import com.acuranza.app.repo.BudgetStatus
+import com.acuranza.app.repo.toInput
 import com.acuranza.app.repo.NotificationItem
 import com.acuranza.app.repo.NotificationItem.Kind
 import com.acuranza.app.repo.GoalStatus
@@ -308,14 +309,8 @@ class ScreensScreenshotTest {
         Budgets.project(limit * 100, spent * 100, today),
     )
 
-    private fun planState() = PlanningState(
-        budgets = listOf(
-            budget(null, 70_000, 61_240),
-            budget("food", 10_000, 9_820),
-            budget("shopping", 12_000, 8_450),
-            budget("transport", 6_000, 4_120),
-        ),
-        goals = listOf(
+    private fun planState(): PlanningState {
+        val goals = listOf(
             GoalStatus(
                 GoalEntity(id = 1, name = "Emergency fund", target = 6_00_000_00, saved = 3_80_000_00, deadline = today.plusMonths(10).toEpochDay()),
                 Goals.plan(6_00_000_00, 3_80_000_00, today.plusMonths(10), today, 7.0),
@@ -324,10 +319,27 @@ class ScreensScreenshotTest {
                 GoalEntity(id = 2, name = "Japan trip", target = 2_50_000_00, saved = 60_000_00, deadline = today.plusMonths(14).toEpochDay(), icon = "flight"),
                 Goals.plan(2_50_000_00, 60_000_00, today.plusMonths(14), today, 6.0),
             ),
-        ),
-        categories = FakeData.categories,
-        loaded = true,
-    )
+        )
+        // The real Monte Carlo outlooks (deterministic seeds), so the cards show the projection row.
+        val outlooks = goals.associate { s ->
+            s.goal.id to com.acuranza.app.repo.GoalOutlook(
+                s.goal.id, s.plan, s.plan.requiredMonthly, 0.0,
+                com.acuranza.app.finance.GoalSimulation.forGoal(s.goal.toInput(), s.plan),
+            )
+        }
+        return PlanningState(
+            budgets = listOf(
+                budget(null, 70_000, 61_240),
+                budget("food", 10_000, 9_820),
+                budget("shopping", 12_000, 8_450),
+                budget("transport", 6_000, 4_120),
+            ),
+            goals = goals,
+            categories = FakeData.categories,
+            loaded = true,
+            outlooks = outlooks,
+        )
+    }
 
     @Test
     fun plan_budgets() = paparazzi.snapshot { Frame { PlanningContent(planState(), tab = 0) } }

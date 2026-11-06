@@ -47,6 +47,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.Canvas
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -73,7 +77,6 @@ import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.CategoryIcon
 import com.acuranza.app.designsystem.components.CategoryIcons
 import com.acuranza.app.designsystem.components.EmptyState
-import com.acuranza.app.designsystem.components.GoalCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.theme.AmountStyles
@@ -107,6 +110,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.math.roundToInt
 
 data class PlanningState(
     val budgets: List<BudgetStatus> = emptyList(),
@@ -254,7 +258,7 @@ private val PlanChakra = FontFamily(
     Font(R.font.chakrapetch_bold, FontWeight.Bold),
 )
 
-private fun planText(weight: FontWeight, size: Int, lineHeight: Int = size + 4, letterSpacingSp: Float = 0f): TextStyle =
+internal fun planText(weight: FontWeight, size: Int, lineHeight: Int = size + 4, letterSpacingSp: Float = 0f): TextStyle =
     TextStyle(fontFamily = PlanChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 /** Budgets / Goals pill toggle at the top of the Plan tab. */
@@ -683,49 +687,16 @@ private fun GoalsTab(
         )
         return
     }
-    LazyColumn(contentPadding = PaddingValues(20.dp, 8.dp, 20.dp, 110.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+    LazyColumn(contentPadding = PaddingValues(20.dp, 8.dp, 20.dp, 110.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         items(state.goals, key = { it.goal.id }) { g ->
-            val plan = g.plan
-            val money = { p: Long -> if (hidden) "₹ ••••" else Money.format(p, showPaise = false) }
-            val hint = when (g.standing) {
-                GoalStanding.REACHED -> "Goal reached"
-                GoalStanding.OVERDUE -> "Deadline passed · ${Fmt.date(g.deadline)} · ${money(plan.gap)} to go"
-                GoalStanding.DUE_NOW -> "${money(plan.gap)} needed by ${Fmt.date(g.deadline)}"
-                else -> buildString {
-                    append("Save ${money(plan.requiredMonthly)}/month")
-                    if (g.hasLoan) append(" + loan ${money(g.goal.loanAmount)} (EMI ${money(g.loanEmi)} for ${g.goal.loanTenureMonths} months)")
-                    else append(" at ${Fmt.pct(g.goal.expectedReturnPct, 0)} a year")
-                    append(" · ${plan.monthsLeft} month${if (plan.monthsLeft == 1) "" else "s"} left")
-                    val now = (g.freeNow ?: 0).coerceAtLeast(0)
-                    val overall = (g.capacity ?: 0).coerceAtLeast(0)
-                    if (g.standing == GoalStanding.TIGHT) {
-                        append(if (plan.requiredMonthly > now) " · tight: ${money(now)} free now, more once earlier goals finish" else " · tight: ${money(overall)} free a month")
-                    }
-                    if (g.standing == GoalStanding.OFF_TRACK) append(" · more than the ${money(overall)} you usually have free")
-                }
-            }
-            Column {
-                GoalCard(
-                    name = g.goal.name,
-                    saved = g.goal.saved,
-                    // What has to be saved: the price at the date (with any rise) less the loan, so the ring and "reached" agree.
-                    target = plan.target.takeIf { it > 0 } ?: g.goal.target,
-                    hint = hint,
-                    onTrack = g.looksOnTrack,
-                    hidden = hidden,
-                    onClick = { onOpen(g.goal) },
-                )
-                state.outlooks[g.goal.id]?.let { o ->
-                    GoalOutlookSection(o, g.deadline, hidden, onInflation = { pct -> onInflation(g.goal.id, pct) })
-                }
-                if (!plan.reached) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                        TextButton(onClick = { contributing = g }) {
-                            Text("+ Add savings", color = SumvaloTheme.colors.accent, style = MaterialTheme.typography.labelLarge)
-                        }
-                    }
-                }
-            }
+            GoalStatusCard(
+                g = g,
+                hidden = hidden,
+                outlook = state.outlooks[g.goal.id],
+                onOpen = { onOpen(g.goal) },
+                onInflation = { pct -> onInflation(g.goal.id, pct) },
+                onContribute = { contributing = g },
+            )
         }
     }
     contributing?.let { g ->
@@ -733,6 +704,135 @@ private fun GoalsTab(
             onContribute(g.goal.id, it)
             contributing = null
         }, type = TxnType.INCOME)
+    }
+}
+
+/** One goal card: 64dp donut, name + saved of target, save plan line, outlook row and Add savings. */
+@Composable
+private fun GoalStatusCard(
+    g: GoalStatus,
+    hidden: Boolean,
+    outlook: com.acuranza.app.repo.GoalOutlook?,
+    onOpen: () -> Unit,
+    onInflation: (Double) -> Unit,
+    onContribute: () -> Unit,
+) {
+    val colors = SumvaloTheme.colors
+    val plan = g.plan
+    val money = { p: Long -> if (hidden) "₹ ••••" else Money.compact(p) }
+    val full = { p: Long -> if (hidden) "₹ ••••" else Money.format(p, showPaise = false) }
+    val pct = (plan.progress * 100).roundToInt().coerceIn(0, 100)
+    // What has to be saved: the price at the date (with any rise) less the loan, so the ring and "reached" agree.
+    val target = plan.target.takeIf { it > 0 } ?: g.goal.target
+    SumvaloCard(contentPadding = PaddingValues(16.dp), onClick = onOpen) {
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+                    Canvas(Modifier.fillMaxSize()) {
+                        val stroke = 5.dp.toPx()
+                        drawArc(
+                            color = colors.hairline,
+                            startAngle = 0f,
+                            sweepAngle = 360f,
+                            useCenter = false,
+                            topLeft = Offset(stroke / 2, stroke / 2),
+                            size = Size(size.width - stroke, size.height - stroke),
+                            style = Stroke(width = stroke),
+                        )
+                        if (pct > 0) {
+                            drawArc(
+                                color = colors.ink,
+                                startAngle = -90f,
+                                sweepAngle = (plan.progress * 360.0).coerceAtLeast(1.0).toFloat(),
+                                useCenter = false,
+                                topLeft = Offset(stroke / 2, stroke / 2),
+                                size = Size(size.width - stroke, size.height - stroke),
+                                style = Stroke(width = stroke),
+                            )
+                        }
+                    }
+                    Text("$pct%", style = planText(FontWeight.Bold, 15, 20), color = colors.ink)
+                }
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        g.goal.name,
+                        style = planText(FontWeight.SemiBold, 16, 22),
+                        color = colors.ink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(money(g.goal.saved), style = planText(FontWeight.Bold, 20, 24), color = colors.ink)
+                        Text(" of ", style = planText(FontWeight.Medium, 13, 20), color = colors.subtleText)
+                        Text(money(target), style = planText(FontWeight.Medium, 13, 20), color = colors.subtleText)
+                    }
+                }
+            }
+            Text(
+                planLine(g, full, colors.income),
+                style = planText(FontWeight.Medium, 12, 16),
+                color = colors.subtleText,
+            )
+            if (outlook != null && !plan.reached) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(colors.hairline),
+                )
+                GoalOutlookSection(outlook, g.deadline, hidden, onInflation = onInflation)
+            }
+            if (!plan.reached) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    Row(
+                        Modifier
+                            .clip(RoundedCornerShape(50))
+                            .clickable(role = Role.Button, onClick = onContribute)
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        Icon(Icons.Outlined.Add, contentDescription = null, tint = colors.ink, modifier = Modifier.size(13.dp))
+                        Text("Add savings", style = planText(FontWeight.SemiBold, 13, 18), color = colors.ink)
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * The wrapped plan line under the goal title — "Save ₹X/month at 7% a year · 10 months left" — with the
+ * loan, tight and off-track qualifiers the old hint carried. [green] styles the monthly amount.
+ */
+private fun planLine(g: GoalStatus, money: (Long) -> String, green: Color): AnnotatedString = buildAnnotatedString {
+    val plan = g.plan
+    when (g.standing) {
+        GoalStanding.REACHED -> {
+            pushStyle(SpanStyle(color = green, fontWeight = FontWeight.SemiBold))
+            append("Goal reached")
+            pop()
+        }
+        GoalStanding.OVERDUE -> append("Deadline passed · ${Fmt.date(g.deadline)} · ${money(plan.gap)} to go")
+        GoalStanding.DUE_NOW -> append("${money(plan.gap)} needed by ${Fmt.date(g.deadline)}")
+        else -> {
+            append("Save ")
+            pushStyle(SpanStyle(color = green, fontWeight = FontWeight.SemiBold))
+            append("${money(plan.requiredMonthly)}/month")
+            pop()
+            if (g.hasLoan) {
+                append(" + loan ${money(g.goal.loanAmount)} (EMI ${money(g.loanEmi)} for ${g.goal.loanTenureMonths} months)")
+            } else {
+                append(" at ${Fmt.pct(g.goal.expectedReturnPct, 0)} a year")
+            }
+            append(" · ${plan.monthsLeft} month${if (plan.monthsLeft == 1) "" else "s"} left")
+            val now = (g.freeNow ?: 0).coerceAtLeast(0)
+            val overall = (g.capacity ?: 0).coerceAtLeast(0)
+            if (g.standing == GoalStanding.TIGHT) {
+                append(if (plan.requiredMonthly > now) " · tight: ${money(now)} free now, more once earlier goals finish" else " · tight: ${money(overall)} free a month")
+            }
+            if (g.standing == GoalStanding.OFF_TRACK) append(" · more than the ${money(overall)} you usually have free")
+        }
     }
 }
 

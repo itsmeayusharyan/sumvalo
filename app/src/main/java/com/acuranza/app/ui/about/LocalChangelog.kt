@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.30",
+        name = "Sumvalo 0.30",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Goals tab redesigned to the new reference — goal cards with a donut progress ring, compact saved-of-target amounts, a green save-plan line, the confidence outlook row with projected monthly and date, and an Add savings button", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.29",
         name = "Sumvalo 0.29",
         publishedAt = "",
