@@ -1,8 +1,12 @@
 package com.acuranza.app.ui.planning
 
-import androidx.compose.foundation.layout.size
-import com.acuranza.app.designsystem.theme.SumvaloText
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,10 +16,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
@@ -37,28 +43,43 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.acuranza.app.R
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.GoalEntity
 import com.acuranza.app.designsystem.components.AmountText
-import com.acuranza.app.designsystem.components.BudgetProgressBar
 import com.acuranza.app.designsystem.components.CategoryIcon
+import com.acuranza.app.designsystem.components.CategoryIcons
 import com.acuranza.app.designsystem.components.EmptyState
 import com.acuranza.app.designsystem.components.GoalCard
-import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
-import com.acuranza.app.designsystem.components.ProgressRing
-import com.acuranza.app.designsystem.components.SegmentedTabs
-import com.acuranza.app.designsystem.theme.staggeredEntrance
+import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.theme.AmountStyles
+import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
+import com.acuranza.app.designsystem.theme.staggeredEntrance
 import com.acuranza.app.di.AppContainer
 import com.acuranza.app.model.Money
 import com.acuranza.app.model.TxnType
@@ -216,7 +237,7 @@ fun PlanningContent(
                     Text(if (tab == 0) "Budget" else "Goal", color = SumvaloTheme.colors.ink)
                 }
             }
-            SegmentedTabs(listOf("Budgets", "Goals"), tab, onSelect = onTab, modifier = Modifier.padding(top = 8.dp, end = 8.dp))
+            TypeToggle(tab = tab, onTab = onTab)
         }
         if (tab == 0) {
             BudgetsTab(state, onAdd = onAddBudget, onSet = onSetBudget, onDelete = onDeleteBudget, onEnvelopeMode = onEnvelopeMode)
@@ -226,6 +247,252 @@ fun PlanningContent(
     }
 }
 
+/** Chakra Petch text styles for the redesigned plan cards. */
+private val PlanChakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+private fun planText(weight: FontWeight, size: Int, lineHeight: Int = size + 4, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = PlanChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
+/** Budgets / Goals pill toggle at the top of the Plan tab. */
+@Composable
+private fun TypeToggle(tab: Int, onTab: (Int) -> Unit) {
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(50))
+            .border(1.dp, colors.hairline, RoundedCornerShape(50))
+            .background(colors.fill)
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        listOf("Budgets", "Goals").forEachIndexed { i, label ->
+            val active = i == tab
+            Box(
+                Modifier
+                    .weight(1f)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(if (active) colors.ink else Color.Transparent)
+                    .clickable(role = Role.Button) { if (!active) onTab(i) },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    label,
+                    style = planText(if (active) FontWeight.SemiBold else FontWeight.Medium, 13, 18),
+                    color = if (active) colors.onInk else colors.subtleText,
+                )
+            }
+        }
+    }
+}
+
+/** One budget card: ring / icon tile, name + spent of limit, right percentage, pace bar + pace footer. */
+@Composable
+private fun BudgetCard(
+    s: BudgetStatus,
+    p: com.acuranza.app.finance.BudgetProjection,
+    hidden: Boolean,
+    dayFraction: Float,
+    barDp: Float,
+    markerDp: Float,
+    onClick: () -> Unit,
+) {
+    val colors = SumvaloTheme.colors
+    val willExceed = p.willExceed
+    val barColor = if (willExceed) colors.alert else colors.income
+    val fraction = p.usedFraction.coerceIn(0.0, 1.0)
+    SumvaloCard(contentPadding = PaddingValues(16.dp)) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (s.isOverall) {
+                    Box(
+                        Modifier
+                            .size(44.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(colors.fill),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Canvas(Modifier.fillMaxSize()) {
+                            val stroke = 4.dp.toPx()
+                            drawArc(
+                                color = colors.hairline,
+                                startAngle = 0f,
+                                sweepAngle = 360f,
+                                useCenter = false,
+                                topLeft = Offset(stroke / 2, stroke / 2),
+                                size = Size((size.width - stroke).toFloat(), (size.height - stroke).toFloat()),
+                                style = Stroke(width = stroke, cap = StrokeCap.Round),
+                            )
+                            val sweep = (p.usedFraction.coerceIn(0.0, 1.0) * 360f).coerceAtLeast(1.0).toFloat()
+                            drawArc(
+                                color = colors.ink,
+                                startAngle = -90f,
+                                sweepAngle = sweep,
+                                useCenter = false,
+                                topLeft = Offset(stroke / 2, stroke / 2),
+                                size = Size((size.width - stroke).toFloat(), (size.height - stroke).toFloat()),
+                                style = Stroke(width = stroke, cap = StrokeCap.Round),
+                            )
+                        }
+                        Text(
+                            "%.0f%%".format(p.usedFraction * 100),
+                            style = planText(FontWeight.Bold, 11, 14),
+                            color = colors.ink,
+                        )
+                    }
+                } else {
+                    Box(
+                        Modifier
+                            .size(40.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(colors.fill),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            CategoryIcons.forName(s.category?.icon ?: "category"),
+                            contentDescription = null,
+                            tint = colors.ink,
+                            modifier = Modifier.size(18.dp),
+                        )
+                    }
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        if (s.isOverall) "Overall budget" else s.category?.name ?: s.budget.categoryKey.orEmpty(),
+                        style = planText(FontWeight.SemiBold, 15, 20),
+                        color = colors.ink,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        AmountText(
+                            s.spent,
+                            style = planText(FontWeight.SemiBold, 14, 18),
+                            hidden = hidden,
+                            color = colors.ink,
+                        )
+                        Text(" of ", style = planText(FontWeight.Normal, 13, 18), color = colors.subtleText)
+                        AmountText(
+                            s.limit,
+                            style = planText(FontWeight.Normal, 13, 18),
+                            hidden = hidden,
+                            color = colors.subtleText,
+                        )
+                        if (s.budget.rollover && s.carry != 0L) {
+                            Text(
+                                if (s.carry > 0) " · +${if (hidden) "₹ ••••" else Money.format(s.carry, showPaise = false)} rolled over"
+                                else " · −${if (hidden) "₹ ••••" else Money.format(-s.carry, showPaise = false)} carried",
+                                style = planText(FontWeight.Normal, 13, 18),
+                                color = colors.subtleText,
+                            )
+                        }
+                    }
+                }
+                Text(
+                    "%.0f%%".format(p.usedFraction * 100),
+                    style = planText(FontWeight.SemiBold, 15, 20),
+                    color = if (willExceed) colors.ink else colors.subtleText,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(barDp.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(colors.fill),
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth(fraction.toFloat())
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(50))
+                            .background(barColor),
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height((barDp + markerDp).dp),
+                    ) {
+                        Canvas(Modifier.fillMaxSize()) {
+                            val barTop = markerDp.dp.toPx()
+                            // track
+                            drawRect(
+                                color = colors.fill,
+                                topLeft = Offset(0f, barTop),
+                                size = Size(size.width, barDp.dp.toPx()),
+                            )
+                            // progress fill
+                            drawRect(
+                                color = barColor,
+                                topLeft = Offset(0f, barTop),
+                                size = Size(size.width * fraction.toFloat(), barDp.dp.toPx()),
+                            )
+                            // today marker (1dp wide, sticks 1dp above the bar)
+                            val markerX = dayFraction * size.width - 0.5f.dp.toPx()
+                            drawRect(
+                                color = colors.subtleText,
+                                topLeft = Offset(markerX.coerceAtLeast(0f), barTop - 1f.dp.toPx()),
+                                size = Size(1f.dp.toPx(), markerDp.dp.toPx()),
+                            )
+                        }
+                    }
+                }
+            }
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                if (p.isExceeded) {
+                    Text("Over by", style = planText(FontWeight.Medium, 12, 16), color = colors.subtleText)
+                    Text(
+                        Money.format(-p.remaining, showPaise = false),
+                        style = planText(FontWeight.SemiBold, 15, 20),
+                        color = colors.alert,
+                    )
+                } else if (willExceed) {
+                    Text("On pace for", style = planText(FontWeight.Medium, 12, 16), color = colors.subtleText)
+                    Text(
+                        Money.format(p.projected, showPaise = false),
+                        style = planText(FontWeight.SemiBold, 15, 20),
+                        color = colors.alert,
+                    )
+                    Text(
+                        " · keep under ${Money.format(p.dailyAllowance, showPaise = false)}/day",
+                        style = planText(FontWeight.Normal, 12, 16),
+                        color = colors.subtleText,
+                    )
+                } else {
+                    Text(
+                        Money.format(p.remaining, showPaise = false),
+                        style = planText(FontWeight.SemiBold, 15, 20),
+                        color = if (s.spent == 0L) colors.subtleText else colors.income,
+                    )
+                    Text(" · ", style = planText(FontWeight.Normal, 12, 16), color = colors.subtleText)
+                    Text(
+                        "${Money.format(p.dailyAllowance, showPaise = false)}/day",
+                        style = planText(FontWeight.Normal, 12, 16),
+                        color = colors.subtleText,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** The redesigned Budgets tab: overall card first, category cards next, envelope toggle last. */
 @Composable
 private fun BudgetsTab(
     state: PlanningState,
@@ -234,6 +501,7 @@ private fun BudgetsTab(
     onDelete: (BudgetStatus) -> Unit,
     onEnvelopeMode: (Boolean) -> Unit = {},
 ) {
+    val colors = SumvaloTheme.colors
     val hidden = LocalHideAmounts.current
     var editing by remember { mutableStateOf<BudgetStatus?>(null) }
     var deleting by remember { mutableStateOf<BudgetStatus?>(null) }
@@ -248,83 +516,30 @@ private fun BudgetsTab(
         )
         return
     }
-    LazyColumn(contentPadding = PaddingValues(20.dp, 8.dp, 20.dp, 110.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        state.envelope?.let { env ->
-            item(key = "envelope") {
-                SumvaloCard {
-                    Text("Give every rupee a job", fontWeight = FontWeight.SemiBold)
-                    Spacer(Modifier.height(8.dp))
-                    EnvelopeLine("Income this month", env.envelope.income, hidden)
-                    EnvelopeLine("Assigned to budgets", env.envelope.assigned, hidden)
-                    EnvelopeLine(if (env.envelope.toAssign >= 0) "Left to assign" else "Over-assigned", env.envelope.toAssign, hidden,
-                        color = if (env.envelope.toAssign >= 0) SumvaloTheme.colors.good else SumvaloTheme.colors.alert)
-                }
-            }
-        }
-        items(state.budgets.size, key = { state.budgets[it].budget.id }) { i ->
-            val s = state.budgets[i]
+    val dayFraction = state.budgets.mapNotNull { it.projection }.firstOrNull()?.let {
+        it.daysElapsed.toFloat() / it.daysInMonth.coerceAtLeast(1)
+    } ?: 0f
+    LazyColumn(contentPadding = PaddingValues(16.dp, 8.dp, 16.dp, 16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        state.budgets.forEachIndexed { i, s ->
             val p = s.projection
-            SumvaloCard(Modifier.staggeredEntrance(i), onClick = { editing = s }) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (s.isOverall) {
-                        ProgressRing(p.usedFraction.toFloat().coerceIn(0f, 1f), size = 36.dp, thickness = 4.dp)
-                    } else {
-                        CategoryIcon(s.category?.icon, s.category.color(), size = 36.dp)
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Column(Modifier.weight(1f)) {
-                        Text(if (s.isOverall) "Overall budget" else s.category?.name ?: s.budget.categoryKey.orEmpty(), fontWeight = FontWeight.SemiBold)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            AmountText(s.spent, style = AmountStyles.small, hidden = hidden)
-                            Text(" of ", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-                            AmountText(s.limit, style = AmountStyles.small, hidden = hidden, color = SumvaloTheme.colors.subtleText)
-                            if (s.budget.rollover && s.carry != 0L) {
-                                Text(
-                                    if (s.carry > 0) " · +${if (hidden) "₹ ••••" else Money.format(s.carry, showPaise = false)} rolled over"
-                                    else " · −${if (hidden) "₹ ••••" else Money.format(-s.carry, showPaise = false)} carried",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = SumvaloTheme.colors.subtleText,
-                                )
-                            }
-                        }
-                    }
-                    Text(
-                        Fmt.pct(p.usedFraction * 100, 0),
-                        fontWeight = FontWeight.SemiBold,
-                        color = when {
-                            p.isExceeded -> SumvaloTheme.colors.alert
-                            p.willExceed -> SumvaloTheme.colors.warning
-                            else -> SumvaloTheme.colors.subtleText
-                        },
-                    )
-                }
-                Spacer(Modifier.height(10.dp))
-                BudgetProgressBar(s.spent, s.limit, projected = p.projected)
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    when {
-                        p.isExceeded -> "Over by ${if (hidden) "₹ ••••" else Money.format(-p.remaining, showPaise = false)}"
-                        p.willExceed -> "On pace for ${if (hidden) "₹ ••••" else Money.format(p.projected, showPaise = false)} · keep under ${
-                            if (hidden) "₹ ••••" else Money.format(p.dailyAllowance, showPaise = false)}/day"
-                        else -> "${if (hidden) "₹ ••••" else Money.format(p.remaining, showPaise = false)} left · ${
-                            if (hidden) "₹ ••••" else Money.format(p.dailyAllowance, showPaise = false)}/day"
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = SumvaloTheme.colors.subtleText,
+            item(key = s.budget.id.toString()) {
+                BudgetCard(
+                    s = s,
+                    p = p,
+                    hidden = hidden,
+                    dayFraction = dayFraction,
+                    barDp = if (s.isOverall) 8f else 6f,
+                    markerDp = 4f,
+                    onClick = { editing = s },
                 )
             }
         }
         item(key = "envelope-mode") {
-            SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 2.dp)) {
-                com.acuranza.app.ui.common.SwitchRow(
-                    "Envelope mode",
-                    "Assign this month's income to budgets until nothing is left over",
-                    state.envelopeMode,
-                    onEnvelopeMode,
-                )
-            }
+            EnvelopeToggle(state.envelopeMode, onEnvelopeMode)
         }
     }
+
+
     editing?.let { s ->
         EditBudgetSheet(
             s,
@@ -344,6 +559,43 @@ private fun BudgetsTab(
             onDelete(s)
             deleting = null
         }, onDismiss = { deleting = null }, destructive = true)
+    }
+}
+
+/** Envelope-mode toggle card at the bottom of the Budgets tab. */
+@Composable
+private fun EnvelopeToggle(on: Boolean, onToggle: (Boolean) -> Unit) {
+    val colors = SumvaloTheme.colors
+    SumvaloCard(contentPadding = PaddingValues(16.dp)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text("Envelope mode", style = planText(FontWeight.SemiBold, 14, 20), color = colors.ink)
+                Text(
+                    "Assign this month's income to budgets until nothing is left over",
+                    style = planText(FontWeight.Normal, 12, 16),
+                    color = colors.subtleText,
+                )
+            }
+            Spacer(Modifier.weight(1f))
+            Box(
+                Modifier
+                    .size(11.dp, 6.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(if (on) colors.ink else colors.fill)
+                    .clickable(role = Role.Button, onClick = { onToggle(!on) }),
+            ) {
+                Box(
+                    Modifier
+                        .size(5.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(if (on) Color.White else Color(0xFF8A8A8A))
+                        .offset(x = if (on) 6.dp else 0.dp),
+                )
+            }
+        }
     }
 }
 

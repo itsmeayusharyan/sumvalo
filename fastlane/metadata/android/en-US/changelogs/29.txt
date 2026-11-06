@@ -1,0 +1,3 @@
+Sumvalo 0.29
+
+- Budgets tab redesigned to the new reference — Budgets/Goals type-toggle pill, Chakra weekly cards with donut progress markers, per-budget pace bars with over-paced alert colors, and an envelope-mode card

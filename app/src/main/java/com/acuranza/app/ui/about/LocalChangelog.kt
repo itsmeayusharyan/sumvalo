@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.29",
+        name = "Sumvalo 0.29",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Budgets tab redesigned to the new reference — Budgets/Goals type-toggle pill, Chakra weekly cards with donut progress markers, per-budget pace bars with over-paced alert colors, and an envelope-mode card", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.28",
         name = "Sumvalo 0.28",
         publishedAt = "",
