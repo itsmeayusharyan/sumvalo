@@ -430,7 +430,7 @@ class ScreensScreenshotTest {
 
     @Test
     fun about() = paparazzi.snapshot {
-        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = false) {
             AboutContent(
                 onBack = {},
                 onPrivacy = {},

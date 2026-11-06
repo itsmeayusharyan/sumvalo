@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.28",
+        name = "Sumvalo 0.28",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("About page redesigned to the new reference — glowing logo, version pill, label-value build facts, icon-tile legal rows and a data-stays-footer", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.27",
         name = "Sumvalo 0.27",
         publishedAt = "",

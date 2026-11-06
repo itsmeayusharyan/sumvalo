@@ -1,0 +1,3 @@
+Sumvalo 0.28
+
+- About page redesigned to the new reference — glowing logo, version pill, label-value build facts, icon-tile legal rows and a data-stays-footer
