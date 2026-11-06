@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.26",
+        name = "Sumvalo 0.26",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Accounts redesigned to the new reference — net-balance hero with Bank/Cash/Cards split, section cards with hairline-separated rows, Overdrawn badge, limit-usage bars and a dashed add-account row", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.25",
         name = "Sumvalo 0.25",
         publishedAt = "",

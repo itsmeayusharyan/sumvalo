@@ -1,25 +1,32 @@
 package com.acuranza.app.ui.accounts
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Archive
@@ -42,10 +49,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
@@ -88,6 +103,8 @@ import com.acuranza.app.ui.common.label
 import com.acuranza.app.ui.home.TxnRow
 import com.acuranza.app.ui.nav.Routes
 import com.acuranza.app.model.TxnType
+import com.acuranza.app.util.Time
+import kotlin.math.roundToInt
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -138,49 +155,93 @@ fun AccountsScreen(nav: NavController) {
             )
             return@SumvaloScreen
         }
-        val pendingCount = list.count { it.isPending }
-        val groups = list.filter { it.counted }.groupBy {
-            when (it.account.type) {
-                AccountType.BANK -> "Bank accounts"
-                AccountType.CREDIT_CARD -> "Credit cards"
-                AccountType.CASH, AccountType.WALLET -> "Cash & wallets"
+        AccountsContent(
+            list = list,
+            ignored = ignored,
+            hidden = hidden,
+            modifier = Modifier.padding(padding),
+            onAccount = { nav.navigate(Routes.account(it)) },
+            onAdd = { nav.navigate(Routes.editAccount()) },
+            onPending = { nav.navigate(Routes.PENDING_ACCOUNTS) },
+            onRestore = { vm.restore(it) },
+        )
+    }
+}
+
+/** Stateless Accounts list; used by the app and by screenshot tests. */
+@Composable
+fun AccountsContent(
+    list: List<AccountWithBalance>,
+    ignored: List<IgnoredAccount>,
+    hidden: Boolean,
+    modifier: Modifier = Modifier,
+    onAccount: (Long) -> Unit = {},
+    onAdd: () -> Unit = {},
+    onPending: () -> Unit = {},
+    onRestore: (Long) -> Unit = {},
+) {
+    val pendingCount = list.count { it.isPending }
+    val groups = list.filter { it.counted }.groupBy {
+        when (it.account.type) {
+            AccountType.BANK -> "Bank accounts"
+            AccountType.CREDIT_CARD -> "Credit cards"
+            AccountType.CASH, AccountType.WALLET -> "Cash & wallets"
+        }
+    }
+    LazyColumn(modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp, 8.dp, 16.dp, 40.dp)) {
+        if (pendingCount > 0) {
+            item(key = "pending") {
+                PendingAccountsBanner(pendingCount, onPending, Modifier.padding(bottom = 8.dp))
             }
         }
-        LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = PaddingValues(16.dp, 0.dp, 16.dp, 40.dp)) {
-            if (pendingCount > 0) {
-                item(key = "pending") {
-                    PendingAccountsBanner(pendingCount, { nav.navigate(Routes.PENDING_ACCOUNTS) }, Modifier.padding(vertical = 8.dp))
+        item(key = "net-balance") {
+            NetBalanceCard(
+                bank = groups["Bank accounts"].orEmpty().sumOf { it.balance },
+                cash = groups["Cash & wallets"].orEmpty().sumOf { it.balance },
+                cardsOutstanding = groups["Credit cards"].orEmpty().sumOf { it.outstanding },
+                hidden = hidden,
+            )
+        }
+        listOf("Bank accounts", "Credit cards", "Cash & wallets").forEach { title ->
+            val items = groups[title].orEmpty()
+            if (items.isNotEmpty()) {
+                item(key = title) {
+                    val total = if (title == "Credit cards") -items.sumOf { it.outstanding } else items.sumOf { it.balance }
+                    DateHeader(
+                        title,
+                        netPaise = total,
+                        hidden = hidden,
+                        netColor = if (title == "Credit cards") SumvaloTheme.colors.alert else SumvaloTheme.colors.subtleText,
+                    )
                 }
-            }
-            listOf("Bank accounts", "Credit cards", "Cash & wallets").forEach { title ->
-                val items = groups[title].orEmpty()
-                if (items.isNotEmpty()) {
-                    item(key = title) {
-                        val total = if (title == "Credit cards") -items.sumOf { it.outstanding } else items.sumOf { it.balance }
-                        DateHeader(title, netPaise = total, hidden = hidden)
+                item(key = title + "-card") {
+                    // One bordered card per section, rows hairline-separated inside it.
+                    SumvaloCard(contentPadding = PaddingValues(0.dp)) {
+                        items.forEachIndexed { i, a ->
+                            AccountRowFlat(a, hidden) { onAccount(a.id) }
+                            if (i < items.lastIndex) {
+                                Box(Modifier.fillMaxWidth().height(1.dp).background(SumvaloTheme.colors.divider))
+                            }
+                        }
                     }
-                    items(items, key = { it.id }) { a -> AccountListRow(a, hidden) { nav.navigate(Routes.account(a.id)) } }
                 }
             }
-            if (ignored.isNotEmpty()) {
-                item(key = "ignored") {
-                    Column(Modifier.padding(top = 20.dp, bottom = 4.dp)) {
-                        Text("Ignored · not counted", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
-                        Text(
-                            "Sumvalo still reads their SMS but leaves them out of spending, balances and net worth.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SumvaloTheme.colors.subtleText,
-                        )
-                    }
-                }
-                items(ignored, key = { "ignored-${it.account.id}" }) { ig -> IgnoredAccountRow(ig) { vm.restore(ig.account.id) } }
-            }
-            item(key = "add") {
-                Row(Modifier.padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedButton(onClick = { nav.navigate(Routes.editAccount()) }, modifier = Modifier.weight(1f)) { Text("Add bank / cash") }
-                    OutlinedButton(onClick = { nav.navigate(Routes.editAccount(card = true)) }, modifier = Modifier.weight(1f)) { Text("Add credit card") }
+        }
+        if (ignored.isNotEmpty()) {
+            item(key = "ignored") {
+                Column(Modifier.padding(top = 20.dp, bottom = 4.dp)) {
+                    Text("Ignored · not counted", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "Sumvalo still reads their SMS but leaves them out of spending, balances and net worth.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = SumvaloTheme.colors.subtleText,
+                    )
                 }
             }
+            items(ignored, key = { "ignored-${it.account.id}" }) { ig -> IgnoredAccountRow(ig, onRestore = { onRestore(ig.account.id) }) }
+        }
+        item(key = "add") {
+            AddAccountRow(Modifier.padding(top = 16.dp), onClick = onAdd)
         }
     }
 }
@@ -215,37 +276,184 @@ private fun IgnoredAccountRow(ig: IgnoredAccount, onRestore: () -> Unit) {
     }
 }
 
+/** Chakra-flavoured text style, matching the home/activity voice. */
+private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = com.acuranza.app.ui.home.Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
+/**
+ * The reference's net-balance hero: total across every counted account, a Bank/Cash/Cards split
+ * bar, and the three totals beside it — card debt in the coral role, as in the design.
+ */
 @Composable
-fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
-    SumvaloCard(Modifier.padding(vertical = 5.dp), onClick = onClick, contentPadding = PaddingValues(14.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            BankBadge(a.bank, size = 40.dp)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(a.account.name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(
-                    buildString {
-                        append(a.account.type.label())
-                        a.account.last4?.let { append(" ••$it") }
-                        if (a.account.autoCreated) append(" · from SMS")
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = SumvaloTheme.colors.subtleText,
-                )
+private fun NetBalanceCard(bank: Long, cash: Long, cardsOutstanding: Long, hidden: Boolean) {
+    val colors = SumvaloTheme.colors
+    val net = bank + cash - cardsOutstanding
+    val total = bank + cash + cardsOutstanding
+    SumvaloCard(contentPadding = PaddingValues(16.dp)) {
+        Text("Net balance", style = chakraText(FontWeight.Medium, 13, 18), color = colors.subtleText)
+        Spacer(Modifier.height(2.dp))
+        AmountText(net, style = chakraText(FontWeight.Bold, 30, 36), hidden = hidden)
+        Spacer(Modifier.height(14.dp))
+        if (total > 0) {
+            Row(Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(50))) {
+                val weight = { v: Long -> ((v.toFloat() / total) * 100f).coerceAtLeast(1f) }
+                Box(Modifier.weight(weight(bank)).fillMaxHeight().background(colors.ink))
+                Box(Modifier.weight(weight(cash)).fillMaxHeight().background(colors.tertiaryText))
+                Box(Modifier.weight(weight(cardsOutstanding)).fillMaxHeight().background(colors.alert))
             }
-            Column(horizontalAlignment = Alignment.End) {
-                if (a.isCard) {
-                    AmountText(a.outstanding, style = AmountStyles.medium, hidden = hidden)
-                    Text("outstanding", style = MaterialTheme.typography.labelSmall, color = SumvaloTheme.colors.subtleText)
-                } else {
-                    AmountText(a.balance, style = AmountStyles.medium, hidden = hidden)
+            Spacer(Modifier.height(14.dp))
+        }
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            AccountSplitColumn("Bank", bank, colors.ink, Color.Unspecified, hidden, Modifier.weight(1f))
+            Box(Modifier.width(1.dp).fillMaxHeight().background(colors.hairline))
+            AccountSplitColumn("Cash", cash, colors.tertiaryText, Color.Unspecified, hidden, Modifier.weight(1f).padding(start = 12.dp))
+            Box(Modifier.width(1.dp).fillMaxHeight().background(colors.hairline))
+            AccountSplitColumn("Cards", -cardsOutstanding, colors.alert, colors.alert, hidden, Modifier.weight(1f).padding(start = 12.dp))
+        }
+    }
+}
+
+@Composable
+private fun AccountSplitColumn(label: String, value: Long, dot: Color, valueColor: Color, hidden: Boolean, modifier: Modifier = Modifier) {
+    Column(modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(8.dp).clip(CircleShape).background(dot))
+            Spacer(Modifier.width(6.dp))
+            Text(label, style = chakraText(FontWeight.Medium, 12, 16), color = SumvaloTheme.colors.tertiaryText)
+        }
+        Spacer(Modifier.height(2.dp))
+        AmountText(value, style = chakraText(FontWeight.SemiBold, 14, 20), hidden = hidden, color = valueColor)
+    }
+}
+
+/**
+ * One account row inside its section card: badge tile, name with type/last4, and the balance —
+ * coral with an "Overdrawn" pill when a bank account went negative, or the outstanding figure
+ * with its limit-usage bar for cards.
+ */
+@Composable
+private fun AccountRowFlat(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        BankBadge(a.bank, size = 40.dp)
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Text(
+                a.account.name,
+                style = chakraText(FontWeight.SemiBold, 15, 20),
+                color = colors.ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                buildString {
+                    append(a.account.type.label())
+                    a.account.last4?.let { append(" ··$it") }
+                    if (a.account.autoCreated) append(" · from SMS")
+                },
+                style = chakraText(FontWeight.Normal, 13, 18),
+                color = colors.subtleText,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            if (a.isCard) {
+                AmountText(a.outstanding, style = chakraText(FontWeight.Bold, 15, 22), hidden = hidden)
+                Text("outstanding", style = chakraText(FontWeight.Normal, 12, 16), color = colors.tertiaryText)
+            } else {
+                val overdrawn = a.balance < 0
+                AmountText(
+                    a.balance,
+                    style = chakraText(FontWeight.Bold, 15, 22),
+                    hidden = hidden,
+                    color = if (overdrawn) colors.alert else Color.Unspecified,
+                )
+                if (overdrawn && !hidden) {
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "Overdrawn",
+                        style = chakraText(FontWeight.SemiBold, 11, 16),
+                        color = colors.alert,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(colors.alert.copy(alpha = 0.15f))
+                            .padding(horizontal = 6.dp),
+                    )
                 }
             }
         }
-        a.utilisation?.let {
-            Spacer(Modifier.height(10.dp))
-            ThinProgressBar(it.toFloat().coerceIn(0f, 1f), color = if (it > 0.3) SumvaloTheme.colors.warning else SumvaloTheme.colors.good)
+    }
+    a.utilisation?.let { util ->
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(start = 52.dp, end = 16.dp)
+                .padding(bottom = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(Modifier.weight(1f).height(4.dp).clip(RoundedCornerShape(50)).background(colors.fill)) {
+                Box(
+                    Modifier
+                        .fillMaxWidth(util.toFloat().coerceIn(0.02f, 1f))
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(50))
+                        .background(if (util > 0.3) colors.warning else colors.good),
+                )
+            }
+            Text(
+                "${(util * 100).roundToInt()}% of limit used",
+                style = chakraText(FontWeight.Medium, 11, 14),
+                color = colors.tertiaryText,
+                maxLines = 1,
+            )
         }
+    }
+}
+
+/** The reference's dashed add-account row; the edit form's type picker covers card/cash/wallet. */
+@Composable
+private fun AddAccountRow(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    val colors = SumvaloTheme.colors
+    Row(
+        modifier
+            .fillMaxWidth()
+            .drawBehind {
+                drawRoundRect(
+                    color = colors.hairline,
+                    style = Stroke(
+                        width = 1.dp.toPx(),
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.dp.toPx(), 6.dp.toPx())),
+                    ),
+                    cornerRadius = CornerRadius(16.dp.toPx()),
+                )
+            }
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(colors.fill),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(Icons.Outlined.Add, contentDescription = null, tint = colors.ink, modifier = Modifier.size(20.dp))
+        }
+        Column(Modifier.weight(1f)) {
+            Text("Add account", style = chakraText(FontWeight.SemiBold, 15, 20), color = colors.ink)
+            Text("Bank, card, cash or wallet", style = chakraText(FontWeight.Normal, 13, 18), color = colors.tertiaryText)
+        }
+        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = colors.tertiaryText, modifier = Modifier.size(18.dp))
     }
 }
 

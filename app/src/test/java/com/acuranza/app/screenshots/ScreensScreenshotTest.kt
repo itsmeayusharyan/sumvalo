@@ -249,6 +249,26 @@ class ScreensScreenshotTest {
         }
     }
 
+    /** The redesigned Accounts list at natural height, including an overdrawn bank row. */
+    @Test
+    fun accounts() = paparazzi.snapshot {
+        com.acuranza.app.designsystem.theme.SumvaloTheme(darkTheme = true) {
+            androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalInspectionMode provides true) {
+                Column(Modifier.background(MaterialTheme.colorScheme.background)) {
+                    val overdrawn = FakeData.accounts.first().copy(
+                        account = FakeData.hdfc.copy(id = 9, name = "HDFC Zero"),
+                        balance = -1_248_500L,
+                    )
+                    com.acuranza.app.ui.accounts.AccountsContent(
+                        list = listOf(overdrawn) + FakeData.accounts,
+                        ignored = emptyList(),
+                        hidden = false,
+                    )
+                }
+            }
+        }
+    }
+
     @Test
     fun activity() = paparazzi.snapshot {
         val groups = FakeData.recent.groupBy { it.date }.map { (d, items) -> DayGroup(d, items, items.sumOf { it.signedAmount }) }

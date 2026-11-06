@@ -154,6 +154,7 @@ fun DateHeader(
     modifier: Modifier = Modifier,
     netPaise: Paise? = null,
     hidden: Boolean = false,
+    netColor: Color = SumvaloTheme.colors.subtleText,
 ) {
     Row(
         modifier = modifier
@@ -172,7 +173,7 @@ fun DateHeader(
                 paise = netPaise,
                 style = AmountStyles.small,
                 hidden = hidden,
-                color = SumvaloTheme.colors.subtleText,
+                color = netColor,
             )
         }
     }

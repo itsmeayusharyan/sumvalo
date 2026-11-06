@@ -1,0 +1,3 @@
+Sumvalo 0.26
+
+- Accounts redesigned to the new reference — net-balance hero with Bank/Cash/Cards split, section cards with hairline-separated rows, Overdrawn badge, limit-usage bars and a dashed add-account row
