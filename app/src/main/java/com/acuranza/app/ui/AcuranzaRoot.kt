@@ -1,5 +1,12 @@
 package com.acuranza.app.ui
 
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.Role
+import com.acuranza.app.R
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.width
@@ -301,6 +308,15 @@ private fun Splash() {
     }
 }
 
+/** Chakra Petch text styles for the redesigned lock screen. */
+private val LockChakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+private fun lockText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
+    TextStyle(fontFamily = LockChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+
 @Composable
 private fun LockScreen(onUnlocked: () -> Unit) {
     val context = LocalContext.current
@@ -330,22 +346,16 @@ private fun LockScreen(onUnlocked: () -> Unit) {
     }
     // With an app PIN set the PIN pad shows first, so a decoy PIN can be entered without a prompt in the way.
     LaunchedEffect(toolsPrefs?.pinSet) { if (toolsPrefs?.pinSet == false) unlock() }
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { },
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            SumvaloLogo(size = 72.dp, shape = LogoShape.RoundedSquare)
-            Text("Sumvalo is locked", style = MaterialTheme.typography.titleLarge, color = SumvaloThemeObject.colors.ink)
-            message?.let { Text(it, color = SumvaloThemeObject.colors.subtleText, style = MaterialTheme.typography.bodyMedium) }
-            Spacer(Modifier.height(8.dp))
-            val pinPrefs = toolsPrefs
-            if (pinPrefs?.pinSet == true) {
+    val prefs = toolsPrefs
+    LockContent(
+        available = available,
+        pinSet = prefs?.pinSet == true,
+        message = message,
+        onUnlock = unlock,
+        pinPad = if (prefs?.pinSet == true) {
+            {
                 com.acuranza.app.ui.tools.PinLockPad(
-                    prefs = pinPrefs,
+                    prefs = prefs,
                     onMatch = { match ->
                         scope.launch {
                             if (match == com.acuranza.app.security.PinMatch.DECOY) {
@@ -358,18 +368,130 @@ private fun LockScreen(onUnlocked: () -> Unit) {
                     },
                     onBiometric = if (available) unlock else null,
                 )
-            } else {
-                PrimaryButton(text = "Unlock", onClick = unlock, icon = Icons.Outlined.Fingerprint, modifier = Modifier.padding(horizontal = 48.dp).fillMaxWidth())
             }
-            if (!available && pinPrefs?.pinSet != true) {
-                androidx.compose.material3.TextButton(onClick = {
-                    runCatching {
-                        context.startActivity(
-                            android.content.Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS)
-                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
-                        )
+        } else null,
+    )
+}
+
+/** Stateless lock screen UI (logo tile, promise, sensor affordance, unlock actions); used by the app and screenshot tests. */
+@Composable
+internal fun LockContent(
+    available: Boolean,
+    pinSet: Boolean,
+    message: String?,
+    onUnlock: () -> Unit,
+    pinPad: (@Composable () -> Unit)? = null,
+) {
+    val colors = SumvaloThemeObject.colors
+    val context = LocalContext.current
+    Box(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { },
+    ) {
+        Column(Modifier.fillMaxSize()) {
+            // Hero: logo tile, title and promise, centered in the space above the unlock actions.
+            Column(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Box(
+                    Modifier
+                        .size(88.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .border(1.dp, colors.hairline, RoundedCornerShape(24.dp))
+                        .background(colors.cardSurface),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    SumvaloLogo(size = 56.dp, shape = LogoShape.RoundedSquare)
+                }
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    "Sumvalo is locked",
+                    style = lockText(FontWeight.Bold, 26, 32, -0.26f),
+                    color = colors.ink,
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Your data stays on this device. Unlock to continue.",
+                    style = lockText(FontWeight.Normal, 14, 20),
+                    color = colors.subtleText,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.widthIn(max = 260.dp),
+                )
+                message?.let {
+                    Spacer(Modifier.height(12.dp))
+                    Text(
+                        it,
+                        style = lockText(FontWeight.Normal, 14, 20),
+                        color = colors.subtleText,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp),
+                    )
+                }
+            }
+            // Actions: the PIN pad when set (a decoy PIN must be enterable without a prompt in the way),
+            // otherwise the sensor affordance and the Unlock pill. Fail closed without a screen lock.
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .navigationBarsPadding()
+                    .padding(bottom = 32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp),
+            ) {
+                if (pinPad != null) {
+                    pinPad()
+                } else {
+                    if (available) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Box(
+                                Modifier
+                                    .size(72.dp)
+                                    .clip(CircleShape)
+                                    .border(1.dp, colors.hairline, CircleShape)
+                                    .background(colors.cardSurface)
+                                    .clickable(role = Role.Button, onClick = onUnlock),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Icon(
+                                    Icons.Outlined.Fingerprint,
+                                    contentDescription = "Unlock with biometrics",
+                                    tint = colors.ink,
+                                    modifier = Modifier.size(34.dp),
+                                )
+                            }
+                            Text(
+                                "TOUCH THE SENSOR",
+                                style = lockText(FontWeight.Medium, 12, 16, 0.96f),
+                                color = colors.subtleText,
+                            )
+                        }
                     }
-                }) { Text("Open security settings") }
+                    PrimaryButton(text = "Unlock", onClick = onUnlock, icon = Icons.Outlined.Fingerprint, modifier = Modifier.fillMaxWidth())
+                    if (available) {
+                        androidx.compose.material3.TextButton(onClick = onUnlock) {
+                            Text("Use device PIN instead", style = lockText(FontWeight.Medium, 13, 18), color = colors.subtleText)
+                        }
+                    }
+                }
+                if (!available && !pinSet) {
+                    androidx.compose.material3.TextButton(onClick = {
+                        runCatching {
+                            context.startActivity(
+                                android.content.Intent(android.provider.Settings.ACTION_SECURITY_SETTINGS)
+                                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                            )
+                        }
+                    }) { Text("Open security settings") }
+                }
             }
         }
     }

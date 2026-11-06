@@ -1,0 +1,3 @@
+Sumvalo 0.32
+
+- App lock screen redesigned to the new reference — bordered logo tile, the data-stays promise, a fingerprint sensor affordance, an Unlock pill and a device-PIN fallback; PIN pad and decoy-PIN unlock behave exactly as before

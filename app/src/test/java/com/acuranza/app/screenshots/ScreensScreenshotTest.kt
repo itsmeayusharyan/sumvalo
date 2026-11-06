@@ -348,6 +348,18 @@ class ScreensScreenshotTest {
     fun plan_goals() = paparazzi.snapshot { Frame { PlanningContent(planState(), tab = 1) } }
 
     @Test
+    fun lock_screen() = paparazzi.snapshot {
+        Frame {
+            com.acuranza.app.ui.LockContent(
+                available = true,
+                pinSet = false,
+                message = null,
+                onUnlock = {},
+            )
+        }
+    }
+
+    @Test
     fun recurring() = paparazzi.snapshot {
         Frame {
             val series = listOf(

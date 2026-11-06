@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.32",
+        name = "Sumvalo 0.32",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("App lock screen redesigned to the new reference — bordered logo tile, the data-stays promise, a fingerprint sensor affordance, an Unlock pill and a device-PIN fallback; PIN pad and decoy-PIN unlock behave exactly as before", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.31",
         name = "Sumvalo 0.31",
         publishedAt = "",
