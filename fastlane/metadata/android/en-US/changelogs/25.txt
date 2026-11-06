@@ -1,0 +1,3 @@
+Sumvalo 0.25
+
+- Activity redesigned to the new reference — compact month switcher, tracking-caps totals, 40dp search, All/Expenses/Income/Transfers segmented filter with a more-filters sheet, and inset hairlines between a day's rows

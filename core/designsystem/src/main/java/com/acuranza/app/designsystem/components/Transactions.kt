@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.theme.AmountStyles
+import com.acuranza.app.designsystem.theme.SumvaloText
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.designsystem.theme.Motion
 import com.acuranza.app.model.Paise
@@ -157,13 +158,13 @@ fun DateHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 20.dp, bottom = 8.dp, start = 4.dp, end = 4.dp),
+            .padding(top = 20.dp, bottom = 6.dp, start = 4.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             label.uppercase(),
-            style = MaterialTheme.typography.labelMedium,
-            color = SumvaloTheme.colors.subtleText,
+            style = SumvaloText.sectionLabel,
+            color = SumvaloTheme.colors.tertiaryText,
             modifier = Modifier.weight(1f),
         )
         if (netPaise != null) {

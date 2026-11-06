@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.25",
+        name = "Sumvalo 0.25",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Activity redesigned to the new reference — compact month switcher, tracking-caps totals, 40dp search, All/Expenses/Income/Transfers segmented filter with a more-filters sheet, and inset hairlines between a day's rows", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.24",
         name = "Sumvalo 0.24",
         publishedAt = "",
