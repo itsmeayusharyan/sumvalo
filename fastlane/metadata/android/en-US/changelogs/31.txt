@@ -1,0 +1,3 @@
+Sumvalo 0.31
+
+- Recurring payments redesigned to the new reference — monthly-cost hero card, the next 30 days in one grouped card, your schedules with reminder-only and paused states, and spotted subscriptions with price-change, AutoPay and Stopped? pills

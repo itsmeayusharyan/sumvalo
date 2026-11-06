@@ -348,6 +348,49 @@ class ScreensScreenshotTest {
     fun plan_goals() = paparazzi.snapshot { Frame { PlanningContent(planState(), tab = 1) } }
 
     @Test
+    fun recurring() = paparazzi.snapshot {
+        Frame {
+            val series = listOf(
+                com.acuranza.app.finance.Recurring.Series(
+                    key = "myntra:WEEKLY", merchant = "Myntra", category = "shopping",
+                    cadence = com.acuranza.app.finance.Recurring.Cadence.WEEKLY,
+                    occurrences = 3, lastDate = today.minusDays(9), nextDate = today.minusDays(2),
+                    lastAmount = 937_00, previousAmount = 2_756_00, typicalAmount = 2_756_00,
+                    monthlyEquivalent = 4_060_00, priceChangePct = -66.0, autoDebit = false, overdue = true,
+                ),
+                com.acuranza.app.finance.Recurring.Series(
+                    key = "ppfcf:MONTHLY", merchant = "SIP - Parag Parikh Flexi Cap", category = "investment",
+                    cadence = com.acuranza.app.finance.Recurring.Cadence.MONTHLY,
+                    occurrences = 4, lastDate = today.minusDays(16), nextDate = today.plusDays(14),
+                    lastAmount = 12_500_00, previousAmount = 12_500_00, typicalAmount = 12_500_00,
+                    monthlyEquivalent = 12_500_00, priceChangePct = null, autoDebit = true, overdue = false,
+                ),
+            )
+            val rules = listOf(
+                com.acuranza.app.data.RecurringRuleEntity(
+                    id = 1, name = "Rent - Landlord", type = com.acuranza.app.model.TxnType.EXPENSE,
+                    amount = 32_000_00, categoryKey = "rent", accountId = 1,
+                    cadence = "MONTHLY", anchorDay = today.toEpochDay(), nextDay = today.plusDays(1).toEpochDay(),
+                ),
+                com.acuranza.app.data.RecurringRuleEntity(
+                    id = 2, name = "Pocket money", type = com.acuranza.app.model.TxnType.INCOME,
+                    amount = 5_000_00, categoryKey = "other", accountId = 1,
+                    cadence = "MONTHLY", anchorDay = today.toEpochDay(), nextDay = today.plusDays(5).toEpochDay(), autoAdd = false,
+                ),
+            )
+            val upcoming = listOf(
+                com.acuranza.app.finance.BudgetMath.Due(today.plusDays(1), 32_000_00, "Rent - Landlord"),
+                com.acuranza.app.finance.BudgetMath.Due(today.plusDays(3), 649_00, "Netflix"),
+                com.acuranza.app.finance.BudgetMath.Due(today.plusDays(14), 12_500_00, "SIP - Parag Parikh Flexi Cap"),
+            )
+            com.acuranza.app.ui.features.RecurringContent(
+                series = series, rules = rules, upcoming = upcoming,
+                hiddenKeys = emptySet(), hidden = false, today = today,
+            )
+        }
+    }
+
+    @Test
     fun card_bills() = paparazzi.snapshot {
         Frame {
             BillsContent(

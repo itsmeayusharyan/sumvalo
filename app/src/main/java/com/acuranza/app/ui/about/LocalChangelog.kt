@@ -21,6 +21,17 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.31",
+        name = "Sumvalo 0.31",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Recurring payments redesigned to the new reference — monthly-cost hero card, the next 30 days in one grouped card, your schedules with reminder-only and paused states, and spotted subscriptions with price-change, AutoPay and Stopped? pills", ChangeCategory.ADDED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.30",
         name = "Sumvalo 0.30",
         publishedAt = "",

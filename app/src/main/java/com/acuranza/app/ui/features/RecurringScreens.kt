@@ -1,5 +1,26 @@
 package com.acuranza.app.ui.features
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.outlined.ArrowDownward
+import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Autorenew
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import com.acuranza.app.R
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -46,7 +67,6 @@ import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.PrimaryButton
 import com.acuranza.app.designsystem.components.SectionHeader
 import com.acuranza.app.designsystem.components.SegmentedTabs
-import com.acuranza.app.designsystem.theme.AmountStyles
 import com.acuranza.app.designsystem.theme.SumvaloTheme
 import com.acuranza.app.finance.BudgetMath
 import com.acuranza.app.finance.Recurring
@@ -62,7 +82,6 @@ import com.acuranza.app.ui.common.rememberHaptic
 import com.acuranza.app.ui.common.SumvaloTextField
 import com.acuranza.app.ui.common.LocalContainer
 import com.acuranza.app.ui.common.LocalHideAmounts
-import com.acuranza.app.ui.common.Pill
 import com.acuranza.app.ui.common.SwitchRow
 import com.acuranza.app.ui.common.label
 import com.acuranza.app.ui.nav.Routes
@@ -81,6 +100,16 @@ fun Recurring.Cadence.title(): String = when (this) {
 
 private fun cadenceOf(name: String) = runCatching { Recurring.Cadence.valueOf(name) }.getOrDefault(Recurring.Cadence.MONTHLY)
 
+/** Chakra Petch text styles for the redesigned recurring cards. */
+private val RecurringChakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
+
+private fun chakra(weight: FontWeight, size: Int, lineHeight: Int = size + 4): TextStyle =
+    TextStyle(fontFamily = RecurringChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp)
+
 /** Subscriptions, EMIs and UPI AutoPay mandates found in spending, the user's own schedules, and what's due soon. */
 @Composable
 fun RecurringScreen(nav: NavController) {
@@ -94,7 +123,6 @@ fun RecurringScreen(nav: NavController) {
     val rules by remember { c.recurring.observeRules() }.collectAsState(initial = emptyList())
     val features by remember { c.featurePrefs.settings }.collectAsState(initial = null)
     var upcoming by remember { mutableStateOf<List<BudgetMath.Due>>(emptyList()) }
-    var showHidden by remember { mutableStateOf(false) }
     LaunchedEffect(detected, rules) {
         upcoming = runCatching { c.recurring.upcoming(today, today.plusDays(31)) }.getOrDefault(emptyList())
     }
@@ -110,111 +138,199 @@ fun RecurringScreen(nav: NavController) {
             )
         },
     ) { pad ->
-        val series = detected
-        LazyColumn(
-            Modifier.fillMaxSize().padding(pad),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            item {
-                val monthly = (series.orEmpty().filter { !it.overdue }.sumOf { it.monthlyEquivalent }) +
-                    rules.filter { it.active && it.type == TxnType.EXPENSE }.sumOf { monthlyOf(it) }
-                SumvaloCard {
-                    Text("Repeating payments cost about", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
-                    Row(verticalAlignment = Alignment.Bottom) {
-                        AmountText(monthly, style = AmountStyles.large, hidden = hidden)
-                        Text(" a month", style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
+        RecurringContent(
+            series = detected,
+            rules = rules,
+            upcoming = upcoming,
+            hiddenKeys = features?.hiddenRecurring.orEmpty(),
+            hidden = hidden,
+            today = today,
+            contentPadding = pad,
+            onEditRule = { nav.navigate(Routes.editRecurring(it)) },
+            onNewSchedule = { nav.navigate(Routes.editRecurring()) },
+            onScheduleSeries = { nav.navigate(Routes.editRecurring(fromSeries = it)) },
+            onHideSeries = { scope.launch { c.recurring.setHidden(it, true) } },
+            onShowSeries = { scope.launch { c.recurring.setHidden(it, false) } },
+        )
+    }
+}
+
+/** Stateless recurring body (hero, next 30 days, schedules, spotted series); used by the app and screenshot tests. */
+@Composable
+fun RecurringContent(
+    series: List<Recurring.Series>?,
+    rules: List<RecurringRuleEntity>,
+    upcoming: List<BudgetMath.Due>,
+    hiddenKeys: Set<String>,
+    hidden: Boolean,
+    today: LocalDate,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    onEditRule: (Long) -> Unit = {},
+    onNewSchedule: () -> Unit = {},
+    onScheduleSeries: (String) -> Unit = {},
+    onHideSeries: (String) -> Unit = {},
+    onShowSeries: (String) -> Unit = {},
+) {
+    val colors = SumvaloTheme.colors
+    var showHidden by remember { mutableStateOf(false) }
+    LazyColumn(
+        Modifier.fillMaxSize().padding(contentPadding),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        item {
+            val monthly = (series.orEmpty().filter { !it.overdue }.sumOf { it.monthlyEquivalent }) +
+                rules.filter { it.active && it.type == TxnType.EXPENSE }.sumOf { monthlyOf(it) }
+            SumvaloCard(contentPadding = PaddingValues(16.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Repeating payments cost about", style = chakra(FontWeight.Medium, 13, 18), color = colors.subtleText)
+                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AmountText(monthly, style = chakra(FontWeight.Bold, 34, 38), hidden = hidden)
+                        Text(
+                            "a month",
+                            style = chakra(FontWeight.Medium, 14, 24),
+                            color = colors.subtleText,
+                            modifier = Modifier.padding(bottom = 4.dp),
+                        )
                     }
                     val mandates = series.orEmpty().count { it.autoDebit }
                     if (mandates > 0) {
-                        Spacer(Modifier.height(6.dp))
+                        Box(Modifier.fillMaxWidth().height(1.dp).background(colors.cardSurfaceHigh))
                         Text(
-                            "$mandates paid by auto-debit (UPI AutoPay, NACH or standing instruction). Cancel unused mandates in your UPI app or bank.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = SumvaloTheme.colors.subtleText,
+                            "$mandates paid by auto-debit (UPI AutoPay, NACH or standing instruction). " +
+                                "Cancel unused mandates in your UPI app or bank.",
+                            style = chakra(FontWeight.Normal, 12, 17),
+                            color = colors.subtleText,
                         )
                     }
                 }
             }
-            item { SectionHeader("Next 30 days") }
+        }
+        item { SectionHeader("Next 30 days") }
+        item {
             if (upcoming.isEmpty()) {
-                item { Text("Nothing expected.", color = SumvaloTheme.colors.subtleText) }
+                Text("Nothing expected.", style = chakra(FontWeight.Medium, 12, 16), color = colors.subtleText)
             } else {
-                items(upcoming.take(30)) { d ->
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(d.label, style = MaterialTheme.typography.bodyLarge)
-                            val days = ChronoUnit.DAYS.between(today, d.date)
-                            Text(
-                                if (days == 0L) "Today" else if (days == 1L) "Tomorrow" else Fmt.dayLabel(d.date, today),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = SumvaloTheme.colors.subtleText,
-                            )
-                        }
-                        AmountText(d.amount, style = AmountStyles.medium, hidden = hidden)
-                    }
-                }
-            }
-
-            item { Spacer(Modifier.height(4.dp)); SectionHeader("Scheduled by you") }
-            if (rules.isEmpty()) {
-                item {
-                    Text(
-                        "Schedule rent, SIPs, EMIs or pocket money and Sumvalo adds them on their dates.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = SumvaloTheme.colors.subtleText,
-                    )
-                }
-            }
-            items(rules, key = { "r${it.id}" }) { r ->
-                SumvaloCard(onClick = { nav.navigate(Routes.editRecurring(r.id)) }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text(r.name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                            Text(
-                                "${cadenceOf(r.cadence).title()} · next ${Fmt.date(LocalDate.ofEpochDay(r.nextDay))}" +
-                                    if (!r.active) " · paused" else if (!r.autoAdd) " · reminder only" else "",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = SumvaloTheme.colors.subtleText,
-                            )
-                        }
-                        AmountText(r.amount, style = AmountStyles.medium, type = r.type, hidden = hidden)
-                    }
-                }
-            }
-
-            item { Spacer(Modifier.height(4.dp)); SectionHeader("Spotted in your spending") }
-            when {
-                series == null -> item { Text("Looking…", color = SumvaloTheme.colors.subtleText) }
-                series.isEmpty() -> item {
-                    EmptyState(
-                        "No repeats yet",
-                        "Subscriptions and EMIs show up here once Sumvalo has seen them a few times.",
-                    )
-                }
-                else -> items(series, key = { "s${it.key}" }) { s ->
-                    SeriesCard(s, hidden, today,
-                        onHide = { scope.launch { c.recurring.setHidden(s.key, true) } },
-                        onSchedule = { nav.navigate(Routes.editRecurring(fromSeries = s.key)) })
-                }
-            }
-            val hiddenKeys = features?.hiddenRecurring.orEmpty()
-            if (hiddenKeys.isNotEmpty()) {
-                item {
-                    TextButton(onClick = { showHidden = !showHidden }) {
-                        Text(if (showHidden) "Hide the list" else "Not recurring (${hiddenKeys.size})")
-                    }
-                }
-                if (showHidden) {
-                    items(hiddenKeys.sorted()) { key ->
-                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            Text(key.substringBefore(':').replaceFirstChar { it.uppercase() }, Modifier.weight(1f))
-                            TextButton(onClick = { scope.launch { c.recurring.setHidden(key, false) } }) { Text("Show again") }
-                        }
+                val rows = upcoming.take(30)
+                SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+                    rows.forEachIndexed { i, d ->
+                        RecurringRow(
+                            title = d.label,
+                            subtitle = run {
+                                val days = ChronoUnit.DAYS.between(today, d.date)
+                                if (days == 0L) "Today" else if (days == 1L) "Tomorrow" else Fmt.dayLabel(d.date, today)
+                            },
+                            amount = d.amount,
+                            hidden = hidden,
+                        )
+                        if (i < rows.lastIndex) Box(Modifier.fillMaxWidth().height(1.dp).background(colors.cardSurfaceHigh))
                     }
                 }
             }
         }
+        item { SectionHeader("Scheduled by you") }
+        if (rules.isEmpty()) {
+            item {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .border(1.dp, colors.hairline, RoundedCornerShape(20.dp))
+                        .padding(horizontal = 20.dp, vertical = 20.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(
+                            Modifier
+                                .size(36.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(colors.fill),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(Icons.Outlined.CalendarMonth, contentDescription = null, tint = colors.subtleText, modifier = Modifier.size(18.dp))
+                        }
+                        Text(
+                            "Schedule rent, SIPs, EMIs or pocket money and Sumvalo adds them on their dates.",
+                            style = chakra(FontWeight.Medium, 13, 19),
+                            color = colors.subtleText,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            }
+        } else {
+            item {
+                SumvaloCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
+                    rules.forEachIndexed { i, r ->
+                        RecurringRow(
+                            title = r.name,
+                            subtitle = "${cadenceOf(r.cadence).title()} · next ${Fmt.date(LocalDate.ofEpochDay(r.nextDay))}" +
+                                if (!r.active) " · paused" else if (!r.autoAdd) " · reminder only" else "",
+                            amount = r.amount,
+                            hidden = hidden,
+                            type = r.type,
+                            onClick = { onEditRule(r.id) },
+                        )
+                        if (i < rules.lastIndex) Box(Modifier.fillMaxWidth().height(1.dp).background(colors.cardSurfaceHigh))
+                    }
+                }
+            }
+        }
+        item { SectionHeader("Spotted in your spending") }
+        when {
+            series == null -> item { Text("Looking…", style = chakra(FontWeight.Medium, 12, 16), color = colors.subtleText) }
+            series.isEmpty() -> item {
+                EmptyState(
+                    "No repeats yet",
+                    "Subscriptions and EMIs show up here once Sumvalo has seen them a few times.",
+                )
+            }
+            else -> items(series, key = { "s${it.key}" }) { s ->
+                SeriesCard(s, hidden, today, onSchedule = { onScheduleSeries(s.key) }, onHide = { onHideSeries(s.key) })
+            }
+        }
+        if (hiddenKeys.isNotEmpty()) {
+            item {
+                TextButton(onClick = { showHidden = !showHidden }) {
+                    Text(if (showHidden) "Hide the list" else "Not recurring (${hiddenKeys.size})")
+                }
+            }
+            if (showHidden) {
+                items(hiddenKeys.sorted()) { key ->
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(key.substringBefore(':').replaceFirstChar { it.uppercase() }, Modifier.weight(1f))
+                        TextButton(onClick = { onShowSeries(key) }) { Text("Show again") }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** One row of a grouped recurring card: title + muted subtitle on the left, amount on the right. */
+@Composable
+private fun RecurringRow(
+    title: String,
+    subtitle: String,
+    amount: Long,
+    hidden: Boolean,
+    type: TxnType = TxnType.EXPENSE,
+    onClick: (() -> Unit)? = null,
+) {
+    val colors = SumvaloTheme.colors
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = chakra(FontWeight.SemiBold, 14, 20), color = colors.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(subtitle, style = chakra(FontWeight.Medium, 12, 16), color = colors.subtleText, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        AmountText(amount, style = chakra(FontWeight.SemiBold, 15, 20), type = type, hidden = hidden)
     }
 }
 
@@ -227,34 +343,67 @@ private fun monthlyOf(r: RecurringRuleEntity): Long = when (cadenceOf(r.cadence)
 
 @Composable
 private fun SeriesCard(s: Recurring.Series, hidden: Boolean, today: LocalDate, onHide: () -> Unit, onSchedule: () -> Unit) {
+    val colors = SumvaloTheme.colors
     var menu by remember { mutableStateOf(false) }
-    SumvaloCard {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Text(s.merchant, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                val next = if (s.overdue) "last paid ${Fmt.date(s.lastDate)}" else "next ${Fmt.dayLabel(s.nextDate, today)}"
-                Text("${s.cadence.title()} · ${s.occurrences} payments · $next", style = MaterialTheme.typography.bodySmall, color = SumvaloTheme.colors.subtleText)
-            }
-            AmountText(s.lastAmount, style = AmountStyles.medium, hidden = hidden)
-            Box0 {
-                IconButton(onClick = { menu = true }) { Icon(Icons.Outlined.MoreVert, "More") }
-                DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                    DropdownMenuItem(text = { Text("Schedule it") }, onClick = { menu = false; onSchedule() })
-                    DropdownMenuItem(text = { Text("Not recurring") }, onClick = { menu = false; onHide() })
+    SumvaloCard(contentPadding = PaddingValues(start = 16.dp, end = 8.dp, top = 16.dp, bottom = 16.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(s.merchant, style = chakra(FontWeight.SemiBold, 15, 20), color = colors.ink, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    val next = if (s.overdue) "last paid ${Fmt.date(s.lastDate)}" else "next ${Fmt.dayLabel(s.nextDate, today)}"
+                    Text(
+                        "${s.cadence.title()} · ${s.occurrences} payments · $next",
+                        style = chakra(FontWeight.Medium, 12, 16),
+                        color = colors.subtleText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                AmountText(s.lastAmount, style = chakra(FontWeight.SemiBold, 15, 20), hidden = hidden)
+                Box0 {
+                    IconButton(onClick = { menu = true }) {
+                        Icon(Icons.Outlined.MoreVert, "More", tint = colors.subtleText, modifier = Modifier.size(18.dp))
+                    }
+                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text("Schedule it") }, onClick = { menu = false; onSchedule() })
+                        DropdownMenuItem(text = { Text("Not recurring") }, onClick = { menu = false; onHide() })
+                    }
                 }
             }
-        }
-        val pills = buildList {
-            if (s.autoDebit) add("AutoPay" to SumvaloTheme.colors.tip)
-            s.priceChangePct?.let { pct ->
-                add((if (pct > 0) "Price up ${Fmt.pct(pct, 0)}" else "Price down ${Fmt.pct(-pct, 0)}") to (if (pct > 0) SumvaloTheme.colors.alert else SumvaloTheme.colors.good))
+            val pills = buildList {
+                if (s.autoDebit) add(RecurringPill("AutoPay", colors.ink, colors.cardSurfaceHigh, colors.hairline, Icons.Outlined.Autorenew))
+                s.priceChangePct?.let { pct ->
+                    if (pct > 0) {
+                        add(RecurringPill("Price up ${Fmt.pct(pct, 0)}", colors.alert, colors.alert.copy(alpha = 0.12f), colors.alert.copy(alpha = 0.4f), Icons.Outlined.ArrowUpward))
+                    } else {
+                        add(RecurringPill("Price down ${Fmt.pct(-pct, 0)}", colors.income, colors.income.copy(alpha = 0.12f), colors.income.copy(alpha = 0.4f), Icons.Outlined.ArrowDownward))
+                    }
+                }
+                if (s.overdue) add(RecurringPill("Stopped?", colors.alert, colors.alert.copy(alpha = 0.12f), colors.alert.copy(alpha = 0.4f)))
             }
-            if (s.overdue) add("Stopped?" to SumvaloTheme.colors.warning)
+            if (pills.isNotEmpty()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { pills.forEach { RecurringPillRow(it) } }
+            }
         }
-        if (pills.isNotEmpty()) {
-            Spacer(Modifier.height(8.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) { pills.forEach { (t, col) -> Pill(t, col) } }
-        }
+    }
+}
+
+/** One status pill on a spotted series: tinted text on a tinted face with a hairline border. */
+private data class RecurringPill(val label: String, val tint: Color, val bg: Color, val border: Color, val icon: ImageVector? = null)
+
+@Composable
+private fun RecurringPillRow(p: RecurringPill) {
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .background(p.bg)
+            .border(1.dp, p.border, RoundedCornerShape(50))
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        if (p.icon != null) Icon(p.icon, contentDescription = null, tint = p.tint, modifier = Modifier.size(12.dp))
+        Text(p.label, style = chakra(FontWeight.SemiBold, 12, 16), color = p.tint, maxLines = 1)
     }
 }
 
