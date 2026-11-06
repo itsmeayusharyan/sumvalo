@@ -10,9 +10,6 @@ import androidx.room.Upsert
 import com.acuranza.app.model.Paise
 import kotlinx.coroutines.flow.Flow
 
-data class CategoryTotal(val categoryKey: String, val total: Paise, val count: Int)
-data class DayTotal(val day: Long, val income: Paise, val expense: Paise)
-data class MerchantTotal(val merchant: String, val total: Paise, val count: Int)
 
 /** A salary credit's time and amount, for learning the day salary arrives. */
 data class SalaryCredit(val timestamp: Long, val amount: Paise)
@@ -136,30 +133,9 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE id = :id")
     fun observeById(id: Long): Flow<TransactionEntity?>
 
-    @Query(
-        """SELECT categoryKey, SUM(amount) AS total, COUNT(*) AS count FROM transactions
-           WHERE type = 'EXPENSE' AND excludeFromStats = 0 AND suspicious = 0 AND timestamp BETWEEN :from AND :to
-           GROUP BY categoryKey ORDER BY total DESC""",
-    )
-    fun observeExpenseByCategory(from: Long, to: Long): Flow<List<CategoryTotal>>
 
-    @Query(
-        """SELECT merchant, SUM(amount) AS total, COUNT(*) AS count FROM transactions
-           WHERE type = 'EXPENSE' AND merchant IS NOT NULL AND excludeFromStats = 0 AND suspicious = 0 AND timestamp BETWEEN :from AND :to
-           GROUP BY merchant ORDER BY total DESC LIMIT :limit""",
-    )
-    fun observeTopMerchants(from: Long, to: Long, limit: Int): Flow<List<MerchantTotal>>
 
-    /** Net movement of an account: income in, expense out, transfers out/in. */
-    @Query(
-        """SELECT
-             COALESCE(SUM(CASE WHEN accountId = :accountId AND type = 'INCOME' THEN amount ELSE 0 END), 0)
-           - COALESCE(SUM(CASE WHEN accountId = :accountId AND type IN ('EXPENSE','TRANSFER') THEN amount ELSE 0 END), 0)
-           + COALESCE(SUM(CASE WHEN toAccountId = :accountId AND type = 'TRANSFER' THEN amount ELSE 0 END), 0)
-           FROM transactions WHERE (accountId = :accountId OR toAccountId = :accountId) AND timestamp >= :since AND suspicious = 0""",
-    )
-    fun observeNetFlow(accountId: Long, since: Long): Flow<Paise>
-
+    
     @Query(
         """SELECT
              COALESCE(SUM(CASE WHEN accountId = :accountId AND type = 'INCOME' THEN amount ELSE 0 END), 0)
@@ -204,20 +180,14 @@ interface TransactionDao {
     @Query("UPDATE transactions SET reviewed = 1, suspicious = 0 WHERE reviewed = 0")
     suspend fun markAllReviewed(): Int
 
-    @Query("UPDATE transactions SET suspicious = :suspicious WHERE id = :id")
-    suspend fun setSuspicious(id: Long, suspicious: Boolean)
 
     /** Transactions (not flagged suspicious) that move [accountId] from [since] on, oldest first. */
-    @Query("SELECT * FROM transactions WHERE (accountId = :accountId OR toAccountId = :accountId) AND timestamp >= :since AND suspicious = 0 ORDER BY timestamp")
-    suspend fun forAccountSince(accountId: Long, since: Long): List<TransactionEntity>
 
     /** Number of transactions (not flagged suspicious) that move [accountId] after [since]. */
     @Query("SELECT COUNT(*) FROM transactions WHERE (accountId = :accountId OR toAccountId = :accountId) AND timestamp >= :since AND suspicious = 0")
     suspend fun countSince(accountId: Long, since: Long): Int
 
     /** Recent amounts of an account, for spotting an implausibly large import. */
-    @Query("SELECT amount FROM transactions WHERE accountId = :accountId AND suspicious = 0 ORDER BY timestamp DESC LIMIT 200")
-    suspend fun recentAmounts(accountId: Long): List<Paise>
 
     @Query("UPDATE transactions SET accountId = :to WHERE accountId = :from")
     suspend fun moveAccount(from: Long, to: Long)
@@ -269,21 +239,15 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE type = 'EXPENSE' AND categoryKey = 'other' ORDER BY timestamp DESC")
     fun observeUncategorised(): Flow<List<TransactionEntity>>
 
-    @Query("SELECT * FROM transactions WHERE type = 'EXPENSE' AND categoryKey = 'other'")
-    suspend fun uncategorised(): List<TransactionEntity>
 
     @Query("SELECT COUNT(*) FROM transactions WHERE fingerprint = :fingerprint")
     suspend fun countFingerprint(fingerprint: String): Int
 
-    @Query("SELECT * FROM transactions WHERE fingerprint = :fingerprint LIMIT 1")
-    suspend fun byFingerprint(fingerprint: String): TransactionEntity?
 
     /** Emits whenever the transactions table changes (Room re-runs the query on invalidation). */
     @Query("SELECT COUNT(*) FROM transactions")
     fun observeChanges(): Flow<Int>
 
-    @Query("SELECT MAX(timestamp) FROM transactions WHERE accountId = :accountId OR toAccountId = :accountId")
-    suspend fun lastTimestamp(accountId: Long): Long?
 
     @Query(
         """SELECT * FROM transactions WHERE amount = :amount AND timestamp BETWEEN :from AND :to
@@ -291,8 +255,6 @@ interface TransactionDao {
     )
     suspend fun findAmountNear(accountId: Long, amount: Paise, from: Long, to: Long): List<TransactionEntity>
 
-    @Query("SELECT COUNT(*) FROM transactions WHERE referenceNo = :ref")
-    suspend fun countReference(ref: String): Int
 
     @Query("SELECT * FROM transactions WHERE timestamp >= :from ORDER BY timestamp")
     suspend fun since(from: Long): List<TransactionEntity>
@@ -335,15 +297,11 @@ interface CardBillDao {
     @Query("UPDATE card_bills SET accountId = :to WHERE accountId = :from")
     suspend fun moveAccount(from: Long, to: Long)
 
-    @Query("SELECT * FROM card_bills WHERE accountId = :accountId AND paid = 0 ORDER BY dueDate")
-    suspend fun unpaidForCard(accountId: Long): List<CardBillEntity>
 
     @Query("SELECT * FROM card_bills")
     suspend fun all(): List<CardBillEntity>
 
     /** Same bill already stored from another source (SMS vs e-mail use different fingerprints). */
-    @Query("SELECT COUNT(*) FROM card_bills WHERE accountId = :accountId AND dueDate IS :dueDate AND totalDue = :totalDue")
-    suspend fun countSame(accountId: Long, dueDate: Long?, totalDue: Paise): Int
 }
 
 @Dao

@@ -73,14 +73,6 @@ class LoanRepository(private val db: SumvaloDatabase) {
 
     suspend fun delete(loan: LoanEntity) = db.loans().delete(loan)
 
-    /** Total still owed on every active loan today. */
-    suspend fun totalOutstanding(): Paise = active().sumOf { it.outstanding }
-
-    /** Home-loan interest and principal paid in the financial year starting April [fyStartYear], for the tax planner. */
-    suspend fun homeLoanYear(fyStartYear: Int): Loans.YearSplit =
-        db.loans().active().filter { it.kind == HOME }
-            .mapNotNull { runCatching { Loans.financialYear(spec(it), fyStartYear) }.getOrNull() }
-            .fold(Loans.YearSplit(0, 0)) { a, b -> Loans.YearSplit(a.interest + b.interest, a.principal + b.principal) }
 
     fun status(loan: LoanEntity, today: LocalDate = Time.today()): LoanStatus {
         val spec = runCatching { spec(loan) }.getOrNull()
@@ -207,53 +199,9 @@ class SplitGroupRepository(private val db: SumvaloDatabase) {
 
     fun observeParticipants(groupId: Long): Flow<List<SplitGroupParticipantEntity>> =
         db.splitGroupParticipants().observeForGroup(groupId)
-    suspend fun participantsFor(groupId: Long): List<SplitGroupParticipantEntity> =
-        db.splitGroupParticipants().forGroup(groupId)
-    suspend fun saveParticipant(p: SplitGroupParticipantEntity): Long =
-        db.splitGroupParticipants().upsert(p)
-    suspend fun deleteParticipant(id: Long) = db.splitGroupParticipants().delete(id)
 
     /** All groups with their participant counts and outstanding balances. */
-    suspend fun groupSummaries(): List<GroupSummary> {
-        val groups = db.splitGroups().observeAll().first().filter { !it.archived }
-        return groups.map { g ->
-            val participants = db.splitGroupParticipants().forGroup(g.id)
-            val expenses = db.splitExpenses().observeForGroup(g.id).first()
-            val settlements = db.splitSettlements().forGroup(g.id)
-            val sharesByExpense = expenses.associate { it.id to db.splitExpenses().sharesFor(it.id) }
-            GroupSummary(g, participants, expenses, settlements, sharesByExpense)
-        }
-    }
 
-    data class GroupSummary(
-        val group: SplitGroupEntity,
-        val participants: List<SplitGroupParticipantEntity>,
-        val expenses: List<SplitExpenseEntity>,
-        val settlements: List<SplitSettlementEntity>,
-        private val sharesByExpense: Map<Long, List<SplitShareEntity>>,
-    ) {
-        /** Net balance per participant: positive = owed to them, negative = they owe. */
-        fun balances(): Map<Long, Paise> {
-            val balances = LinkedHashMap<Long, Paise>()
-            participants.forEach { balances[it.id] = 0L }
-            for (e in expenses) {
-                val shares = sharesByExpense[e.id] ?: emptyList()
-                for (s in shares) {
-                    val cur = balances[s.participantId] ?: 0L
-                    balances[s.participantId] = cur - s.share
-                }
-                val cur = balances[e.payerId] ?: 0L
-                balances[e.payerId] = cur + e.amount
-            }
-            for (s in settlements) {
-                val fromCur = balances[s.fromId] ?: 0L
-                balances[s.fromId] = fromCur - s.amount
-                val toCur = balances[s.toId] ?: 0L
-                balances[s.toId] = toCur + s.amount
-            }
-            return balances
-        }
-    }
 }
 
 /** Shared expenses and their splits. */
@@ -274,12 +222,6 @@ class SplitExpenseRepository(private val db: SumvaloDatabase) {
             id
         }
 
-    /** Updates an existing expense and replaces its shares. */
-    suspend fun updateWithShares(expense: SplitExpenseEntity, shares: List<SplitShareEntity>) =
-        db.withTransaction {
-            db.splitExpenses().upsert(expense)
-            db.splitExpenses().replaceShares(expense.id, shares)
-        }
 
     suspend fun sharesFor(expenseId: Long): List<SplitShareEntity> =
         db.splitExpenses().sharesFor(expenseId)

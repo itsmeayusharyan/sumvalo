@@ -410,12 +410,6 @@ private fun InsightsBulbButton(onInsights: () -> Unit) {
     }
 }
 
-/** A 1dp divider for rows inside a card, optionally inset from the start. */
-@Composable
-fun ListHairline(start: androidx.compose.ui.unit.Dp = 0.dp) {
-    Box(Modifier.fillMaxWidth().padding(start = start).height(1.dp).background(SumvaloTheme.colors.divider))
-}
-
 @Composable
 internal fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, fromSms: Int = 0, fromEmail: Int = 0) {
     Row(
@@ -449,25 +443,6 @@ internal fun ReviewBanner(count: Int, modifier: Modifier, onClick: () -> Unit, f
     }
 }
 
-@Composable
-internal fun AccountListRow(a: AccountWithBalance, hidden: Boolean, onClick: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        BankBadge(a.bank, size = 32.dp)
-        Spacer(Modifier.width(12.dp))
-        Column(Modifier.weight(1f)) {
-            Text(a.account.name, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Text(
-                if (a.isCard) "Outstanding" else a.account.type.label(),
-                style = MaterialTheme.typography.bodySmall,
-                color = SumvaloTheme.colors.subtleText,
-            )
-        }
-        AmountText(if (a.isCard) a.outstanding else a.balance, style = AmountStyles.medium, hidden = hidden)
-    }
-}
 
 /** A transaction row with the standard subtitle. */
 @Composable

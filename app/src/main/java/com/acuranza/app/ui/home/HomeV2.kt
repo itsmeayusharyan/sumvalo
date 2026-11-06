@@ -100,10 +100,6 @@ val Chakra = FontFamily(
     Font(R.font.chakrapetch_bold, FontWeight.Bold),
 )
 
-/** Chakra-flavoured copy of a text style, so home headings carry the new voice. */
-private fun chakra(style: TextStyle, weight: FontWeight = FontWeight.SemiBold): TextStyle =
-    style.copy(fontFamily = Chakra, fontWeight = weight)
-
 private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int = size + 6, letterSpacingSp: Float = 0f): TextStyle =
     TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 

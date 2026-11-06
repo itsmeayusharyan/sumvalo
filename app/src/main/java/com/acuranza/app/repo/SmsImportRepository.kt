@@ -322,13 +322,7 @@ class SmsImportRepository(private val db: SumvaloDatabase, private val attachmen
 
     suspend fun pendingCount(): Int = db.smsImports().pendingCount()
 
-    /** Drops one pending candidate without importing anything. */
-    suspend fun removePending(id: Long) = db.withTransaction { db.smsImports().deleteRow(id) }
 
-    /** Clears every pending candidate. */
-    suspend fun clearPending() = db.withTransaction {
-        for (row in db.smsImports().pending()) db.smsImports().deleteRow(row.id)
-    }
 
     /** The user's corrections to a pending candidate before it becomes a transaction. */
     data class PendingEdit(val amount: Long? = null, val merchant: String? = null, val categoryKey: String? = null, val accountId: Long? = null)

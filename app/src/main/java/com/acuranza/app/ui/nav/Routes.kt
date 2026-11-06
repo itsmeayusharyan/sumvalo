@@ -87,12 +87,8 @@ object Routes {
     fun editLoan(id: Long? = null) = "loan/edit?id=${id ?: -1}"
     fun yearReview(year: Int) = "reports/year/$year"
     fun splitGroup(id: Long) = "split-group/$id"
-    fun splitGroupEdit(id: Long? = null) = "split-group/edit?id=${id ?: -1}"
     fun splitAddExpense(groupId: Long) = "split-expense/add?group=$groupId"
-    fun splitExpense(id: Long) = "split-expense/$id"
-    fun splitSettlements(groupId: Long) = "split-settlements?group=$groupId"
     fun purchase(id: Long) = "purchase/$id"
-    fun purchaseEdit(id: Long? = null) = "purchase/edit?id=${id ?: -1}"
 }
 
 data class Tab(val route: String, val label: String, val icon: ImageVector, val selectedIcon: ImageVector)

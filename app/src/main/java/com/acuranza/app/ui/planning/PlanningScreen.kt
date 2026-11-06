@@ -1045,10 +1045,3 @@ private fun RequiredSaving(target: Long?, saved: Long, deadline: LocalDate, retu
     }
 }
 
-@Composable
-private fun EnvelopeLine(label: String, amount: Long, hidden: Boolean, color: androidx.compose.ui.graphics.Color = androidx.compose.ui.graphics.Color.Unspecified) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = SumvaloTheme.colors.subtleText)
-        AmountText(amount, style = AmountStyles.medium, hidden = hidden, color = color)
-    }
-}

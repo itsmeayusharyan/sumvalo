@@ -120,7 +120,6 @@ private const val F_MANUAL = "Manual"
 
 /** Opens the fix-uncategorised screen rather than filtering the list. */
 internal const val F_OTHER = "Other"
-private val FILTERS = listOf(F_SMS, F_OTHER, F_EXPENSE, F_INCOME, F_TRANSFER, F_MANUAL)
 
 /** One-shot filter requested by another screen (e.g. Settings → "View email transactions"). */
 object ActivityFilterRequest {

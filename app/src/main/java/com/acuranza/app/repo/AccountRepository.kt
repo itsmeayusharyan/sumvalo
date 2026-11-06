@@ -72,8 +72,6 @@ class AccountRepository(
     /** Active accounts with balances (pending ones included, flagged), recomputed on any change. */
     fun observeAccounts(): Flow<List<AccountWithBalance>> = shared
 
-    /** Accounts found in SMS/e-mail that the user still has to confirm, merge or ignore. */
-    fun observePending(): Flow<List<AccountWithBalance>> = observeAccounts().map { list -> list.filter { it.isPending } }
 
     fun observeAccount(id: Long): Flow<AccountWithBalance?> =
         observeAccounts().map { list -> list.firstOrNull { it.id == id } }

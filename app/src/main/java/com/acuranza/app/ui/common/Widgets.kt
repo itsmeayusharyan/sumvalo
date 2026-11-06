@@ -437,13 +437,3 @@ fun Pill(text: String, color: androidx.compose.ui.graphics.Color, modifier: Modi
 }
 
 /** Fades content in once a condition becomes true. */
-@Composable
-fun Reveal(visible: Boolean, content: @Composable () -> Unit) {
-    AnimatedVisibility(visible = visible) { content() }
-}
-
-/** Full-screen centered box (for empty or loading states). */
-@Composable
-fun Centered(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) { content() }
-}

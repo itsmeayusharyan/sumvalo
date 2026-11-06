@@ -18,8 +18,6 @@ object Tags {
         return if (unique.isEmpty()) "" else unique.values.joinToString("|", prefix = "|", postfix = "|")
     }
 
-    /** The LIKE pattern matching transactions carrying [tag]. */
-    fun pattern(tag: String): String = "%|" + clean(tag).replace("%", "").replace("_", "") + "|%"
 
     fun has(stored: String, tag: String): Boolean = decode(stored).any { it.equals(clean(tag), ignoreCase = true) }
 }
