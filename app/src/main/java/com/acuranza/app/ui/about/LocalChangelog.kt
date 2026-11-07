@@ -21,6 +21,20 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.36",
+        name = "Sumvalo 0.36",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fix: Onboarding hero cards now use a consistent height across all five steps (no layout jumps between screens)", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding spacing now follows a consistent 24dp grid — no more inconsistent padding between hero, progress, headline, and content sections", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding decorative elements now scale proportionally to screen width — no overlap on small screens, no drift on large screens", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding navigation buttons (Back/Skip) and hero logo use consistent 24dp horizontal padding", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.35",
         name = "Sumvalo 0.35",
         publishedAt = "",

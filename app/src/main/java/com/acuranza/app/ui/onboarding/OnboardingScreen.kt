@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -142,38 +143,37 @@ fun OnboardingScreen() {
 
 // ── Shared scaffolding ──────────────────────────────────────────────────────────────────────
 
-/**
- * Full-page scaffold shared by every step: scrollable body with the primary action pinned to
+/** Full-page scaffold shared by every step: scrollable body with the primary action pinned to
  * the bottom above the nav bar — matching the reference, where the CTA never scrolls away.
- * The body reserves [bottomReserve] so its last row can never hide behind the pinned area.
+ * The body uses a consistent 24dp horizontal grid; content components should not re-pad.
  */
-@Composable
-private fun OnboardingPage(buttonContent: @Composable () -> Unit, content: @Composable () -> Unit) {
-    Column(
-        Modifier.fillMaxSize().background(OnboardingBg),
-    ) {
-        Box(
-            Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            Column(Modifier.padding(horizontal = 12.dp, vertical = 12.dp)) {
-                content()
-            }
-        }
-        Column(
-            Modifier.fillMaxWidth().background(OnboardingBg),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Column(
-                Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                buttonContent()
-            }
-        }
-    }
-}
+ @Composable
+ private fun OnboardingPage(buttonContent: @Composable () -> Unit, content: @Composable () -> Unit) {
+     Column(
+         Modifier.fillMaxSize().background(OnboardingBg),
+     ) {
+         Box(
+             Modifier
+                 .weight(1f)
+                 .verticalScroll(rememberScrollState()),
+         ) {
+             Column(Modifier.padding(horizontal = 24.dp, vertical = 20.dp)) {
+                 content()
+             }
+         }
+         Column(
+             Modifier.fillMaxWidth().background(OnboardingBg),
+             horizontalAlignment = Alignment.CenterHorizontally,
+         ) {
+             Column(
+                 Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
+                 horizontalAlignment = Alignment.CenterHorizontally,
+             ) {
+                 buttonContent()
+             }
+         }
+     }
+ }
 
 /** The rounded hero card every step opens with: 32dp corners, hairline border, fixed-dark surface. */
 @Composable
@@ -273,7 +273,7 @@ private fun HeroNavRow(onBack: (() -> Unit)?, onSkip: (() -> Unit)?) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 24.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -288,7 +288,7 @@ private fun ProgressRow(activeIndex: Int) {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 24.dp),
+            .padding(vertical = 24.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -314,7 +314,7 @@ private fun ProgressRow(activeIndex: Int) {
 /** Headline + subtitle block (px-6 pt-5 in the reference). */
 @Composable
 private fun HeadlineBlock(title: String, subtitle: String, titleSize: Int = 40, letterSpacing: Float = 0f) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp)) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 20.dp)) {
         Text(
             title,
             style = chakraText(FontWeight.Bold, titleSize, titleSize, letterSpacing),
@@ -359,7 +359,10 @@ private fun PillButton(label: String, icon: ImageVector, onClick: () -> Unit, he
 
 // ── Decoration primitives: edge-anchored, so nothing drifts off-screen ──────────────────────
 
-/** Right-aligned insets pull inward from the right edge; left-aligned from the left edge. */
+/** Right-aligned insets pull inward from the right edge; left-aligned from the left edge.
+ * Offsets are scaled proportionally to the available width so decorations stay correctly
+ * placed across screen sizes (no overlap on small screens, no drift on large ones).
+ */
 @Composable
 private fun BoxScope.Deco(
     size: Dp,
@@ -370,16 +373,21 @@ private fun BoxScope.Deco(
     insetX: Dp = 0.dp,
     insetY: Dp = 0.dp,
 ) {
-    val fromEnd = alignment == Alignment.TopEnd || alignment == Alignment.BottomEnd
-    Box(
+    BoxWithConstraints(
         Modifier
             .align(alignment)
-            .offset(x = if (fromEnd) -insetX else insetX, y = insetY)
             .size(size)
             .graphicsLayer { rotationZ = rotation }
             .clip(RoundedCornerShape(corner))
             .background(color),
-    )
+    ) {
+        val fromEnd = alignment == Alignment.TopEnd || alignment == Alignment.BottomEnd
+        // Reference width ~393dp (Pixel 6); scale offsets proportionally so they adapt
+        val scale = constraints.maxWidth / 393f
+        val x = (if (fromEnd) -insetX else insetX) * scale
+        val y = insetY * scale
+        Modifier.offset(x = x, y = y)
+    }
 }
 
 @Composable
@@ -392,16 +400,20 @@ private fun BoxScope.DecoPill(
     insetX: Dp = 0.dp,
     insetY: Dp = 0.dp,
 ) {
-    val fromEnd = alignment == Alignment.TopEnd || alignment == Alignment.BottomEnd
-    Box(
+    BoxWithConstraints(
         Modifier
             .align(alignment)
-            .offset(x = if (fromEnd) -insetX else insetX, y = insetY)
             .size(width, height)
             .graphicsLayer { rotationZ = rotation }
             .clip(RoundedCornerShape(50))
             .background(color),
-    )
+    ) {
+        val fromEnd = alignment == Alignment.TopEnd || alignment == Alignment.BottomEnd
+        val scale = constraints.maxWidth / 393f
+        val x = (if (fromEnd) -insetX else insetX) * scale
+        val y = insetY * scale
+        Modifier.offset(x = x, y = y)
+    }
 }
 
 // ── Step 1 · Welcome ────────────────────────────────────────────────────────────────────────
@@ -424,7 +436,7 @@ internal fun Welcome(onNext: () -> Unit) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 24.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
@@ -520,7 +532,7 @@ internal fun Welcome(onNext: () -> Unit) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             BenefitCard(Icons.Outlined.Lock, "On-device", Modifier.weight(1f))
@@ -559,7 +571,7 @@ internal fun FeaturesStep(onBack: () -> Unit, onNext: () -> Unit) {
             PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext)
         },
     ) {
-        HeroCardScaffold(height = 320.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
             Box(
                 Modifier
                     .align(Alignment.TopEnd)
@@ -626,7 +638,7 @@ internal fun FeaturesStep(onBack: () -> Unit, onNext: () -> Unit) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             FeatureRow(Icons.Outlined.BarChart, Hairline, Color.White, "Track everything", "Income, expenses and card dues in one place.")
@@ -683,7 +695,7 @@ internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
             PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext)
         },
     ) {
-        HeroCardScaffold(height = 256.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
             Box(
                 Modifier
                     .align(Alignment.TopEnd)
@@ -772,7 +784,7 @@ internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             HistoryOptionRow(Icons.Outlined.Edit, "Quick manual entry", "Tags, splits and receipts in seconds.", selected == 0) { selected = 0 }
@@ -889,7 +901,7 @@ internal fun NotificationsScreen(
             }
         },
     ) {
-        HeroCardScaffold(height = 270.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
             Box(
                 Modifier
                     .align(Alignment.TopEnd)
@@ -966,7 +978,7 @@ internal fun NotificationsScreen(
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             NotifRow(Icons.Outlined.CalendarToday, "Card bills", "A reminder before each due date.", cardBills) { cardBills = !cardBills }
@@ -975,7 +987,7 @@ internal fun NotificationsScreen(
         }
 
         if (showDeniedHelp) {
-            NotificationDeniedHelp(Modifier.fillMaxWidth().padding(horizontal = 20.dp))
+            NotificationDeniedHelp(Modifier.fillMaxWidth())
         }
     }
 }
@@ -1050,7 +1062,7 @@ internal fun DoneStep(onBack: () -> Unit, onFinish: () -> Unit) {
             }
         },
     ) {
-        HeroCardScaffold(height = 380.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = null) }, decorations = {
+        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = null) }, decorations = {
             // Big white check disc with hard shadow, centre-left
             Box(
                 Modifier
@@ -1107,7 +1119,7 @@ internal fun DoneStep(onBack: () -> Unit, onFinish: () -> Unit) {
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 20.dp),
+                .padding(vertical = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             StatCard("Tracking", "Manual", Modifier.weight(1f))

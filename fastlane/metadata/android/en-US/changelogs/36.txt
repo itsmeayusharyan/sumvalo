@@ -1,0 +1,6 @@
+Sumvalo 0.36
+
+- Fix: Onboarding hero cards now use a consistent height across all five steps (no layout jumps between screens)
+- Fix: Onboarding spacing now follows a consistent 24dp grid — no more inconsistent padding between hero, progress, headline, and content sections
+- Fix: Onboarding decorative elements now scale proportionally to screen width — no overlap on small screens, no drift on large screens
+- Fix: Onboarding navigation buttons (Back/Skip) and hero logo use consistent 24dp horizontal padding
