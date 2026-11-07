@@ -323,7 +323,7 @@ fun CalendarScreen(nav: NavController) {
             }
             item { Spacer(Modifier.height(16.dp)); SectionHeader(Fmt.dayLabel(selected, today)) }
             val dayDues = dues[selected].orEmpty()
-            items(dayDues) { d ->
+            items(dayDues, key = { "${it.label}-${it.date.toEpochDay()}" }) { d ->
                 Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(d.label, style = MaterialTheme.typography.bodyLarge)

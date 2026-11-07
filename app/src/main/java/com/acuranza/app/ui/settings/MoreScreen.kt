@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import com.acuranza.app.designsystem.components.SumvaloCard
 import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.designsystem.theme.SumvaloText
@@ -369,11 +370,6 @@ private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpa
     TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 /** Chakra Petch — bundled under res/font (SIL OFL). */
-val Chakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 /** One-line horizontal hairline used between design rows. */
 @Composable

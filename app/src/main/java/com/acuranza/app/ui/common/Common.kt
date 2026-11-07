@@ -1,6 +1,12 @@
 package com.acuranza.app.ui.common
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.acuranza.app.R
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
@@ -38,6 +44,13 @@ inline fun <reified VM : ViewModel> acuranzaViewModel(key: String? = null, cross
     val container = LocalContainer.current
     return viewModel(key = key, factory = viewModelFactory { initializer { create(container) } })
 }
+
+/** The bundled Chakra Petch family shared by every redesigned screen. */
+internal val Chakra = FontFamily(
+    Font(R.font.chakrapetch_medium, FontWeight.Medium),
+    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
+    Font(R.font.chakrapetch_bold, FontWeight.Bold),
+)
 
 object Fmt {
     private val dayMonth = DateTimeFormatter.ofPattern("d MMM", Locale.ENGLISH)

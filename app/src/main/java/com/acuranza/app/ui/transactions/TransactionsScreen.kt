@@ -77,6 +77,7 @@ import androidx.navigation.NavController
 import com.acuranza.app.data.TransactionEntity
 import com.acuranza.app.data.tombstones
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import com.acuranza.app.designsystem.components.DateHeader
 import com.acuranza.app.designsystem.components.EmptyState
 import com.acuranza.app.designsystem.components.AmountText
@@ -305,11 +306,6 @@ fun TransactionsScreen(nav: NavController) {
 }
 
 /** Chakra Petch — bundled under res/font (SIL OFL). Shared display face across home/settings/activity. */
-val Chakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 /** Chakra-flavoured text style. */
 private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =

@@ -50,7 +50,7 @@ class SumvaloApp : Application() {
             runCatching { com.acuranza.app.repo.AutoCategoriser.run(c.db) }
             runCatching { container.settings.clearLegacyGmail() }
         }
-        WorkScheduler.schedule(this)
+        appScope.launch { WorkScheduler.schedule(this@SumvaloApp) }
         com.acuranza.app.work.SmsForegroundTicker.start(this)
         com.acuranza.app.tools.WidgetUpdater.start(this)
         appScope.launch { runCatching { com.acuranza.app.tools.DigestSchedule.sync(this@SumvaloApp) } }

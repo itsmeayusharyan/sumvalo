@@ -76,6 +76,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import com.acuranza.app.designsystem.components.SumvaloLogo
 import com.acuranza.app.ui.common.LocalContainer
 import kotlinx.coroutines.launch
@@ -83,11 +84,6 @@ import kotlinx.coroutines.launch
 private const val STEPS = 5
 
 /** Chakra Petch — bundled under res/font (SIL OFL). */
-private val Chakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int = size + 6, letterSpacingSp: Float = 0f): TextStyle =
     TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)

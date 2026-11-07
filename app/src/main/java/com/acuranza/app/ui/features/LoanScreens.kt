@@ -236,7 +236,7 @@ fun LoanDetailScreen(nav: NavController, id: Long) {
                 val made = spec.prepayments
                 if (made.isNotEmpty()) {
                     item { SectionHeader("Prepayments made") }
-                    items(made) { p ->
+                    items(made, key = { "${it.date.toEpochDay()}-${it.amount}" }) { p ->
                         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(Fmt.fullDate(p.date), style = MaterialTheme.typography.bodyLarge)

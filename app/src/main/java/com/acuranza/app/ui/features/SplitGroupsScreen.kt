@@ -47,6 +47,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+private val groupCreatedFormat = java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")
+
 /** Groups overview for Split Any Expense. */
 @Composable
 fun SplitGroupsScreen(nav: NavController) {

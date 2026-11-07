@@ -7,6 +7,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.semantics.Role
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.width
@@ -132,6 +133,9 @@ import com.acuranza.app.ui.transactions.ReviewScreen
 import com.acuranza.app.ui.transactions.TransactionDetailScreen
 import com.acuranza.app.ui.transactions.TransactionsScreen
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.launch
 import com.acuranza.app.ui.nav.navigateToTab
 import androidx.compose.ui.text.style.TextOverflow
@@ -204,7 +208,9 @@ fun SumvaloRoot(container: AppContainer, initialRoute: String?, onRouteConsumed:
             var splashDone by remember { mutableStateOf(AppLock.splashShown) }
             LaunchedEffect(Unit) {
                 if (!AppLock.splashShown) {
-                    delay(700)
+                    // Splash lasts exactly as long as the settings actually take to load (700 ms cap),
+                    // instead of a fixed delay that taxed every cold start.
+                    withTimeoutOrNull(700) { snapshotFlow { settingsState }.first { it != null } }
                     AppLock.splashShown = true
                 }
                 splashDone = true
@@ -309,13 +315,9 @@ private fun Splash() {
 }
 
 /** Chakra Petch text styles for the redesigned lock screen. */
-private val LockChakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 private fun lockText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
-    TextStyle(fontFamily = LockChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 @Composable
 private fun LockScreen(onUnlocked: () -> Unit) {
@@ -587,11 +589,13 @@ private fun MainShell(initialRoute: String?, onRouteConsumed: () -> Unit) {
 @Composable
 private fun BottomBar(nav: NavHostController, activeTab: String?, onHomeReTap: () -> Unit) {
     val s = com.acuranza.app.ui.common.LocalSettings.current
-    val tabs = com.acuranza.app.ui.nav.NavTabs.resolve(
-        com.acuranza.app.ui.nav.NavTabs.decodeLayout(s.navTabLayout),
-        com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
-        com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
-    )
+    val tabs = remember(s.navTabLayout, s.navTabLabels, s.navTabIcons) {
+        com.acuranza.app.ui.nav.NavTabs.resolve(
+            com.acuranza.app.ui.nav.NavTabs.decodeLayout(s.navTabLayout),
+            com.acuranza.app.ui.nav.NavTabs.decodeLabels(s.navTabLabels),
+            com.acuranza.app.ui.nav.NavTabs.decodeIcons(s.navTabIcons),
+        )
+    }
     SumvaloBottomBar(
         activeTab,
         onTab = { route -> nav.navigateToTab(route, onHomeReTap) },
@@ -677,7 +681,7 @@ fun SumvaloBottomBar(
                         if (showLabels) {
                             Text(
                                 tab.label,
-                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.home.Chakra),
+                                style = MaterialTheme.typography.labelSmall.copy(fontFamily = com.acuranza.app.ui.common.Chakra),
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 13.sp,
                                 lineHeight = 16.sp,

@@ -278,7 +278,7 @@ private fun IgnoredAccountRow(ig: IgnoredAccount, onRestore: () -> Unit) {
 
 /** Chakra-flavoured text style, matching the home/activity voice. */
 private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int, letterSpacingSp: Float = 0f): TextStyle =
-    TextStyle(fontFamily = com.acuranza.app.ui.home.Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+    TextStyle(fontFamily = com.acuranza.app.ui.common.Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 /**
  * The reference's net-balance hero: total across every counted account, a Bank/Cash/Cards split

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
@@ -101,14 +102,9 @@ fun Recurring.Cadence.title(): String = when (this) {
 private fun cadenceOf(name: String) = runCatching { Recurring.Cadence.valueOf(name) }.getOrDefault(Recurring.Cadence.MONTHLY)
 
 /** Chakra Petch text styles for the redesigned recurring cards. */
-private val RecurringChakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 private fun chakra(weight: FontWeight, size: Int, lineHeight: Int = size + 4): TextStyle =
-    TextStyle(fontFamily = RecurringChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp)
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp)
 
 /** Subscriptions, EMIs and UPI AutoPay mandates found in spending, the user's own schedules, and what's due soon. */
 @Composable
@@ -216,10 +212,8 @@ fun RecurringContent(
                     rows.forEachIndexed { i, d ->
                         RecurringRow(
                             title = d.label,
-                            subtitle = run {
-                                val days = ChronoUnit.DAYS.between(today, d.date)
-                                if (days == 0L) "Today" else if (days == 1L) "Tomorrow" else Fmt.dayLabel(d.date, today)
-                            },
+                            subtitle = if (ChronoUnit.DAYS.between(today, d.date) == 0L) "Today"
+                            else if (ChronoUnit.DAYS.between(today, d.date) == 1L) "Tomorrow" else Fmt.dayLabel(d.date, today),
                             amount = d.amount,
                             hidden = hidden,
                         )
@@ -361,7 +355,7 @@ private fun SeriesCard(s: Recurring.Series, hidden: Boolean, today: LocalDate, o
                     )
                 }
                 AmountText(s.lastAmount, style = chakra(FontWeight.SemiBold, 15, 20), hidden = hidden)
-                Box0 {
+                Box {
                     IconButton(onClick = { menu = true }) {
                         Icon(Icons.Outlined.MoreVert, "More", tint = colors.subtleText, modifier = Modifier.size(18.dp))
                     }
@@ -408,8 +402,6 @@ private fun RecurringPillRow(p: RecurringPill) {
     }
 }
 
-@Composable
-private fun Box0(content: @Composable () -> Unit) = androidx.compose.foundation.layout.Box { content() }
 
 /** Adds or edits a scheduled payment. [fromSeries] prefills it from a detected repeating payment. */
 @Composable
@@ -469,8 +461,9 @@ fun RecurringEditScreen(nav: NavController, id: Long?, fromSeries: String?) {
         if (!loaded) return@SumvaloScreen
         Column(Modifier.fillMaxSize().padding(pad).verticalScroll(rememberScrollState()).padding(20.dp)) {
             FormColumn {
-                SegmentedTabs(listOf("Expense", "Income", "Transfer"), listOf(TxnType.EXPENSE, TxnType.INCOME, TxnType.TRANSFER).indexOf(type),
-                    onSelect = { type = listOf(TxnType.EXPENSE, TxnType.INCOME, TxnType.TRANSFER)[it]; category = null })
+                val txnTypes = listOf(TxnType.EXPENSE, TxnType.INCOME, TxnType.TRANSFER)
+                SegmentedTabs(listOf("Expense", "Income", "Transfer"), txnTypes.indexOf(type),
+                    onSelect = { type = txnTypes[it]; category = null })
                 SumvaloTextField(name, { name = it.take(60) }, "Name", supporting = "e.g. Rent, SIP, Netflix, Maid")
                 AmountField("Amount", amount, { amount = it }, allowZero = false)
                 if (type != TxnType.TRANSFER) {

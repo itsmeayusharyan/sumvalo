@@ -71,6 +71,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import com.acuranza.app.data.CategoryEntity
 import com.acuranza.app.data.GoalEntity
 import com.acuranza.app.designsystem.components.AmountText
@@ -252,14 +253,9 @@ fun PlanningContent(
 }
 
 /** Chakra Petch text styles for the redesigned plan cards. */
-private val PlanChakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 internal fun planText(weight: FontWeight, size: Int, lineHeight: Int = size + 4, letterSpacingSp: Float = 0f): TextStyle =
-    TextStyle(fontFamily = PlanChakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
+    TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
 
 /** Budgets / Goals pill toggle at the top of the Plan tab. */
 @Composable

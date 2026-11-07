@@ -21,6 +21,21 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.33",
+        name = "Sumvalo 0.33",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Security hardening from a full audit + penetration test — a broken key store can no longer silently store new data unencrypted, turning the app lock off (or installing a first PIN) now asks for fingerprint/face first, and backup/restore now carries split groups, purchase records and SMS-import bookkeeping", ChangeCategory.FIXED),
+            ChangeItem("Money-integrity fixes — chained calculator expressions, crafted bank messages and restored files can no longer wrap amounts into garbage values; goal contributions and debt repayments became atomic so double-taps can no longer drop one", ChangeCategory.FIXED),
+            ChangeItem("Privacy consistency — privacy mode now also masks the SMS-capture alert and price-change notification titles, and launcher widgets switch to the decoy profile with it", ChangeCategory.IMPROVED),
+            ChangeItem("Startup polish — the splash now lasts exactly as long as settings take to load instead of a fixed 700 ms; background bookkeeping moved off the main thread", ChangeCategory.IMPROVED),
+            ChangeItem("Dead code removed across DAOs, repositories, navigation and resources after a full unused-code audit", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.32",
         name = "Sumvalo 0.32",
         publishedAt = "",

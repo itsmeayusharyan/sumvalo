@@ -112,10 +112,7 @@ fun AboutContent(
 ) {
     val c = SumvaloTheme.colors
     // "0.27-full" → "v0.27 · full"; a plain "0.27" → "v0.27".
-    val versionLabel = device.appVersion
-        .split("-", limit = 2)
-        .joinToString(" · ") { it }
-        .let { "v$it" }
+    val versionLabel = "v${device.appVersion.split("-", limit = 2).joinToString(" · ")}"
 
     SumvaloScreen(
         title = "About",

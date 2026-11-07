@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.acuranza.app.R
+import com.acuranza.app.ui.common.Chakra
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.RangeChips
 import com.acuranza.app.designsystem.components.SectionHeader
@@ -94,11 +95,6 @@ import kotlin.math.roundToInt
  * Chakra Petch — the display face of the redesigned home (bundled under res/font, SIL OFL).
  * The rupee glyph falls back to the system font per-glyph when the typeface lacks it.
  */
-val Chakra = FontFamily(
-    Font(R.font.chakrapetch_medium, FontWeight.Medium),
-    Font(R.font.chakrapetch_semibold, FontWeight.SemiBold),
-    Font(R.font.chakrapetch_bold, FontWeight.Bold),
-)
 
 private fun chakraText(weight: FontWeight, size: Int, lineHeight: Int = size + 6, letterSpacingSp: Float = 0f): TextStyle =
     TextStyle(fontFamily = Chakra, fontWeight = weight, fontSize = size.sp, lineHeight = lineHeight.sp, letterSpacing = letterSpacingSp.sp)
@@ -443,7 +439,7 @@ internal fun NetWorthHero(state: HomeState, hidden: Boolean, onToggleHidden: () 
                 val color = if (up) SumvaloTheme.colors.income else SumvaloTheme.colors.expense
                 Text(
                     (if (up) "▲ " else "▼ ") + formatAmount(abs(delta), compact = true) +
-                        " (" + String.format(Locale.US, "%.1f", abs(deltaPct)) + "%) vs $vsMonth",
+                        " (" + Fmt.pct(abs(deltaPct), 1) + "%) vs $vsMonth",
                     style = chakraText(FontWeight.SemiBold, 13, 18),
                     color = color,
                 )
@@ -558,7 +554,7 @@ internal fun Last7DaysCard(state: HomeState, hidden: Boolean) {
 
 /* ------------------------------- Quick actions ------------------------------- */
 
-private class QuickTileSpec(val title: String, val subtitle: String, val icon: ImageVector, val onClick: () -> Unit)
+private data class QuickTileSpec(val title: String, val subtitle: String, val icon: ImageVector, val onClick: () -> Unit)
 
 /** The 2×2 quick-action grid: Transactions, Bills, Budgets, Accounts. */
 @Composable
