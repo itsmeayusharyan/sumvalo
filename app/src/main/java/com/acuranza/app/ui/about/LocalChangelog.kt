@@ -21,6 +21,19 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.35",
+        name = "Sumvalo 0.35",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fix: Home screen now shows a loading indicator during initial data load instead of rendering empty/zero-value dashboard UI (no more dummy/placeholder screen on launch)", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding primary CTA buttons render as pill-shaped buttons instead of clipped circles", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding Skip button now has a visible background on dark hero cards", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.34",
         name = "Sumvalo 0.34",
         publishedAt = "",

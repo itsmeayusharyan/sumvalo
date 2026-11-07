@@ -1,0 +1,5 @@
+Sumvalo 0.35
+
+- Fix: Home screen now shows a loading indicator during initial data load instead of rendering empty/zero-value dashboard UI (no more dummy/placeholder screen on launch)
+- Fix: Onboarding primary CTA buttons render as pill-shaped buttons instead of clipped circles
+- Fix: Onboarding Skip button now has a visible background on dark hero cards

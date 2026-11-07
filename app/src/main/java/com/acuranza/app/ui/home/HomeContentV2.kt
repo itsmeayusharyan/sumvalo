@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.acuranza.app.designsystem.components.AmountText
 import com.acuranza.app.designsystem.components.EmptyState
@@ -74,7 +74,23 @@ fun HomeContent(
     onPlanning: () -> Unit = {},
     listState: LazyListState = rememberLazyListState(),
 ) {
-    LazyColumn(
+// While the initial data load is in flight, show a loading indicator instead of
+// rendering the dashboard with zero/default values — otherwise the first frame looks
+// like a dummy/placeholder screen before real data arrives.
+if (state.loading) {
+    Box(
+        Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+        contentAlignment = Alignment.Center,
+    ) {
+        CircularProgressIndicator(
+            color = SumvaloTheme.colors.accent,
+            modifier = Modifier.size(40.dp),
+        )
+    }
+    return
+}
+
+LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState,
         contentPadding = PaddingValues(bottom = 8.dp),

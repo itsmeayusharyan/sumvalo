@@ -259,6 +259,7 @@ private fun SkipButton(onSkip: () -> Unit) {
     Box(
         Modifier
             .clip(RoundedCornerShape(9999.dp))
+            .background(TileBg)
             .clickable(onClick = onSkip)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
@@ -330,7 +331,7 @@ private fun PillButton(label: String, icon: ImageVector, onClick: () -> Unit, he
     Box(
         Modifier
             .fillMaxWidth()
-            .clip(CircleShape)
+            .clip(RoundedCornerShape(9999.dp))
             .background(Color.White)
             .clickable(onClick = onClick),
     ) {
