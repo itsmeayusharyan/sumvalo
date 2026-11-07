@@ -1,0 +1,8 @@
+Sumvalo 0.37
+
+- Fix: Onboarding Welcome screen rebuilt to match React+Tailwind reference — correct logo placement, hero illustrations, decorations, dots, and typography
+- Fix: Onboarding Features screen rebuilt — 320dp hero card, bullseye target, shield badge, bar chart, and feature rows match reference
+- Fix: Onboarding History screen rebuilt — 256dp hero card, receipt card, ₹ bubble, repeat badge, and option rows match reference
+- Fix: Onboarding Notifications screen rebuilt — 270dp hero card, bell illustration, count badge, bill-due chip, and toggle rows match reference
+- Fix: Onboarding Done screen rebuilt — 380dp hero card, check mark, confetti, and stat cards match reference
+- Fix: All five onboarding screens now use consistent hero heights, absolute-positioned decorations that scale across screen sizes, and reference-accurate spacing

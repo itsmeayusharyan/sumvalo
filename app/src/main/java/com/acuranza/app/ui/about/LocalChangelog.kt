@@ -21,6 +21,22 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.37",
+        name = "Sumvalo 0.37",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Fix: Onboarding Welcome screen rebuilt to match React+Tailwind reference — correct logo placement, hero illustrations, decorations, dots, and typography", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding Features screen rebuilt — 320dp hero card, bullseye target, shield badge, bar chart, and feature rows match reference", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding History screen rebuilt — 256dp hero card, receipt card, ₹ bubble, repeat badge, and option rows match reference", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding Notifications screen rebuilt — 270dp hero card, bell illustration, count badge, bill-due chip, and toggle rows match reference", ChangeCategory.FIXED),
+            ChangeItem("Fix: Onboarding Done screen rebuilt — 380dp hero card, check mark, confetti, and stat cards match reference", ChangeCategory.FIXED),
+            ChangeItem("Fix: All five onboarding screens now use consistent hero heights, absolute-positioned decorations that scale across screen sizes, and reference-accurate spacing", ChangeCategory.FIXED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.36",
         name = "Sumvalo 0.36",
         publishedAt = "",

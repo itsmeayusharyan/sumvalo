@@ -145,35 +145,33 @@ fun OnboardingScreen() {
 
 /** Full-page scaffold shared by every step: scrollable body with the primary action pinned to
  * the bottom above the nav bar — matching the reference, where the CTA never scrolls away.
- * The body uses a consistent 24dp horizontal grid; content components should not re-pad.
+ * Steps manage their own internal padding and positioning to match the reference exactly.
  */
- @Composable
- private fun OnboardingPage(buttonContent: @Composable () -> Unit, content: @Composable () -> Unit) {
-     Column(
-         Modifier.fillMaxSize().background(OnboardingBg),
-     ) {
-         Box(
-             Modifier
-                 .weight(1f)
-                 .verticalScroll(rememberScrollState()),
-         ) {
-             Column(Modifier.padding(horizontal = 24.dp, vertical = 20.dp)) {
-                 content()
-             }
-         }
-         Column(
-             Modifier.fillMaxWidth().background(OnboardingBg),
-             horizontalAlignment = Alignment.CenterHorizontally,
-         ) {
-             Column(
-                 Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 20.dp),
-                 horizontalAlignment = Alignment.CenterHorizontally,
-             ) {
-                 buttonContent()
-             }
-         }
-     }
- }
+@Composable
+private fun OnboardingPage(buttonContent: @Composable () -> Unit, content: @Composable () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().background(OnboardingBg),
+    ) {
+        Box(
+            Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            content()
+        }
+        Column(
+            Modifier.fillMaxWidth().background(OnboardingBg),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column(
+                Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                buttonContent()
+            }
+        }
+    }
+}
 
 /** The rounded hero card every step opens with: 32dp corners, hairline border, fixed-dark surface. */
 @Composable
@@ -204,7 +202,7 @@ private fun HeroCardScaffold(
         Column(Modifier.fillMaxSize()) {
             HeroStatusBar()
             if (navRow != null) navRow()
-            Box(Modifier.weight(1f).fillMaxWidth(), content = decorations)
+            Box(Modifier.fillMaxSize(), content = decorations)
         }
     }
 }
@@ -233,7 +231,7 @@ private fun HeroStatusGlyph(icon: ImageVector, tint: Color = Color.White) {
     Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp))
 }
 
-/** White circular back button (steps 2-5). */
+/** White circular back button (steps 2-5): white bg, dark arrow — matches the reference. */
 @Composable
 private fun BackButton(onBack: () -> Unit) {
     Box(
@@ -248,18 +246,17 @@ private fun BackButton(onBack: () -> Unit) {
             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = "Back",
             tint = OnboardingBg,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(22.dp),
         )
     }
 }
 
-/** Skip pill (steps 1-4). */
+/** Skip pill (steps 1-4). Transparent pill like the reference — no background by default. */
 @Composable
 private fun SkipButton(onSkip: () -> Unit) {
     Box(
         Modifier
             .clip(RoundedCornerShape(9999.dp))
-            .background(TileBg)
             .clickable(onClick = onSkip)
             .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
@@ -282,7 +279,7 @@ private fun HeroNavRow(onBack: (() -> Unit)?, onSkip: (() -> Unit)?) {
     }
 }
 
-/** Progress dots + page label (px-6 pt-6 in the reference). */
+/** Progress dots + page label — reference: 3dp dots, active is w-9 h-3. */
 @Composable
 private fun ProgressRow(activeIndex: Int) {
     Row(
@@ -313,15 +310,28 @@ private fun ProgressRow(activeIndex: Int) {
 
 /** Headline + subtitle block (px-6 pt-5 in the reference). */
 @Composable
-private fun HeadlineBlock(title: String, subtitle: String, titleSize: Int = 40, letterSpacing: Float = 0f) {
+private fun HeadlineBlock(
+    title: String,
+    subtitle: String,
+    titleSize: Int = 40,
+    titleWeight: FontWeight = FontWeight.Bold,
+    titleLineHeight: Int? = null,
+    subtitleSize: Int = 15,
+    subtitleLineHeight: Int? = null,
+    letterSpacing: Float = 0f,
+) {
     Column(Modifier.fillMaxWidth().padding(vertical = 20.dp)) {
         Text(
             title,
-            style = chakraText(FontWeight.Bold, titleSize, titleSize, letterSpacing),
+            style = chakraText(titleWeight, titleSize, titleLineHeight ?: titleSize, letterSpacing),
             color = Color.White,
         )
         Spacer(Modifier.height(12.dp))
-        Text(subtitle, style = chakraText(FontWeight.Normal, 15, 21), color = SubtleText)
+        Text(
+            subtitle,
+            style = chakraText(FontWeight.Normal, subtitleSize, subtitleLineHeight ?: subtitleSize + 6),
+            color = SubtleText,
+        )
     }
 }
 
@@ -417,13 +427,12 @@ private fun BoxScope.DecoPill(
 }
 
 // ── Step 1 · Welcome ────────────────────────────────────────────────────────────────────────
-
 @Composable
 internal fun Welcome(onNext: () -> Unit) {
     OnboardingPage(
         buttonContent = {
-            PillButton("Get started", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext, height = 56.dp)
-            Spacer(Modifier.height(12.dp))
+            PillButton("Get started", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext, height = 64.dp)
+            Spacer(Modifier.height(8.dp))
             Text(
                 "Takes less than a minute",
                 style = chakraText(FontWeight.Medium, 13, 16),
@@ -436,39 +445,59 @@ internal fun Welcome(onNext: () -> Unit) {
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
+                // Logo: dark rounded-square container (h-10 w-10 rounded-xl bg-[#0e0e0e])
                 Box(
                     Modifier
                         .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.White),
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(OnboardingBg),
                     contentAlignment = Alignment.Center,
-                ) { SumvaloLogo(size = 24.dp) }
-                Spacer(Modifier.width(12.dp))
-                Text("SUMVALO", style = chakraText(FontWeight.Bold, 15, 20), color = Color.White)
+                ) {
+                    SumvaloLogo(size = 28.dp)
+                }
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    "SUMVALO",
+                    style = chakraText(FontWeight.Bold, 15, 20, 0.18f),
+                    color = Color.White,
+                )
                 Spacer(Modifier.weight(1f))
                 SkipButton(onNext)
             }
         }, decorations = {
-            // Grey circle bleeding off the top-right corner
+            // Big circle: h-260 w-260 top-10 left-150 bg-[#2a2a2a] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 40.dp)
+                    .offset(x = 150.dp, y = 10.dp)
                     .size(260.dp)
                     .clip(CircleShape)
                     .background(Hairline),
             )
-            Deco(20.dp, OnboardingBg, Alignment.TopStart, corner = 6.dp, insetX = 34.dp, insetY = 12.dp)
-            Deco(6.dp, Color.White, Alignment.TopStart, corner = 3.dp, insetX = 104.dp, insetY = 30.dp)
-
-            // ₹ gauge: white disc + dark ring + glyph, centred slightly high
+            // Small deco: h-10 w-10 top-22 left-40 bg-[#0e0e0e] rounded-10px rotate-18deg
             Box(
                 Modifier
-                    .align(Alignment.Center)
-                    .offset(y = (-12).dp)
+                    .offset(x = 40.dp, y = 22.dp)
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 18f },
+            )
+            // Tiny deco: h-5 w-5 top-78 left-110 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 110.dp, y = 78.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // ₹ gauge: h-184 w-184 top-46 left-166 bg-[#ffffff] shadow absolute
+            Box(
+                Modifier
+                    .offset(x = 166.dp, y = 46.dp)
                     .size(184.dp)
                     .clip(CircleShape)
                     .background(Color.White),
@@ -481,42 +510,51 @@ internal fun Welcome(onNext: () -> Unit) {
                         .border(6.dp, OnboardingBg, CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("₹", style = chakraText(FontWeight.Bold, 92, 92), color = OnboardingBg)
+                    Text(
+                        "₹",
+                        style = chakraText(FontWeight.ExtraBold, 92, 92),
+                        color = OnboardingBg,
+                    )
                 }
             }
-
-            // Bottom stats strip: three mini columns + growth pill
-            Row(
-                Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            // Bottom stats: bottom-28 left-24 gap-2
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Box(Modifier.size(44.dp, 24.dp).clip(RoundedCornerShape(10.dp)).background(Color.White))
-                    Box(Modifier.size(44.dp, 40.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF3A3A3A)))
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Box(Modifier.size(44.dp, 32.dp).clip(RoundedCornerShape(10.dp)).background(Color.White))
-                    Box(Modifier.size(44.dp, 64.dp).clip(RoundedCornerShape(12.dp)).background(OnboardingBg))
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Box(Modifier.size(44.dp, 40.dp).clip(RoundedCornerShape(10.dp)).background(OnboardingBg))
-                    Box(Modifier.size(44.dp, 96.dp).clip(RoundedCornerShape(12.dp)).background(Color.White))
-                }
-                Spacer(Modifier.weight(1f))
                 Row(
                     Modifier
-                        .clip(RoundedCornerShape(9999.dp))
-                        .background(OnboardingBg)
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                        .offset(x = 24.dp, y = -28.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    Text("▲", style = chakraText(FontWeight.Bold, 14, 18), color = Green)
-                    Text("2.4% this month", style = chakraText(FontWeight.Bold, 14, 18), color = Green)
+                    Box(Modifier.size(12.dp, 80.dp).clip(RoundedCornerShape(14.dp)).background(Color(0xFF3A3A3A)))
+                    Box(Modifier.size(12.dp, 128.dp).clip(RoundedCornerShape(14.dp)).background(OnboardingBg))
+                    Box(Modifier.size(12.dp, 176.dp).clip(RoundedCornerShape(14.dp)).background(Color.White))
+                }
+            }
+            // Growth pill: bottom-34 left-196 -rotate-4deg px-4 py-2 bg-[#0e0e0e] rounded-9999px
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                Box(
+                    Modifier
+                        .offset(x = 196.dp, y = -34.dp)
+                        .graphicsLayer { rotationZ = -4f },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Row(
+                        Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                            .background(OnboardingBg)
+                            .clip(RoundedCornerShape(9999.dp)),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text("▲", style = chakraText(FontWeight.Bold, 14, 18), color = Green)
+                        Text("2.4% this month", style = chakraText(FontWeight.Bold, 14, 18), color = Green)
+                    }
                 }
             }
         })
@@ -526,13 +564,16 @@ internal fun Welcome(onNext: () -> Unit) {
             title = "Take control of your money.",
             subtitle = "Track income, expenses, budgets and goals — privately, on your phone.",
             titleSize = 44,
-            letterSpacing = -0.8f,
+            titleWeight = FontWeight.ExtraBold,
+            titleLineHeight = 42,
+            subtitleSize = 16,
+            subtitleLineHeight = 23,
         )
 
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             BenefitCard(Icons.Outlined.Lock, "On-device", Modifier.weight(1f))
@@ -563,69 +604,112 @@ private fun BenefitCard(icon: ImageVector, label: String, modifier: Modifier = M
 }
 
 // ── Step 2 · Features ───────────────────────────────────────────────────────────────────────
-
 @Composable
 internal fun FeaturesStep(onBack: () -> Unit, onNext: () -> Unit) {
     OnboardingPage(
         buttonContent = {
-            PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext)
+            PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext, height = 64.dp)
         },
     ) {
-        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 320.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+            // Big circle: h-230 w-230 -top-20 left-170 bg-[#2a2a2a] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .offset(x = 12.dp)
+                    .offset(x = 170.dp, y = -20.dp)
                     .size(230.dp)
                     .clip(CircleShape)
                     .background(Hairline),
             )
-            Deco(36.dp, OnboardingBg, Alignment.TopStart, corner = 10.dp, rotation = 18f, insetX = 34.dp, insetY = 12.dp)
-            Deco(20.dp, Color.White, Alignment.TopStart, corner = 10.dp, insetX = 104.dp, insetY = 30.dp)
-
-            // Bullseye target with hard shadow, right of centre
+            // Small deco: h-9 w-9 top-12 left-34 bg-[#0e0e0e] rounded-10px rotate-18deg
             Box(
                 Modifier
-                    .align(Alignment.Center)
-                    .offset(x = 36.dp, y = (-6).dp)
-                    .size(164.dp),
+                    .offset(x = 34.dp, y = 12.dp)
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 18f },
+            )
+            // Tiny deco: h-5 w-5 top-30 left-104 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 104.dp, y = 30.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Bullseye target: h-164 w-164 top-8 left-186 bg-[#ffffff] with shadow
+            Box(
+                Modifier
+                    .offset(x = 186.dp, y = 8.dp)
+                    .size(164.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(Modifier.size(164.dp).offset(y = 14.dp).clip(CircleShape).background(OnboardingBg))
-                Box(Modifier.size(164.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-                    Box(Modifier.size(128.dp).clip(CircleShape).background(OnboardingBg), contentAlignment = Alignment.Center) {
-                        Box(Modifier.size(92.dp).clip(CircleShape).background(Color.White), contentAlignment = Alignment.Center) {
-                            Box(Modifier.size(58.dp).clip(CircleShape).background(OnboardingBg), contentAlignment = Alignment.Center) {
-                                Box(Modifier.size(22.dp).clip(CircleShape).background(Color.White))
-                            }
+                Box(
+                    Modifier
+                        .size(128.dp)
+                        .clip(CircleShape)
+                        .background(OnboardingBg),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Box(
+                        Modifier
+                            .size(92.dp)
+                            .clip(CircleShape)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(
+                            Modifier
+                                .size(58.dp)
+                                .clip(CircleShape)
+                                .background(OnboardingBg),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Box(Modifier.size(22.dp).clip(CircleShape).background(Color.White))
                         }
                     }
                 }
             }
 
-            // Bar chart, bottom-left
-            Row(
-                Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 22.dp, bottom = 22.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.Bottom,
-            ) {
-                BarColumn(topColor = Color.White, topHeight = 24.dp, bottomColor = Color(0xFF3A3A3A), bottomHeight = 40.dp)
-                BarColumn(topColor = Color.White, topHeight = 32.dp, bottomColor = OnboardingBg, bottomHeight = 64.dp)
-                BarColumn(topColor = OnboardingBg, topHeight = 40.dp, bottomColor = Color.White, bottomHeight = 96.dp)
-            }
-
-            // Shield-with-check badge overlapping the target
+            // Shield-with-check badge: text-104px top-96 left-148 -rotate-6deg
             Box(
                 Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (-4).dp, y = 10.dp)
-                    .size(96.dp)
+                    .offset(x = 148.dp, y = 96.dp)
+                    .size(104.dp)
                     .graphicsLayer { rotationZ = -6f },
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Filled.VerifiedUser, contentDescription = null, tint = OnboardingBg, modifier = Modifier.size(96.dp))
                 Icon(Icons.Outlined.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(44.dp))
+            }
+
+            // Bar chart, bottom-left: three flex-col columns gap-1
+            Column(
+                Modifier
+                    .offset(x = 22.dp, y = -22.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Box(Modifier.size(11.dp, 24.dp).clip(RoundedCornerShape(10.dp)).background(Color.White))
+                        Box(Modifier.size(11.dp, 40.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFF3A3A3A)))
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Box(Modifier.size(11.dp, 32.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFF3A3A3A)))
+                        Box(Modifier.size(11.dp, 64.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFF3A3A3A)))
+                    }
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Box(Modifier.size(11.dp, 40.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFF3A3A3A)))
+                        Box(Modifier.size(11.dp, 96.dp).clip(RoundedCornerShape(10.dp)).background(Color(0xFF3A3A3A)))
+                    }
+                }
             }
         })
 
@@ -633,12 +717,17 @@ internal fun FeaturesStep(onBack: () -> Unit, onNext: () -> Unit) {
         HeadlineBlock(
             title = "Track, plan and stay in control.",
             subtitle = "",
+            titleSize = 40,
+            titleWeight = FontWeight.ExtraBold,
+            titleLineHeight = 40,
+            subtitleSize = 16,
+            subtitleLineHeight = 23,
         )
 
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             FeatureRow(Icons.Outlined.BarChart, Hairline, Color.White, "Track everything", "Income, expenses and card dues in one place.")
@@ -685,49 +774,52 @@ private fun FeatureRow(icon: ImageVector, iconBg: Color, iconTint: Color, title:
 }
 
 // ── Step 3 · History ────────────────────────────────────────────────────────────────────────
-
 @Composable
 internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
     var selected by rememberSaveable { mutableIntStateOf(0) }
 
     OnboardingPage(
         buttonContent = {
-            PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext)
+            PillButton("Continue", Icons.AutoMirrored.Filled.KeyboardArrowRight, onNext, height = 64.dp)
         },
     ) {
-        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 256.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+            // Big circle: h-190 w-190 top-34 left-196 bg-[#2a2a2a] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 4.dp)
+                    .offset(x = 196.dp, y = 34.dp)
                     .size(190.dp)
                     .clip(CircleShape)
                     .background(Hairline),
             )
-            Deco(20.dp, Color.White, Alignment.TopStart, corner = 10.dp, insetX = 30.dp, insetY = 84.dp)
-            Deco(32.dp, OnboardingBg, Alignment.TopEnd, corner = 10.dp, rotation = 18f, insetX = 36.dp, insetY = 70.dp)
-
-            // Receipt card with hard shadow, slightly rotated, left of centre
+            // Small deco: h-5 w-5 top-118 left-30 bg-[#ffffff] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (-24).dp, y = (-8).dp)
-                    .size(112.dp, 150.dp)
-                    .graphicsLayer { rotationZ = -6f },
+                    .offset(x = 30.dp, y = 118.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Deco: h-8 w-8 top-104 left-322 bg-[#0e0e0e] rounded-10px rotate-18deg
+            Box(
+                Modifier
+                    .offset(x = 322.dp, y = 104.dp)
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 18f },
+            )
+            // Receipt card: h-150 w-28 top-12 left-132 bg-[#ffffff] rounded-18px rotate-6deg
+            Box(
+                Modifier
+                    .offset(x = 132.dp, y = 12.dp)
+                    .size(28.dp, 150.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(Color.White)
+                    .graphicsLayer { rotationZ = 6f },
             ) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .offset(y = 10.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(OnboardingBg),
-                )
                 Column(
-                    Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Color.White)
-                        .padding(horizontal = 16.dp, vertical = 20.dp),
+                    Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     ReceiptBar(56.dp, 12.dp)
@@ -737,35 +829,31 @@ internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
                     ReceiptBar(48.dp, 10.dp)
                 }
             }
-
-            // ₹ speech bubble + tail, upper-left
+            // ₹ speech bubble: h-66 w-88 top-22 left-40 bg-[#0e0e0e] rounded-22px rotate-8deg
             Box(
                 Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 40.dp, top = 8.dp)
+                    .offset(x = 40.dp, y = 22.dp)
                     .size(88.dp, 66.dp)
-                    .graphicsLayer { rotationZ = 8f }
                     .clip(RoundedCornerShape(22.dp))
-                    .background(OnboardingBg),
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 8f },
                 contentAlignment = Alignment.Center,
             ) {
-                Text("₹", style = chakraText(FontWeight.Bold, 38, 40), color = Color.White)
+                Text("₹", style = chakraText(FontWeight.ExtraBold, 38, 40), color = Color.White)
             }
-            Deco(20.dp, OnboardingBg, Alignment.TopStart, corner = 4.dp, rotation = 45f, insetX = 58.dp, insetY = 64.dp)
-
-            // Repeat badge with hard shadow, right side
+            // Small deco: h-5 w-5 top-78 left-58 bg-[#0e0e0e] rounded-4px rotate-45deg
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 80.dp, top = 40.dp)
-                    .size(78.dp)
-                    .clip(CircleShape)
-                    .background(OnboardingBg),
+                    .offset(x = 58.dp, y = 78.dp)
+                    .size(20.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 45f },
             )
+            // Repeat badge: h-78 w-78 top-66 left-232 bg-[#ffffff] shadow
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 80.dp, top = 32.dp)
+                    .offset(x = 232.dp, y = 66.dp)
                     .size(78.dp)
                     .clip(CircleShape)
                     .background(Color.White),
@@ -779,12 +867,17 @@ internal fun HistoryStep(onBack: () -> Unit, onNext: () -> Unit) {
         HeadlineBlock(
             title = "Your history, your way.",
             subtitle = "Track transactions, enable SMS tracking, import a bank statement or add entries manually — it's up to you.",
+            titleSize = 40,
+            titleWeight = FontWeight.ExtraBold,
+            titleLineHeight = 40,
+            subtitleSize = 15,
+            subtitleLineHeight = 21,
         )
 
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             HistoryOptionRow(Icons.Outlined.Edit, "Quick manual entry", "Tags, splits and receipts in seconds.", selected == 0) { selected = 0 }
@@ -889,49 +982,100 @@ internal fun NotificationsScreen(
                 if (granted) "Continue" else "Allow notifications",
                 if (granted) Icons.AutoMirrored.Filled.KeyboardArrowRight else Icons.Outlined.NotificationsNone,
                 onClick = onAllowClick,
+                height = 64.dp,
             )
             Spacer(Modifier.height(8.dp))
             Box(
                 Modifier
+                    .size(40.dp)
                     .clip(RoundedCornerShape(9999.dp))
                     .clickable(onClick = onNext)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text("Maybe later", style = chakraText(FontWeight.Bold, 15, 20), color = SubtleText)
             }
         },
     ) {
-        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+        HeroCardScaffold(height = 270.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = onNext) }, decorations = {
+            // Big circle: h-200 w-200 top-10 left-150 bg-[#2a2a2a] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 40.dp)
+                    .offset(x = 150.dp, y = 10.dp)
                     .size(200.dp)
                     .clip(CircleShape)
                     .background(Hairline),
             )
-            Deco(20.dp, Color.White, Alignment.TopStart, corner = 10.dp, insetX = 40.dp, insetY = 64.dp)
-            Deco(32.dp, OnboardingBg, Alignment.TopStart, corner = 10.dp, rotation = 18f, insetX = 100.dp, insetY = 76.dp)
-            Deco(20.dp, OnboardingBg, Alignment.TopEnd, corner = 4.dp, rotation = 45f, insetX = 48.dp, insetY = 66.dp)
-            Deco(20.dp, Color.White, Alignment.TopEnd, corner = 10.dp, insetX = 144.dp, insetY = 36.dp)
-
-            // Bell: dome + rim bar (hard shadow) + clapper, one right-anchored group
+            // Small deco: h-5 w-5 top-28 left-40 bg-[#ffffff] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 60.dp, top = 8.dp)
-                    .size(156.dp, 170.dp),
-            ) {
-                Box(Modifier.align(Alignment.TopCenter).size(112.dp, 104.dp).clip(RoundedCornerShape(56.dp)).background(Color.White))
-                Box(Modifier.align(Alignment.TopCenter).offset(y = 100.dp).size(156.dp, 24.dp).clip(RoundedCornerShape(50)).background(OnboardingBg))
-                Box(Modifier.align(Alignment.TopCenter).offset(y = 92.dp).size(156.dp, 24.dp).clip(RoundedCornerShape(50)).background(Color.White))
-                Box(Modifier.align(Alignment.TopCenter).offset(y = 134.dp).size(32.dp).clip(CircleShape).background(OnboardingBg))
-            }
-            // Red count badge overlapping the dome's top-right
+                    .offset(x = 40.dp, y = 28.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Deco: h-8 w-8 top-40 left-100 bg-[#0e0e0e] rounded-10px rotate-18deg
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 72.dp, top = 28.dp)
+                    .offset(x = 100.dp, y = 40.dp)
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 18f },
+            )
+            // Small deco: h-5 w-5 top-30 left-322 bg-[#0e0e0e] rounded-4px rotate-45deg
+            Box(
+                Modifier
+                    .offset(x = 322.dp, y = 30.dp)
+                    .size(20.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 45f },
+            )
+            // Small deco: h-5 w-5 top-0 left-226 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 226.dp, y = 0.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Bell dome: h-104 w-28 top-12 left-180 bg-[#ffffff] rounded-56px
+            Box(
+                Modifier
+                    .offset(x = 180.dp, y = 12.dp)
+                    .size(112.dp, 104.dp)
+                    .clip(RoundedCornerShape(56.dp))
+                    .background(Color.White),
+            )
+            // Bell rim bar: h-6 w-156 top-104 left-158 bg-[#ffffff]
+            Box(
+                Modifier
+                    .offset(x = 158.dp, y = 104.dp)
+                    .size(156.dp, 24.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color.White),
+            )
+            // Bell inner bar: h-6 w-156 top-92 left-158 bg-[#0e0e0e]
+            Box(
+                Modifier
+                    .offset(x = 158.dp, y = 92.dp)
+                    .size(156.dp, 24.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(OnboardingBg),
+            )
+            // Bell clapper: h-8 w-8 top-134 left-220 rounded-9999px bg-[#0e0e0e]
+            Box(
+                Modifier
+                    .offset(x = 220.dp, y = 134.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(OnboardingBg),
+            )
+            // Count badge: h-12 w-12 border-4 border-[#1f1f1f] bg-[#d9776f] top-[-4px] left-[262px]
+            Box(
+                Modifier
+                    .offset(x = 262.dp, y = -4.dp)
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(Coral)
@@ -940,30 +1084,35 @@ internal fun NotificationsScreen(
             ) {
                 Text("3", style = chakraText(FontWeight.Bold, 20, 22), color = Color.White)
             }
-
-            // Bill-due chip, rotated, with hard shadow
-            Box(
+            // Bill-due chip: rounded-2xl bg-[#0e0e0e] px-4 py-3 shadow top-[118px] left-[18px] -rotate-7deg
+            Column(
                 Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(start = 18.dp, bottom = 10.dp)
-                    .graphicsLayer { rotationZ = -7f },
+                    .offset(x = 18.dp, y = 118.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Bottom,
             ) {
                 Box(
                     Modifier
-                        .offset(y = 6.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFF3A3A3A)),
+                        .graphicsLayer { rotationZ = -7f },
+                    contentAlignment = Alignment.Center,
                 ) {
-                    Row(
+                    Box(
                         Modifier
+                            .offset(y = 6.dp)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(OnboardingBg)
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            .background(Color(0xFF3A3A3A)),
                     ) {
-                        Box(Modifier.size(10.dp).clip(CircleShape).background(Coral))
-                        Text("Bill due in 3 days", style = chakraText(FontWeight.Bold, 15, 18), color = Color.White)
+                        Row(
+                            Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(OnboardingBg)
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        ) {
+                            Box(Modifier.size(10.dp).clip(CircleShape).background(Coral))
+                            Text("Bill due in 3 days", style = chakraText(FontWeight.Bold, 15, 18), color = Color.White)
+                        }
                     }
                 }
             }
@@ -973,12 +1122,17 @@ internal fun NotificationsScreen(
         HeadlineBlock(
             title = "Turn on notifications.",
             subtitle = "Timely reminders for bills, unusual spending, warranties and scheduled payments.",
+            titleSize = 40,
+            titleWeight = FontWeight.ExtraBold,
+            titleLineHeight = 40,
+            subtitleSize = 15,
+            subtitleLineHeight = 21,
         )
 
         Column(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             NotifRow(Icons.Outlined.CalendarToday, "Card bills", "A reminder before each due date.", cardBills) { cardBills = !cardBills }
@@ -1045,81 +1199,176 @@ private fun NotifRow(icon: ImageVector, title: String, text: String, on: Boolean
 }
 
 // ── Step 5 · All set ────────────────────────────────────────────────────────────────────────
-
 @Composable
 internal fun DoneStep(onBack: () -> Unit, onFinish: () -> Unit) {
     OnboardingPage(
         buttonContent = {
-            PillButton("Open Sumvalo", Icons.AutoMirrored.Filled.KeyboardArrowRight, onFinish)
+            PillButton("Open Sumvalo", Icons.AutoMirrored.Filled.KeyboardArrowRight, onFinish, height = 64.dp)
             Spacer(Modifier.height(8.dp))
             Box(
                 Modifier
+                    .size(40.dp)
                     .clip(RoundedCornerShape(9999.dp))
                     .clickable(onClick = onFinish)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(vertical = 10.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text("Add an account first", style = chakraText(FontWeight.Bold, 15, 20), color = SubtleText)
             }
         },
     ) {
-        HeroCardScaffold(height = 430.dp, navRow = { HeroNavRow(onBack = onBack, onSkip = null) }, decorations = {
-            // Big white check disc with hard shadow, centre-left
+        HeroCardScaffold(height = 380.dp, navRow = { HeroNavRow(onBack = null, onSkip = null) }, decorations = {
+            // Big white check disc: h-184 w-184 top-30 left-91 bg-[#ffffff] shadow
             Box(
                 Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (-14).dp, y = (-20).dp)
-                    .size(184.dp),
+                    .offset(x = 91.dp, y = 30.dp)
+                    .size(184.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center,
             ) {
-                Box(Modifier.size(184.dp).offset(y = 10.dp).clip(CircleShape).background(OnboardingBg))
-                Box(
-                    Modifier.size(184.dp).clip(CircleShape).background(Color.White),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(Icons.Outlined.Check, contentDescription = null, tint = OnboardingBg, modifier = Modifier.size(96.dp))
-                }
+                Icon(Icons.Outlined.Check, contentDescription = null, tint = OnboardingBg, modifier = Modifier.size(112.dp))
             }
 
-            // Confetti: squares, pills, dots and triangles around the disc
-            Deco(28.dp, OnboardingBg, Alignment.TopStart, corner = 8.dp, rotation = 18f, insetX = 36.dp, insetY = 10.dp)
-            Deco(20.dp, Color.White, Alignment.TopStart, corner = 10.dp, insetX = 22.dp, insetY = 88.dp)
-            DecoPill(48.dp, 16.dp, Green, Alignment.TopStart, rotation = -28f, insetX = 30.dp, insetY = 168.dp)
-            Deco(20.dp, OnboardingBg, Alignment.TopStart, corner = 4.dp, rotation = 40f, insetX = 90.dp, insetY = 218.dp)
+            // Confetti decorations
+            // Small deco: h-7 w-7 top-30 left-36 bg-[#0e0e0e] rounded-8px rotate-18deg
             Box(
                 Modifier
-                    .align(Alignment.TopStart)
-                    .padding(start = 68.dp, top = 42.dp)
+                    .offset(x = 36.dp, y = 30.dp)
+                    .size(28.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 18f },
+            )
+            // Tiny deco: h-5 w-5 top-110 left-22 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 22.dp, y = 110.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Green pill: h-4 w-12 top-190 left-30 bg-[#6fbf8b] rounded-9999px rotate-28deg
+            Box(
+                Modifier
+                    .offset(x = 30.dp, y = 190.dp)
+                    .size(12.dp, 16.dp)
+                    .clip(CircleShape)
+                    .background(Green)
+                    .graphicsLayer { rotationZ = -28f },
+            )
+            // Small deco: h-5 w-5 top-240 left-90 bg-[#0e0e0e] rounded-4px rotate-40deg
+            Box(
+                Modifier
+                    .offset(x = 90.dp, y = 240.dp)
+                    .size(20.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 40f },
+            )
+            // ChangeHistory icon: text-34px text-[#f5f5f5] top-64 left-68 -rotate-14deg
+            Box(
+                Modifier
+                    .offset(x = 68.dp, y = 64.dp)
                     .graphicsLayer { rotationZ = -14f },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Filled.ChangeHistory, contentDescription = null, tint = Color(0xFFF5F5F5), modifier = Modifier.size(34.dp))
             }
-            Deco(12.dp, Color.White, Alignment.TopStart, corner = 6.dp, insetX = 80.dp, insetY = 138.dp)
-            Deco(32.dp, OnboardingBg, Alignment.TopEnd, corner = 9.dp, rotation = -16f, insetX = 62.dp, insetY = 8.dp)
-            Deco(24.dp, Color.White, Alignment.TopEnd, corner = 12.dp, insetX = 50.dp, insetY = 74.dp)
-            DecoPill(56.dp, 16.dp, Green, Alignment.TopEnd, rotation = 32f, insetX = 78.dp, insetY = 42.dp)
+            // Tiny deco: h-3 w-3 top-160 left-80 bg-[#ffffff] rounded-9999px
             Box(
                 Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(end = 50.dp, top = 148.dp)
+                    .offset(x = 80.dp, y = 160.dp)
+                    .size(12.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Small deco: h-8 w-8 top-22 left-296 bg-[#0e0e0e] rounded-9px rotate-16deg
+            Box(
+                Modifier
+                    .offset(x = 296.dp, y = 22.dp)
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(9.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = -16f },
+            )
+            // Tiny deco: h-6 w-6 top-96 left-316 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 316.dp, y = 96.dp)
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Green pill: h-4 w-14 top-64 left-256 bg-[#6fbf8b] rounded-9999px rotate-32deg
+            Box(
+                Modifier
+                    .offset(x = 256.dp, y = 64.dp)
+                    .size(14.dp, 16.dp)
+                    .clip(CircleShape)
+                    .background(Green)
+                    .graphicsLayer { rotationZ = 32f },
+            )
+            // ChangeHistory icon: text-40px text-[#6fbf8b] top-170 left-300 rotate-22deg
+            Box(
+                Modifier
+                    .offset(x = 300.dp, y = 170.dp)
                     .graphicsLayer { rotationZ = 22f },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Filled.ChangeHistory, contentDescription = null, tint = Green, modifier = Modifier.size(40.dp))
             }
-            Deco(20.dp, OnboardingBg, Alignment.TopEnd, corner = 5.dp, rotation = 24f, insetX = 108.dp, insetY = 224.dp)
-            Deco(14.dp, Color.White, Alignment.TopEnd, corner = 7.dp, insetX = 196.dp, insetY = 8.dp)
-            DecoPill(40.dp, 12.dp, Green, Alignment.TopStart, rotation = -8f, insetX = 160.dp, insetY = 234.dp)
-            Deco(16.dp, Color.White, Alignment.TopEnd, corner = 8.dp, insetX = 56.dp, insetY = 202.dp)
+            // Small deco: h-5 w-5 top-246 left-262 bg-[#0e0e0e] rounded-5px rotate-24deg
+            Box(
+                Modifier
+                    .offset(x = 262.dp, y = 246.dp)
+                    .size(20.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(OnboardingBg)
+                    .graphicsLayer { rotationZ = 24f },
+            )
+            // Tiny deco: h-3.5 w-3.5 top-0 left-180 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 180.dp, y = 0.dp)
+                    .size(14.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
+            // Green pill: h-3 w-10 top-256 left-160 bg-[#6fbf8b] rounded-9999px rotate-8deg
+            Box(
+                Modifier
+                    .offset(x = 160.dp, y = 256.dp)
+                    .size(10.dp, 12.dp)
+                    .clip(CircleShape)
+                    .background(Green)
+                    .graphicsLayer { rotationZ = -8f },
+            )
+            // Tiny deco: h-4 w-4 top-224 left-318 bg-[#ffffff] rounded-9999px
+            Box(
+                Modifier
+                    .offset(x = 318.dp, y = 224.dp)
+                    .size(16.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            )
         })
 
         ProgressRow(4)
         HeadlineBlock(
             title = "You're all set.",
             subtitle = "Add bank accounts and cards anytime from Accounts, or jump straight in and add transactions as you go.",
+            titleSize = 40,
+            titleWeight = FontWeight.ExtraBold,
+            titleLineHeight = 40,
+            subtitleSize = 15,
+            subtitleLineHeight = 21,
         )
 
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             StatCard("Tracking", "Manual", Modifier.weight(1f))
