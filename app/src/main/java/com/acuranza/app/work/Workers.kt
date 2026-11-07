@@ -23,7 +23,7 @@ import java.time.LocalTime
 class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as SumvaloApp).container
+        val c = (applicationContext as SumvaloApp).acquireContainer() ?: return Result.retry()
         val settings = c.settings.current()
         val today = Time.today()
 
@@ -100,7 +100,7 @@ class DailyRefreshWorker(appContext: Context, params: WorkerParameters) : Corout
 class SmsScanWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
         if (!com.acuranza.app.BuildConfig.SMS_FULL) return Result.success()
-        val c = (applicationContext as SumvaloApp).container
+        val c = (applicationContext as SumvaloApp).acquireContainer() ?: return Result.retry()
         val runner = c.smsScanRunner ?: return Result.success()
         runCatching { runner.run(auto = true) }
             .onFailure { runCatching { c.settings.recordSmsScan("failed") } }
@@ -112,7 +112,7 @@ class SmsScanWorker(appContext: Context, params: WorkerParameters) : CoroutineWo
 class BillReminderWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as SumvaloApp).container
+        val c = (applicationContext as SumvaloApp).acquireContainer() ?: return Result.retry()
         val settings = c.settings.current()
         if (!settings.notifyBills) return Result.success()
         val due = c.bills.unpaid().filter { it.daysLeft != null && (it.daysLeft in REMIND_DAYS || it.daysLeft < 0) }
@@ -147,7 +147,7 @@ class BillReminderWorker(appContext: Context, params: WorkerParameters) : Corout
 class TransactionReminderWorker(appContext: Context, params: WorkerParameters) : CoroutineWorker(appContext, params) {
 
     override suspend fun doWork(): Result {
-        val c = (applicationContext as SumvaloApp).container
+        val c = (applicationContext as SumvaloApp).acquireContainer() ?: return Result.retry()
         val settings = c.settings.current()
         if (!settings.txnReminderEnabled) return Result.success()
         val today = Time.today()

@@ -21,6 +21,18 @@ import com.acuranza.app.model.ReleaseEntry
  */
 val LocalChangelog: List<ReleaseEntry> = listOf(
     ReleaseEntry(
+        tag = "v0.34",
+        name = "Sumvalo 0.34",
+        publishedAt = "",
+        body = null,
+        htmlUrl = "",
+    ).copy(
+        providedChanges = listOf(
+            ChangeItem("Security-review close-out: database fails closed when the key exists but can't be unwrapped (even after a prior plaintext fallback); background workers and widget updates route through acquireContainer so they no-op instead of crash-looping", ChangeCategory.FIXED),
+            ChangeItem("Minor: weekly recurring monthly-equivalent now rounds instead of truncating (1 paise); removed leftover date formatter and unused route constants", ChangeCategory.IMPROVED),
+        ),
+    ),
+    ReleaseEntry(
         tag = "v0.33",
         name = "Sumvalo 0.33",
         publishedAt = "",

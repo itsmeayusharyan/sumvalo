@@ -278,13 +278,17 @@ abstract class SumvaloDatabase : RoomDatabase() {
             if (passphrase == null) {
                 val hadEncryptedDb = DatabaseEncryption.quarantineUnreadable(context)
                 val hasAnyDb = context.getDatabasePath(DatabaseEncryption.NAME).exists()
-                if (hadEncryptedDb || !hasAnyDb) {
-                    // No key and nothing to fall back to: never open a cleartext database for financial data.
+                if (hasAnyDb) {
+                    // No key and a database file already exists (encrypted or plaintext): never open a
+                    // cleartext database for financial data. The encrypted file (and its WAL/SHM) was
+                    // preserved by quarantineUnreadable; a plaintext file means a prior fallback state.
                     throw DatabaseUnavailableException(
                         "Your encrypted data couldn't be unlocked because Android's secure storage was reset. " +
                             "The data file was preserved untouched and nothing was stored unprotected.",
                     )
                 }
+                // No database file exists yet: fresh install proceeds; DatabaseKey.passphrase() will create
+                // the key, so this null case is transient and Room builds an encrypted database below.
             }
             if (passphrase != null && runCatching { DatabaseEncryption.prepare(context, passphrase) }.getOrDefault(false)) {
                 builder.openHelperFactory(net.zetetic.database.sqlcipher.SupportOpenHelperFactory(passphrase))
